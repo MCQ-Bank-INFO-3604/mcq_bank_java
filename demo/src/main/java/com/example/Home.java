@@ -4,17 +4,26 @@
  */
 package com.example;
 
+import java.awt.CardLayout;
+
 /**
  *
  * @author Rian Ramdin
  */
 public class Home extends javax.swing.JFrame {
+    
+    private CardLayout cardLayout;
 
     /**
      * Creates new form Home
      */
     public Home() {
         initComponents();
+        cardLayout = (CardLayout) getContentPane().getLayout();
+        getContentPane().add(new Questions(), "questionsPanel");
+        getContentPane().add(new Exams(), "examsPanel");
+        getContentPane().add(new Courses(), "coursesPanel");
+        setVisible(true);
     }
 
     /**
@@ -26,79 +35,124 @@ public class Home extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        homePanel = new javax.swing.JPanel();
+        headerPanel = new javax.swing.JPanel();
+        settingsButton = new javax.swing.JButton();
+        homeLabel = new javax.swing.JLabel();
+        helpButton = new javax.swing.JButton();
+        contentPanel = new javax.swing.JPanel();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 10), new java.awt.Dimension(32767, 10));
-        jButton3 = new javax.swing.JButton();
+        questionsButton = new javax.swing.JButton();
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 10), new java.awt.Dimension(32767, 10));
-        jButton4 = new javax.swing.JButton();
+        examsButton = new javax.swing.JButton();
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 10), new java.awt.Dimension(32767, 10));
-        jButton6 = new javax.swing.JButton();
+        coursesButton = new javax.swing.JButton();
         filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 10), new java.awt.Dimension(32767, 10));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("MCQ Bank Home");
+        setTitle("MCQ Bank V2 App");
+        setPreferredSize(new java.awt.Dimension(800, 600));
+        getContentPane().setLayout(new java.awt.CardLayout());
 
-        jPanel1.setLayout(new java.awt.BorderLayout());
+        homePanel.setLayout(new java.awt.BorderLayout());
 
-        jButton1.setText("Settings");
-        jPanel1.add(jButton1, java.awt.BorderLayout.LINE_START);
+        headerPanel.setLayout(new java.awt.BorderLayout());
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Home");
-        jPanel1.add(jLabel1, java.awt.BorderLayout.CENTER);
-
-        jButton2.setText("Help");
-        jButton2.setMaximumSize(new java.awt.Dimension(75, 23));
-        jButton2.setMinimumSize(new java.awt.Dimension(75, 23));
-        jButton2.setPreferredSize(new java.awt.Dimension(75, 23));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        settingsButton.setText("Settings");
+        settingsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                settingsButtonActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, java.awt.BorderLayout.LINE_END);
+        headerPanel.add(settingsButton, java.awt.BorderLayout.LINE_START);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+        homeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        homeLabel.setText("Home");
+        headerPanel.add(homeLabel, java.awt.BorderLayout.CENTER);
 
-        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.Y_AXIS));
-        jPanel2.add(filler1);
+        helpButton.setText("Help");
+        helpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
+        headerPanel.add(helpButton, java.awt.BorderLayout.LINE_END);
 
-        jButton3.setText("Questions");
-        jButton3.setAlignmentX(0.5F);
-        jButton3.setMaximumSize(new java.awt.Dimension(175, 35));
-        jButton3.setMinimumSize(new java.awt.Dimension(175, 35));
-        jButton3.setPreferredSize(new java.awt.Dimension(175, 35));
-        jPanel2.add(jButton3);
-        jPanel2.add(filler2);
+        homePanel.add(headerPanel, java.awt.BorderLayout.PAGE_START);
 
-        jButton4.setText("Exams");
-        jButton4.setAlignmentX(0.5F);
-        jButton4.setMaximumSize(new java.awt.Dimension(175, 35));
-        jButton4.setMinimumSize(new java.awt.Dimension(175, 35));
-        jButton4.setPreferredSize(new java.awt.Dimension(175, 35));
-        jPanel2.add(jButton4);
-        jPanel2.add(filler3);
+        contentPanel.setLayout(new javax.swing.BoxLayout(contentPanel, javax.swing.BoxLayout.Y_AXIS));
+        contentPanel.add(filler1);
 
-        jButton6.setText("Performance Metrics");
-        jButton6.setAlignmentX(0.5F);
-        jButton6.setMaximumSize(new java.awt.Dimension(175, 35));
-        jButton6.setMinimumSize(new java.awt.Dimension(175, 35));
-        jButton6.setPreferredSize(new java.awt.Dimension(175, 35));
-        jPanel2.add(jButton6);
-        jPanel2.add(filler4);
+        questionsButton.setText("Questions");
+        questionsButton.setAlignmentX(0.5F);
+        questionsButton.setMaximumSize(new java.awt.Dimension(175, 35));
+        questionsButton.setMinimumSize(new java.awt.Dimension(175, 35));
+        questionsButton.setPreferredSize(new java.awt.Dimension(175, 35));
+        questionsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                questionsButtonActionPerformed(evt);
+            }
+        });
+        contentPanel.add(questionsButton);
+        contentPanel.add(filler2);
 
-        getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
+        examsButton.setText("Exams");
+        examsButton.setAlignmentX(0.5F);
+        examsButton.setMaximumSize(new java.awt.Dimension(175, 35));
+        examsButton.setMinimumSize(new java.awt.Dimension(175, 35));
+        examsButton.setPreferredSize(new java.awt.Dimension(175, 35));
+        examsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                examsButtonActionPerformed(evt);
+            }
+        });
+        contentPanel.add(examsButton);
+        contentPanel.add(filler3);
+
+        coursesButton.setText("Courses");
+        coursesButton.setAlignmentX(0.5F);
+        coursesButton.setMaximumSize(new java.awt.Dimension(175, 35));
+        coursesButton.setMinimumSize(new java.awt.Dimension(175, 35));
+        coursesButton.setPreferredSize(new java.awt.Dimension(175, 35));
+        coursesButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                coursesButtonActionPerformed(evt);
+            }
+        });
+        contentPanel.add(coursesButton);
+        contentPanel.add(filler4);
+
+        homePanel.add(contentPanel, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(homePanel, "Home");
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+        new Help(null, true, 1);
+    }//GEN-LAST:event_helpButtonActionPerformed
+
+    private void settingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_settingsButtonActionPerformed
+
+    private void questionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_questionsButtonActionPerformed
+        // TODO add your handling code here:
+        cardLayout.show(getContentPane(), "questionsPanel");
+    }//GEN-LAST:event_questionsButtonActionPerformed
+
+    private void examsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_examsButtonActionPerformed
+        // TODO add your handling code here:
+        cardLayout.show(getContentPane(), "examsPanel");
+    }//GEN-LAST:event_examsButtonActionPerformed
+
+    private void coursesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_coursesButtonActionPerformed
+        // TODO add your handling code here:
+        cardLayout.show(getContentPane(), "coursesPanel");
+    }//GEN-LAST:event_coursesButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -136,17 +190,18 @@ public class Home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel contentPanel;
+    private javax.swing.JButton coursesButton;
+    private javax.swing.JButton examsButton;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
     private javax.swing.Box.Filler filler4;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel headerPanel;
+    private javax.swing.JButton helpButton;
+    private javax.swing.JLabel homeLabel;
+    private javax.swing.JPanel homePanel;
+    private javax.swing.JButton questionsButton;
+    private javax.swing.JButton settingsButton;
     // End of variables declaration//GEN-END:variables
 }
