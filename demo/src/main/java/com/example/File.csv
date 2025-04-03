@@ -1,0 +1,41 @@
+Question,Correct Answer,Wrong Answer 1,Wrong Answer 2,Wrong Answer 3,Course,Topic,Subtopic,Difficulty
+What is the parent class of all Java classes?,Object,String,Integer,Class,Java,Basics,Inheritance,Easy
+Which method is used to compare two strings in Java?,equals(),==,compare(),checkEqual(),Java,String Handling,Methods,Easy
+What is the default value of a boolean in Java?,FALSE,TRUE,0,null,Java,Data Types,Primitives,Easy
+Which collection implements FIFO (First-In-First-Out) behavior?,Queue,List,Set,Map,Java,Collections,Interfaces,Medium
+What does SQL stand for?,Structured Query Language,Simple Query Logic,Standard Question Language,System Query Language,SQL,Fundamentals,Terminology,Easy
+Which SQL clause is used to filter groups?,HAVING,WHERE,FILTER,GROUP BY,SQL,Queries,Clauses,Medium
+What is the time complexity of binary search?,O(log n),O(1),O(n),O(n log n),Algorithms,Searching,Complexity,Hard
+Which design pattern ensures only one instance exists?,Singleton,Factory,Observer,Adapter,Design Patterns,Creational,Instantiation,Medium
+What does CSS stand for?,Cascading Style Sheets,Computer Style System,Creative Style Syntax,Content Styling Service,Web,Fundamentals,CSS,Easy
+Which HTTP status code means 'Not Found'?,404,400,500,403,Web,HTTP,Status Codes,Easy
+What is the first step in the nursing process?,Assessment,Diagnosis,Planning,Evaluation,Nursing Fundamentals,Clinical Process,Stages,Easy
+Which artery is commonly used to measure blood pressure?,Brachial,Femoral,Carotid,Radial,Anatomy,Cardiovascular System,Arteries,Easy
+Which drug is a beta-blocker?,Metoprolol,Ibuprofen,Omeprazole,Warfarin,Pharmacology,Cardiovascular Drugs,Beta-Blockers,Medium
+What does 'NPO' mean?,Nothing by mouth,No physical activity,No postoperative care,New patient order,Medical Terminology,Abbreviations,Orders,Easy
+Which electrolyte imbalance causes muscle cramps?,Hypokalemia,Hypernatremia,Hypocalcemia,Hyperglycemia,Pathophysiology,Fluid Balance,Electrolytes,Hard
+Which nursing theory was developed by Florence Nightingale?,Environmental Theory,Self-Care Theory,Transcultural Theory,Adaptation Model,Nursing Fundamentals,Theories,Historical,Medium
+Which drug reverses opioid overdose?,Naloxone,Epinephrine,Atropine,Aspirin,Pharmacology,Emergency Drugs,Overdose Management,Hard
+Which heart valve separates the left atrium and ventricle?,Mitral,Aortic,Tricuspid,Pulmonary,Anatomy,Cardiovascular System,Valves,Medium
+What is the normal pH range of blood?,7.35-7.45,6.5-7.0,7.5-8.0,8.0-8.5,Pathophysiology,Acid-Base Balance,Blood Analysis,Medium
+Which assessment tool screens for depression?,PHQ-9,Glasgow Scale,Braden Scale,APGAR,Mental Health,Screening Tools,Depression,Hard
+What keyword declares a constant in JavaScript?,const,var,let,static,Programming Fundamentals,Syntax,Variables,Easy
+Which OOP principle promotes 'interface over implementation'?,Abstraction,Encapsulation,Inheritance,Polymorphism,Programming Fundamentals,Concepts,OOP,Medium
+Which framework uses JSX syntax?,React,Angular,Vue,Svelte,Web,Frontend,Frameworks,Easy
+Which backend framework uses 'Convention over Configuration'?,Ruby on Rails,Django,Express.js,Spring Boot,Web,Backend,Frameworks,Medium
+What is the time complexity of array index access?,O(1),O(n),O(log n),O(n²),Data Structures,Linear Structures,Arrays,Easy
+What is the main advantage of linked lists over arrays?,Dynamic size,Faster access,Lower memory,Built-in sorting,Data Structures,Linear Structures,Linked Lists,Medium
+Which pattern ensures a single class instance?,Singleton,Factory,Observer,Adapter,Software Design,Architecture,Patterns,Medium
+Which pattern decouples abstraction from implementation?,Bridge,Facade,Proxy,Decorator,Software Design,Best Practices,Patterns,Hard
+Which tool is used for container orchestration?,Kubernetes,Jenkins,Ansible,Docker Compose,DevOps,CI/CD,Tools,Medium
+Which tool uses 'Infrastructure as Code' via declarative files?,Terraform,Chef,Puppet,CloudFormation,DevOps,Infrastructure,Tools,Hard
+What is the primary cause of deforestation in the Amazon?,Agriculture,Wildfires,Urbanization,Mining,Ecology,Environmental Threats,Deforestation,Medium
+Which international agreement aims to limit global warming to 2°C?,Paris Agreement,Kyoto Protocol,Copenhagen Accord,Montreal Protocol,Environmental Policy,Climate Change,Global Agreements,Hard
+Which renewable energy source uses photovoltaic cells?,Solar,Wind,Hydropower,Geothermal,Renewable Energy,Energy Sources,Technology,Easy
+What is a keystone species?,A species critical to ecosystem stability,An invasive species,A newly discovered species,A genetically modified species,Ecology,Biodiversity,Species Roles,Medium
+Which gas is most responsible for ocean acidification?,Carbon dioxide,Methane,Nitrous oxide,Ozone,Marine Science,Pollution,Ocean Chemistry,Hard
+What does IUCN classify as 'Critically Endangered'?,Species at extremely high extinction risk,Species with stable populations,Invasive species,Species extinct in the wild,Conservation Biology,Wildlife Protection,IUCN Categories,Medium
+Which practice reduces carbon footprint in agriculture?,Crop rotation,Monoculture,Deforestation,Excessive tilling,Sustainable Agriculture,Farming Techniques,Climate Mitigation,Easy
+What is the main driver of coral bleaching?,Rising sea temperatures,Overfishing,Oil spills,Plastic pollution,Marine Science,Ecosystem Stressors,Coral Reefs,Medium
+Which is NOT a renewable energy source?,Natural gas,Wind,Solar,Biomass,Renewable Energy,Energy Sources,Definitions,Easy
+Which greenhouse gas has the highest global warming potential?,Sulfur hexafluoride (SF₆),Carbon dioxide (CO₂),Methane (CH₄),Nitrous oxide (N₂O),Climate Science,Atmospheric Science,Greenhouse Gases,Hard
