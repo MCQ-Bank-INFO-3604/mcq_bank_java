@@ -5,8 +5,10 @@
 package com.example.views;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import com.example.controllers.ExamController;
 import com.example.controllers.QuestionController;
@@ -949,6 +951,42 @@ public class Exams extends javax.swing.JPanel {
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
         // TODO add your handling code here:
+        if (currentExamId == null) {
+            JOptionPane.showMessageDialog(this, 
+                "Please create or select an exam first", 
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            // Ask user for file location
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Exam PDF");
+            fileChooser.setSelectedFile(new File("Exam_" + currentExamId + ".pdf"));
+            fileChooser.setFileFilter(new FileNameExtensionFilter("PDF Files", "pdf"));
+            
+            int userSelection = fileChooser.showSaveDialog(this);
+            
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+                // Ensure the file has .pdf extension
+                if (!fileToSave.getName().toLowerCase().endsWith(".pdf")) {
+                    fileToSave = new File(fileToSave.getAbsolutePath() + ".pdf");
+                }
+                
+                // Generate the PDF
+                eController.generateExamPDF(currentExamId, fileToSave.getAbsolutePath());
+                
+                JOptionPane.showMessageDialog(this, 
+                    "Exam PDF generated successfully at:\n" + fileToSave.getAbsolutePath(), 
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Error generating PDF: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_exportButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
