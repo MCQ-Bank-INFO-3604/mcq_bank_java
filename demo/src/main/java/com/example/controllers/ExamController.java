@@ -20,26 +20,25 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.poi.xwpf.usermodel.*;
 
 public class ExamController {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
     private QuestionController questionController = new QuestionController();
 
-    public void insertExam(String examTitle,int numQuestions, String course, String topic, String subTopic) {
-        String sql = "INSERT INTO exams (examTitle, numQuestions, course, topic, subTopic, dateCreated) VALUES ( ?, ?, ?, ?, ?, ? );";
+    public void insertExam(String examTitle, int numQuestions, Integer course, Float performance) {
+        String sql = "INSERT INTO exams (examTitle, numQuestions, course, performance, dateCreated, lastEdited) VALUES (?, ?, ?, ?, ?, ?);";
         
-        //java.util.Date today=new Date();
-        //java.sql.Date date=new java.sql.Date(today.getTime()); //your SQL date object
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, examTitle);
-                pstmt.setInt(2, numQuestions);
-                pstmt.setString(3, course);
-                pstmt.setString(4, topic);
-                pstmt.setString(5, subTopic);
-                pstmt.setString(6, date);
-                pstmt.executeUpdate();
+            pstmt.setString(1, examTitle);
+            pstmt.setInt(2, numQuestions);
+            pstmt.setInt(3, course);
+            pstmt.setFloat(4, performance);
+            pstmt.setString(5, date);
+            pstmt.setString(6, date);
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -63,8 +62,7 @@ public class ExamController {
         }
     }
     
-    public ResultSet getExam(int examID){
-        
+    public ResultSet getExam(int examID) {
         String sql = "SELECT * FROM exams WHERE examID = '" + examID + "';";
         try {
             Connection conn = DriverManager.getConnection(DB_URL);
@@ -73,7 +71,7 @@ public class ExamController {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
-          }        
+        }        
     }
 
     public ResultSet getQuestionsFromExam(int examID){
@@ -91,51 +89,43 @@ public class ExamController {
     }
     
     public void addQuestionToExam(int examID, int questionID) throws SQLException {
-        // Get current exam data
-        ResultSet rs2 = getExam(examID);
-        
-        // Prepare the current date/time
-        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-    
+        // Fetch the exam details
+        int numQuestions = 0;
+        String sql = "SELECT numQuestions FROM exams WHERE examID = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, examID);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    numQuestions = rs.getInt("numQuestions");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
         // Update exam with new lastEdited and numQuestions
-        String sql = "UPDATE exams " +
-                    "SET lastEdited = ?, numQuestions = ? " +
-                    "WHERE examID = ?";
-    
-        try (Connection conn1 = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt1 = conn1.prepareStatement(sql)) {
-            pstmt1.setString(1, date);
-            pstmt1.setInt(2, rs2.getInt("numQuestions") + 1);
-            pstmt1.setInt(3, examID);
-            pstmt1.executeUpdate();
+        sql = "UPDATE exams SET lastEdited = ?, numQuestions = ? WHERE examID = ?";
+        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, date);
+            pstmt.setInt(2, numQuestions + 1);
+            pstmt.setInt(3, examID);
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
-        }        
-                   
-        // Update question with lastUsed and increment timesUsed
-        sql = "UPDATE questions " +
-            "SET lastUsed = ?, timesUsed = timesUsed + 1 " +
-            "WHERE questionID = ?";
-    
-        try (Connection conn2 = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt2 = conn2.prepareStatement(sql)) {
-            pstmt2.setString(1, date);
-            pstmt2.setInt(2, questionID);
-            pstmt2.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        }        
-    
+        }
+
         // Add the question to the exam
-        sql = "INSERT INTO ExamQuestions (examID, questionID) VALUES (?, ?)"; 
-    
-        try (Connection conn3 = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt3 = conn3.prepareStatement(sql)) {
-            pstmt3.setInt(1, examID);
-            pstmt3.setInt(2, questionID);
-            pstmt3.executeUpdate();
+        sql = "INSERT INTO ExamQuestions (examID, questionID) VALUES (?, ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, examID);
+            pstmt.setInt(2, questionID);
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
@@ -143,17 +133,11 @@ public class ExamController {
     }
 
     public void removeQuestionFromExam(int examID, int questionID) throws SQLException {
-        // Get current exam data
         ResultSet rs2 = getExam(examID);
-        
-        // Prepare the current date/time
-        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-    
+
         // Update exam with new lastEdited and numQuestions
-        String sql = "UPDATE exams " +
-                    "SET lastEdited = ?, numQuestions = ? " +
-                    "WHERE examID = ?";
-    
+        String sql = "UPDATE exams SET lastEdited = ?, numQuestions = ? WHERE examID = ?";
+        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         try (Connection conn1 = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt1 = conn1.prepareStatement(sql)) {
             pstmt1.setString(1, date);
@@ -163,33 +147,114 @@ public class ExamController {
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
-        }        
-    
-        // Update question to decrement timesUsed
-        sql = "UPDATE questions " +
-            "SET timesUsed = timesUsed - 1 " +
-            "WHERE questionID = ?";
-    
+        }
+
+        // Remove the question from the exam
+        sql = "DELETE FROM ExamQuestions WHERE questionID = ? AND examID = ?";
         try (Connection conn2 = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt2 = conn2.prepareStatement(sql)) {
             pstmt2.setInt(1, questionID);
+            pstmt2.setInt(2, examID);
             pstmt2.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
-        }        
-    
-        // Remove the question from the exam
-        sql = "DELETE FROM ExamQuestions WHERE questionID = ? AND examID = ?";
-    
-        try (Connection conn3 = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt3 = conn3.prepareStatement(sql)) {
-            pstmt3.setInt(1, questionID);
-            pstmt3.setInt(2, examID);
-            pstmt3.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
+        }
+    }
+
+    public boolean editExam(int examID, String newTitle, String newCourse, Float newPerformance, String newLastUsed) throws SQLException {
+        String sql = "UPDATE exams SET examTitle = ?, course = ?, performance = ?, lastUsed = ?, lastEdited = ? WHERE examID = ?";
+        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, newTitle);
+            pstmt.setString(2, newCourse);
+            pstmt.setFloat(3, newPerformance);
+            pstmt.setString(4, newLastUsed);
+            pstmt.setString(5, date);
+            pstmt.setInt(6, examID);
+            pstmt.executeUpdate();
+        }
+
+        // Update the lastUsed for questions in the exam
+        updateQuestionsLastUsed(examID, newLastUsed);
+
+        // Call updateTimesUsed for each question in the exam
+        String getQuestionsSql = "SELECT questionID FROM ExamQuestions WHERE examID = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(getQuestionsSql)) {
+            pstmt.setInt(1, examID);
+            ResultSet rs = pstmt.executeQuery();
+
+            QuestionController questionController = new QuestionController();
+            while (rs.next()) {
+                int questionID = rs.getInt("questionID");
+                questionController.updateTimesUsed(questionID);
+            }
+        }
+
+        return true;
+    }
+
+    private void updateQuestionsLastUsed(int examID, String examLastUsed) throws SQLException {
+        String sql = "SELECT questionID, lastUsed FROM questions WHERE questionID IN (SELECT questionID FROM ExamQuestions WHERE examID = ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, examID);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int questionID = rs.getInt("questionID");
+                String questionLastUsed = rs.getString("lastUsed");
+
+                String newerLastUsed;
+                if (examLastUsed == null || examLastUsed.isEmpty()) {
+                    // If the exam's lastUsed is null or empty, find the most recent lastUsed from all related exams
+                    newerLastUsed = getMostRecentLastUsedFromExams(questionID);
+                } else {
+                    // Compare the exam's lastUsed with the question's lastUsed
+                    newerLastUsed = getNewerDate(examLastUsed, questionLastUsed);
+                }
+
+                // Update the question's lastUsed if it has changed
+                if (!newerLastUsed.equals(questionLastUsed)) {
+                    updateQuestionLastUsed(questionID, newerLastUsed);
+                }
+            }
+        }
+    }
+
+    private String getMostRecentLastUsedFromExams(int questionID) throws SQLException {
+        String sql = "SELECT MAX(lastUsed) AS mostRecentLastUsed " +
+                     "FROM exams " +
+                     "WHERE examID IN (SELECT examID FROM ExamQuestions WHERE questionID = ?) AND lastUsed IS NOT NULL AND lastUsed != ''";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, questionID);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("mostRecentLastUsed");
+            }
+        }
+        return null; // Return null if no valid lastUsed dates are found
+    }
+
+    private String getNewerDate(String date1, String date2) {
+        if (date1 == null || date1.isEmpty()) return date2;
+        if (date2 == null || date2.isEmpty()) return date1;
+
+        return date1.compareTo(date2) > 0 ? date1 : date2;
+    }
+
+    private void updateQuestionLastUsed(int questionID, String newLastUsed) throws SQLException {
+        String sql = "UPDATE questions SET lastUsed = ? WHERE questionID = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, newLastUsed);
+            pstmt.setInt(2, questionID);
+            pstmt.executeUpdate();
         }
     }
 
@@ -212,18 +277,8 @@ public class ExamController {
     public void generateExamPDF(int examID, String filePath) throws SQLException, DocumentException, IOException {
         ResultSet rs = getQuestionsFromExam(examID);
         ResultSet rs2 = getExam(examID);
-        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         int autoNum = 1;
-    
-        // Update last used date
-        String sql = "UPDATE exams SET lastUsed = ? WHERE examID = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, date);
-            pstmt.setInt(2, examID);
-            pstmt.executeUpdate();
-        }
-        
+
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream(filePath));
@@ -268,7 +323,88 @@ public class ExamController {
                 document.close();
             }
         }
-        }
-    
     }
-    
+
+    public void generateExamDocx(int examID, String filePath) throws SQLException, IOException {
+        ResultSet rs = getQuestionsFromExam(examID);
+        ResultSet rs2 = getExam(examID);
+        int autoNum = 1;
+
+        try (// Create a new Word document
+        XWPFDocument document = new XWPFDocument()) {
+            try (FileOutputStream out = new FileOutputStream(filePath)) {
+                // Add exam header
+                XWPFParagraph header = document.createParagraph();
+                header.setAlignment(ParagraphAlignment.CENTER);
+                XWPFRun headerRun = header.createRun();
+                headerRun.setBold(true);
+                headerRun.setFontSize(16);
+                headerRun.setText("Exam ID: " + examID);
+
+                XWPFParagraph title = document.createParagraph();
+                title.setAlignment(ParagraphAlignment.CENTER);
+                XWPFRun titleRun = title.createRun();
+                titleRun.setBold(true);
+                titleRun.setFontSize(14);
+                titleRun.setText("Exam Title: " + rs2.getString("examTitle"));
+
+                XWPFParagraph course = document.createParagraph();
+                XWPFRun courseRun = course.createRun();
+                courseRun.setText("Course: " + rs2.getString("course"));
+
+                XWPFParagraph numQuestions = document.createParagraph();
+                XWPFRun numQuestionsRun = numQuestions.createRun();
+                numQuestionsRun.setText("Number of Questions: " + rs2.getInt("numQuestions"));
+
+                document.createParagraph(); // Add a blank line
+
+                // Add questions
+                while (rs != null && rs.next()) {
+                    ResultSet question = questionController.getQuestion(rs.getInt("questionID"));
+                    List<String> li = new ArrayList<>();
+                    li.add(question.getString("correctAnswer"));
+                    li.add(question.getString("wrongAnswer1"));
+                    li.add(question.getString("wrongAnswer2"));
+                    li.add(question.getString("wrongAnswer3"));
+                    Collections.shuffle(li);
+
+                    // Format question
+                    XWPFParagraph questionPara = document.createParagraph();
+                    XWPFRun questionRun = questionPara.createRun();
+                    questionRun.setBold(true);
+                    questionRun.setText(autoNum + ". " + question.getString("question"));
+
+                    // Format answers
+                    XWPFParagraph answerA = document.createParagraph();
+                    XWPFRun answerARun = answerA.createRun();
+                    answerARun.setText("A. " + li.get(0));
+
+                    XWPFParagraph answerB = document.createParagraph();
+                    XWPFRun answerBRun = answerB.createRun();
+                    answerBRun.setText("B. " + li.get(1));
+
+                    XWPFParagraph answerC = document.createParagraph();
+                    XWPFRun answerCRun = answerC.createRun();
+                    answerCRun.setText("C. " + li.get(2));
+
+                    XWPFParagraph answerD = document.createParagraph();
+                    XWPFRun answerDRun = answerD.createRun();
+                    answerDRun.setText("D. " + li.get(3));
+
+                    document.createParagraph(); // Add a blank line between questions
+                    autoNum++;
+                }
+
+                // Add footer
+                XWPFParagraph footer = document.createParagraph();
+                footer.setAlignment(ParagraphAlignment.CENTER);
+                XWPFRun footerRun = footer.createRun();
+                footerRun.setBold(true);
+                footerRun.setText("End of Exam");
+
+                // Write the document to the file
+                document.write(out);
+            }
+        }
+    }
+}

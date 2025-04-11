@@ -7,17 +7,32 @@ package com.example.views;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
+import com.example.controllers.CoursesController;
 import com.example.controllers.ExamController;
 import com.example.controllers.QuestionController;
+import com.example.controllers.SubtopicsController;
+import com.example.controllers.TopicsController;
 
 /**
  *
  * @author Michelle Khadan
  */
 public class GenerateQuestionForm extends javax.swing.JDialog {
+    private HashMap<String, Integer> courseCodeToIDMap = new HashMap<>();
+    private CoursesController cController = new CoursesController();
+    
+    private HashMap<String, Integer> topicNameToIDMap = new HashMap<>();
+    private TopicsController tController = new TopicsController();
+    
+    private HashMap<String, Integer> subtopicNameToIDMap = new HashMap<>();
+    private SubtopicsController sController = new SubtopicsController();
+    
+    private static final String DEFAULT_ALL_OPTION = "--All--";
 
     private Integer currentExamId;
     /**
@@ -29,6 +44,7 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
         initComponents();
 
         populateDropdowns();
+        setupDropdownListeners();
     }
 
     /**
@@ -284,35 +300,80 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
         courseComboBox.removeAllItems();
         topicComboBox.removeAllItems();
         subtopicComboBox.removeAllItems();
+        courseCodeToIDMap.clear();
+        topicNameToIDMap.clear();
+        subtopicNameToIDMap.clear();
 
         // Add All option
-        courseComboBox.addItem("--All--");
-        topicComboBox.addItem("--All--");
-        subtopicComboBox.addItem("--All--");
+        courseComboBox.addItem(DEFAULT_ALL_OPTION);
+        topicComboBox.addItem(DEFAULT_ALL_OPTION);
+        subtopicComboBox.addItem(DEFAULT_ALL_OPTION);
 
-        QuestionController controller = new QuestionController();
-        // Get distinct values
-        ArrayList<String> courses = controller.getDistinctCourses();
-        ArrayList<String> topics = controller.getDistinctTopics();
-        ArrayList<String> subtopics = controller.getDistinctSubtopics();
-
+        ArrayList<String[]> courses = cController.getAllCourses();
+        
         // Add items to the combo boxes
-        for (String course : courses) {
-            courseComboBox.addItem(course);
-        }
-        for (String topic : topics) {
-            topicComboBox.addItem(topic);
-        }
-        for (String subtopic : subtopics) {
-            subtopicComboBox.addItem(subtopic);
+        for (String[] course : courses) {
+            String courseCode = course[0];
+            int courseID = Integer.parseInt(course[1]);
+            courseComboBox.addItem(courseCode);
+            courseCodeToIDMap.put(courseCode, courseID);
         }
         
         // Set the default selected item to the first one
-        courseComboBox.setSelectedIndex(0);
-        topicComboBox.setSelectedIndex(0);
-        subtopicComboBox.setSelectedIndex(0);
-
+        topicComboBox.setEnabled(false);
+        subtopicComboBox.setEnabled(false);
     }
+
+    private void setupDropdownListeners() {
+        courseComboBox.addActionListener(e -> {
+            String selectedCourse = (String) courseComboBox.getSelectedItem();
+            if (DEFAULT_ALL_OPTION.equals(selectedCourse)) {
+                topicComboBox.setEnabled(false);
+                subtopicComboBox.setEnabled(false);
+                topicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+                subtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+            } else {
+                Integer courseID = courseCodeToIDMap.get(selectedCourse);
+                topicComboBox.setEnabled(true);
+                populateTopicsDropdown(topicComboBox, courseID);
+            }
+        });
+
+        topicComboBox.addActionListener(e -> {
+            String selectedTopic = (String) topicComboBox.getSelectedItem();
+            if (DEFAULT_ALL_OPTION.equals(selectedTopic)) {
+                subtopicComboBox.setEnabled(false);
+                subtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+            } else {
+                Integer topicID = topicNameToIDMap.get(selectedTopic);
+                subtopicComboBox.setEnabled(true);
+                populateSubtopicsDropdown(subtopicComboBox, topicID);
+            }
+        });
+    }
+
+    private void populateTopicsDropdown(JComboBox<String> topicDropdown, Integer course) {
+        topicDropdown.removeAllItems();
+        topicDropdown.addItem(DEFAULT_ALL_OPTION);
+
+        ArrayList<String[]> topics = tController.getTopicsByCourse(course);
+        for (String[] topic : topics) {
+            String topicName = topic[0];
+            topicDropdown.addItem(topicName);
+        }
+    }
+
+    private void populateSubtopicsDropdown(JComboBox<String> subtopicDropdown, Integer topic) {
+        subtopicDropdown.removeAllItems();
+        subtopicDropdown.addItem(DEFAULT_ALL_OPTION);
+
+        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicID(topic);
+        for (String[] subtopic : subtopics) {
+            String subtopicName = subtopic[0];
+            subtopicDropdown.addItem(subtopicName);
+        }
+    }
+
     /**
      * @param args the command line arguments
      */

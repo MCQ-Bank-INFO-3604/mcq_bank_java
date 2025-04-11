@@ -24,6 +24,7 @@ public class Home extends javax.swing.JFrame {
         getContentPane().add(new Exams(), "examsPanel");
         getContentPane().add(new Courses(), "coursesPanel");
         setSize(800, 600);
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 

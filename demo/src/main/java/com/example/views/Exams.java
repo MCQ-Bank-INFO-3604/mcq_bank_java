@@ -10,8 +10,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
+import com.example.controllers.CoursesController;
 import com.example.controllers.ExamController;
 import com.example.controllers.QuestionController;
+import com.example.controllers.SubtopicsController;
+import com.example.controllers.TopicsController;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -22,6 +25,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,8 +37,20 @@ import java.util.Set;
 public class Exams extends javax.swing.JPanel {
     private ExamController eController = new ExamController();
     private QuestionController qController = new QuestionController();
+    
+    private HashMap<String, Integer> courseCodeToIDMap = new HashMap<>();
+    private CoursesController cController = new CoursesController();
+    
+    private HashMap<String, Integer> topicNameToIDMap = new HashMap<>();
+    private TopicsController tController = new TopicsController();
+    
+    private HashMap<String, Integer> subtopicNameToIDMap = new HashMap<>();
+    private SubtopicsController sController = new SubtopicsController();
+    
     private Integer currentExamId = null;
     private JPanel lastHighlightedPanel = null; // Class-level variable to track the last highlighted panel
+
+    private static final String DEFAULT_ALL_OPTION = "--All--";
 
     public Exams() {
         initComponents();
@@ -44,6 +60,8 @@ public class Exams extends javax.swing.JPanel {
         verticalScrollBar.setUnitIncrement(16); // Set the scroll speed (in pixels) for each click
 
         populateDropdowns();
+        setupManageDropdownListeners();
+
 
         populateBResultsPanel(eController.getExamsWithFilter());
     }
@@ -1080,14 +1098,14 @@ public class Exams extends javax.swing.JPanel {
 
         // Get exam data from UI components
         String examTitle = examTitleTF.getText().trim();
-        String course = (String) mCourseComboBox.getSelectedItem();
-        String topic = (String) mTopicComboBox.getSelectedItem();
-        String subTopic = (String) mSubtopicComboBox.getSelectedItem();
+        String courseCode = (String) mCourseComboBox.getSelectedItem();
+        Integer courseID = courseCodeToIDMap.get(courseCode);
 
+        Float performance = null;
         try {
             if (currentExamId == null) {
                 // Create new exam - we'll use numQuestions=0 initially since we'll add questions separately
-                eController.insertExam(examTitle, 0, course, topic, subTopic);
+                eController.insertExam(examTitle, 0, courseID, performance);
                 
                 // Get the ID of the newly created exam
                 ResultSet latestExam = eController.getExamsWithFilter("SELECT * FROM exams ORDER BY examID DESC LIMIT 1");
@@ -1180,7 +1198,7 @@ public class Exams extends javax.swing.JPanel {
         bGradedNoCB.setSelected(false);
         bCourseComboBox.setSelectedIndex(0);
         bSearchTF.setText("");
-        mButtonGroup.clearSelection();
+        mButtonGroup.setSelected(mSortRB1.getModel(), true);
         ansListPanel.removeAll();
         ansListPanel.revalidate();
         ansListPanel.repaint();
@@ -1264,19 +1282,22 @@ public class Exams extends javax.swing.JPanel {
         // Handle course filter
         String selectedCourse = (String) mCourseComboBox.getSelectedItem();
         if (selectedCourse != null && !selectedCourse.equals("--All--")) {
-            sqlQuery.append(" AND course = '").append(selectedCourse).append("'");
+            Integer courseID = courseCodeToIDMap.get(selectedCourse);
+            sqlQuery.append(" AND course = '").append(courseID).append("'");
         }
 
         // Handle topic filter
         String selectedTopic = (String) mTopicComboBox.getSelectedItem();
         if (selectedTopic != null && !selectedTopic.equals("--All--")) {
-            sqlQuery.append(" AND topic = '").append(selectedTopic).append("'");
+            Integer topicID = topicNameToIDMap.get(selectedTopic);
+            sqlQuery.append(" AND topic = '").append(topicID).append("'");
         }
 
         // Handle subtopic filter
         String selectedSubtopic = (String) mSubtopicComboBox.getSelectedItem();
         if (selectedSubtopic != null && !selectedSubtopic.equals("--All--")) {
-            sqlQuery.append(" AND subTopic = '").append(selectedSubtopic).append("'");
+            Integer subtopicID = subtopicNameToIDMap.get(selectedSubtopic);
+            sqlQuery.append(" AND subTopic = '").append(subtopicID).append("'");
         }
 
         // Handle search term
@@ -1326,30 +1347,91 @@ public class Exams extends javax.swing.JPanel {
         mTopicComboBox.removeAllItems();
         mSubtopicComboBox.removeAllItems();
         bCourseComboBox.removeAllItems();
+        courseCodeToIDMap.clear();
+        topicNameToIDMap.clear();
+        subtopicNameToIDMap.clear();
 
         // Add "--All--" option
-        mCourseComboBox.addItem("--All--");
-        mTopicComboBox.addItem("--All--");
-        mSubtopicComboBox.addItem("--All--");
-        bCourseComboBox.addItem("--All--");
+        mCourseComboBox.addItem(DEFAULT_ALL_OPTION);
+        mTopicComboBox.addItem(DEFAULT_ALL_OPTION);
+        mSubtopicComboBox.addItem(DEFAULT_ALL_OPTION);
+        bCourseComboBox.addItem(DEFAULT_ALL_OPTION);
 
         // Get distinct values from the database
-        ArrayList<String> courses = qController.getDistinctCourses();
-        ArrayList<String> topics = qController.getDistinctTopics();
-        ArrayList<String> subtopics = qController.getDistinctSubtopics();
-
+        ArrayList<String[]> courses = cController.getAllCourses();
+    
         // Populate the dropdowns
-        for (String course : courses) {
-            mCourseComboBox.addItem(course);
-            bCourseComboBox.addItem(course);
+        for (String[] course : courses) {
+            String courseCode = course[0];
+            int courseID = Integer.parseInt(course[1]);
+            bCourseComboBox.addItem(courseCode);
+            mCourseComboBox.addItem(courseCode);
+            courseCodeToIDMap.put(courseCode, courseID);
         }
-        for (String topic : topics) {
-            mTopicComboBox.addItem(topic);
-        }
-        for (String subtopic : subtopics) {
-            mSubtopicComboBox.addItem(subtopic);
+
+        // Initially disable dependent dropdowns
+        mTopicComboBox.setEnabled(false);
+        mSubtopicComboBox.setEnabled(false);
+    }
+
+    private void setupManageDropdownListeners() {
+        mCourseComboBox.addActionListener(e -> {
+            String selectedCourse = (String) mCourseComboBox.getSelectedItem();
+            if (DEFAULT_ALL_OPTION.equals(selectedCourse)) {
+                mTopicComboBox.setEnabled(false);
+                mSubtopicComboBox.setEnabled(false);
+                mTopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+                mSubtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+            } else {
+                Integer courseID = courseCodeToIDMap.get(selectedCourse);
+                mTopicComboBox.setEnabled(true);
+                populateTopicsDropdown(mTopicComboBox, courseID);
+            }
+        });
+
+        mTopicComboBox.addActionListener(e -> {
+            String selectedTopic = (String) mTopicComboBox.getSelectedItem();
+            if (DEFAULT_ALL_OPTION.equals(selectedTopic)) {
+                mSubtopicComboBox.setEnabled(false);
+                mSubtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+            } else {
+                mSubtopicComboBox.setEnabled(true);
+                populateSubtopicsDropdown(mSubtopicComboBox, selectedTopic);
+            }
+        });
+    }
+    
+    private void populateTopicsDropdown(JComboBox<String> topicDropdown, Integer course) {
+        topicDropdown.removeAllItems();
+        topicDropdown.addItem(DEFAULT_ALL_OPTION);
+
+        ArrayList<String[]> topics = tController.getTopicsByCourse(course);
+        for (String[] topic : topics) {
+            String topicName = topic[0];
+            topicDropdown.addItem(topicName);
         }
     }
+
+    private void populateSubtopicsDropdown(JComboBox<String> subtopicDropdown, String topicName) {
+        subtopicDropdown.removeAllItems();
+        subtopicDropdown.addItem(DEFAULT_ALL_OPTION);
+
+        // Get the topicID from the topicNameToIDMap
+        Integer topicID = topicNameToIDMap.get(topicName);
+        if (topicID == null) {
+            System.err.println("Error: topicID is null for topicName: " + topicName);
+            return; // Exit early if topicID is null
+        }
+
+        // Fetch subtopics using the topicID
+        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicID(topicID);
+        for (String[] subtopic : subtopics) {
+            String subtopicName = subtopic[0];
+            subtopicDropdown.addItem(subtopicName);
+            subtopicNameToIDMap.put(subtopicName, Integer.parseInt(subtopic[1])); // Map subtopicName to subtopicID
+        }
+    }
+
 
     private void populateBResultsPanel(ResultSet rs) {
         // Clear existing components
@@ -1596,11 +1678,12 @@ public class Exams extends javax.swing.JPanel {
     private void loadExamData(int examId) {
         try {
             this.currentExamId = examId;
-
+            System.out.println("Loading exam data for ID: " + examId);
             // Fetch exam details from the database
             ResultSet rs = eController.getExam(examId);
 
             if (rs.next()) {
+                System.out.println("Exam ID: " + rs.getInt("examID"));
                 // Fill exam title
                 examTitleTF.setText(rs.getString("examTitle"));
 
@@ -1609,11 +1692,13 @@ public class Exams extends javax.swing.JPanel {
                 String dateAdmin = rs.getString("lastUsed");
                 mDateAdminTF.setText(dateAdmin == null ? "Never" : dateAdmin);
                 mDateEditedTF.setText(rs.getString("lastEdited"));
-                mPerfTF.setText(String.valueOf(rs.getInt("performanceMetric")));
+                // mPerfTF.setText(String.valueOf(rs.getInt("performanceMetric")));
             
                 // Populate questions
                 ResultSet examQuestions = eController.getQuestionsFromExam(examId);
                 populateMListPanels(examQuestions, "SELECT * FROM questions WHERE 1=1");
+            } else {
+                JOptionPane.showMessageDialog(this, "Exam not found", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (SQLException e) {

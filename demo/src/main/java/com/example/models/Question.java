@@ -14,7 +14,6 @@ public class Question{
 
     }
 
-
     public void deleteQuestionTable() {
         String sql = "DROP TABLE IF EXISTS questions;";
         
@@ -34,17 +33,26 @@ public class Question{
                    + "wrongAnswer1 TEXT NOT NULL,"
                    + "wrongAnswer2 TEXT NOT NULL,"
                    + "wrongAnswer3 TEXT NOT NULL,"
-                   + "course TEXT,"
-                   + "topic TEXT,"
-                   + "subTopic TEXT,"
-                   + "difficulty TEXT,"
+                   + "course INTEGER NOT NULL,"
+                   + "topic INTEGER NOT NULL,"
+                   + "subTopic INTEGER NOT NULL,"
+                   + "difficulty FLOAT,"
                    + "dateCreated DATETIME,"
                    + "lastUsed DATETIME,"
                    + "lastEdited DATETIME,"
                    + "timesUsed INTEGER,"
-                   + "performanceMetric FLOAT,"
+                   + "performance FLOAT,"
+                   + "discrimination FLOAT,"
                    + "hasImage BOOLEAN DEFAULT 0,"
-                   + "imagePath TEXT);";
+                   + "questionImagePath TEXT,"
+                   + "correctAnswerImagePath TEXT,"
+                   + "wrongAnswer1ImagePath TEXT,"
+                   + "wrongAnswer2ImagePath TEXT,"
+                   + "wrongAnswer3ImagePath TEXT,"
+                   + "comment TEXT,"
+                   + "FOREIGN KEY(course) REFERENCES courses(courseID),"
+                   + "FOREIGN KEY(topic) REFERENCES topics(topicID),"
+                   + "FOREIGN KEY(subtopic) REFERENCES subtopics(subtopicID));";
         
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement()) {

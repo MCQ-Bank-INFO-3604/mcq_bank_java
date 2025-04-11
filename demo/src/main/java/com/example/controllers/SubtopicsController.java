@@ -37,6 +37,20 @@ public class SubtopicsController {
         }
         return subtopics;
     }
+    public ArrayList<String[]> getAllSubtopicsWithIDs() {
+        ArrayList<String[]> subtopics = new ArrayList<>();
+        String sql = "SELECT subtopicName, subtopicID FROM subtopics;";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                subtopics.add(new String[]{rs.getString("subtopicName"), rs.getString("subtopicID")});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return subtopics;
+    }
     public boolean deleteSubtopic(String subtopicName) {
         String sql = "DELETE FROM subtopics WHERE subtopicName = ?;";
         try (Connection conn = DriverManager.getConnection(DB_URL);
@@ -62,19 +76,35 @@ public class SubtopicsController {
             return false; // Return false if there was an error
         }
     }
-    public ArrayList<String> getSubtopicsByTopic(String topicName) {
-        ArrayList<String> subtopics = new ArrayList<>();
-        String sql = "SELECT subtopicName FROM subtopics WHERE topicName = ?;";
+    
+    public ArrayList<String[]> getSubtopicsByTopicID(Integer topicID) {
+        ArrayList<String[]> subtopics = new ArrayList<>();
+        String sql = "SELECT subtopicName, subtopicID FROM subtopics WHERE topicID = ?;";
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, topicName);
+            pstmt.setInt(1, topicID);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                subtopics.add(rs.getString("subtopicName"));
+                subtopics.add(new String[]{rs.getString("subtopicName"), rs.getString("subtopicID")});
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return subtopics;
     }
+    public String getSubtopicName(Integer subtopicID) {
+        String sql = "SELECT subtopicName FROM subtopics WHERE subtopicID = ?;";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, subtopicID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("subtopicName");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if no subtopic found with the given ID
+    }
 }
+ 

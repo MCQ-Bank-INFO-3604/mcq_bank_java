@@ -1,0 +1,59 @@
+courseCode,courseName,topicName,subtopicName
+CS101,Introduction to Computer Science,Programming Basics,Variables and Data Types
+CS101,Introduction to Computer Science,Programming Basics,Control Structures
+CS101,Introduction to Computer Science,Object-Oriented Programming,Classes and Objects
+CS101,Introduction to Computer Science,Object-Oriented Programming,Inheritance
+CS102,Data Structures,Linear Structures,Arrays
+CS102,Data Structures,Linear Structures,Linked Lists
+CS102,Data Structures,Non-Linear Structures,Trees
+CS102,Data Structures,Non-Linear Structures,Graphs
+CS103,Algorithms,Sorting Algorithms,Quick Sort
+CS103,Algorithms,Sorting Algorithms,Merge Sort
+CS103,Algorithms,Search Algorithms,Binary Search
+CS103,Algorithms,Search Algorithms,Depth First Search
+MATH201,Calculus I,Differentiation,Limits
+MATH201,Calculus I,Differentiation,Derivatives
+MATH201,Calculus I,Integration,Definite Integrals
+MATH201,Calculus I,Integration,Indefinite Integrals
+MATH202,Linear Algebra,Vectors,Vector Spaces
+MATH202,Linear Algebra,Matrices,Matrix Operations
+MATH202,Linear Algebra,Eigenvalues,Eigenvectors
+PHYS101,Mechanics,Kinematics,Projectile Motion
+PHYS101,Mechanics,Dynamics,Newton's Laws
+PHYS101,Mechanics,Work and Energy,Conservation of Energy
+PHYS102,Electromagnetism,Electricity,Ohm’s Law
+PHYS102,Electromagnetism,Magnetism,Magnetic Fields
+PHYS102,Electromagnetism,Electromagnetic Induction,Faraday’s Law
+CHEM101,General Chemistry,Atomic Structure,Electron Configuration
+CHEM101,General Chemistry,Periodic Table,Groups and Periods
+CHEM101,General Chemistry,Chemical Bonds,Covalent Bonds
+CHEM102,Organic Chemistry,Hydrocarbons,Alkanes
+CHEM102,Organic Chemistry,Hydrocarbons,Alkenes
+CHEM102,Organic Chemistry,Reactions,Addition Reactions
+BIO150,General Biology,Cell Biology,Cell Membrane and Transport
+BIO150,General Biology,Cell Biology,Cell Structure
+BIO150,General Biology,Genetics,DNA Replication
+BIO150,General Biology,Genetics,Genetic Inheritance
+BIO151,Biology II,Evolution,Natural Selection
+BIO151,Biology II,Evolution,Speciation
+BIO151,Biology II,Ecology,Food Chains
+PSY101,Introduction to Psychology,Foundations,History of Psychology
+PSY101,Introduction to Psychology,Foundations,Major Perspectives
+PSY101,Introduction to Psychology,Development,Childhood Development
+PSY102,Cognitive Psychology,Memory,Short-Term Memory
+PSY102,Cognitive Psychology,Memory,Long-Term Memory
+PSY102,Cognitive Psychology,Perception,Visual Perception
+ENG101,English Composition,Writing Skills,Thesis Statements
+ENG101,English Composition,Writing Skills,Paragraph Structure
+ENG101,English Composition,Research,Using Sources
+HIST101,World History,Ancient Civilizations,Mesopotamia
+HIST101,World History,Ancient Civilizations,Ancient Egypt
+HIST101,World History,Modern Era,World War I
+HIST101,World History,Modern Era,World War II
+ECON101,Principles of Economics,Microeconomics,Supply and Demand
+ECON101,Principles of Economics,Microeconomics,Elasticity
+ECON101,Principles of Economics,Macroeconomics,GDP
+ECON101,Principles of Economics,Macroeconomics,Inflation
+PHIL101,Introduction to Philosophy,Ethics,Moral Theories
+PHIL101,Introduction to Philosophy,Logic,Arguments and Fallacies
+PHIL101,Introduction to Philosophy,Metaphysics,Free Will

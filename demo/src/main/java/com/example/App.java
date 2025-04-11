@@ -1,12 +1,14 @@
 package com.example;
 
-import java.sql.ResultSet;
-
 import com.example.controllers.ExamController;
 import com.example.controllers.QuestionController;
+import com.example.models.Courses;
 import com.example.models.Exam;
 import com.example.models.ExamQuestions;
 import com.example.models.Question;
+import com.example.models.Subtopics;
+import com.example.models.Topics;
+import com.example.controllers.CSVImporter;
 import com.example.views.Home;
 import com.formdev.flatlaf.FlatLightLaf;
 
@@ -20,18 +22,26 @@ public class App {
         Question question = new Question();
         Exam exam = new Exam();
         ExamQuestions examQuestions = new ExamQuestions();
-        
+        Courses courses = new Courses();
+        Topics topics = new Topics();
+        Subtopics subtopics = new Subtopics();
+
         //Create Contollers
         QuestionController questionController = new QuestionController();
         ExamController examController = new ExamController();
         
 
         //READING FROM A CSV
-        String filename = "demo\\src\\main\\java\\com\\example\\File.csv";
-        System.out.println("Inserts Questions from, CSV: ");
-        questionController.insertQuestionsFromCSV(filename);
+        CSVImporter csvImporter = new CSVImporter();
+        String cFilename = "demo\\src\\main\\java\\com\\example\\courses_topics_subtopics.csv";
+        System.out.println("Insert course details from CSV: ");
+        csvImporter.importCourseTopicSubtopicFromCSV(cFilename);
 
-        examController.insertExam("Test Exam",0, "Java", "Topic", "subTopic");
+        String qFilename = "demo\\src\\main\\java\\com\\example\\questions.csv";
+        System.out.println("Inserts questions from CSV: ");
+        csvImporter.importQuestionsFromCSV(qFilename);
+
+        examController.insertExam("Test Exam",0, 1, 0.0f);
 
         examController.addQuestionToExam(1,1);
         examController.addQuestionToExam(1,2);
@@ -52,6 +62,6 @@ public class App {
             ex.printStackTrace();
         }
 
-        Home gui = new Home();
+        new Home();
     }
 }

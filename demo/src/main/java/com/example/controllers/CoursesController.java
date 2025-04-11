@@ -25,7 +25,7 @@ public class CoursesController {
             return false; // Return false if there was an error
         }
     }
-    public ArrayList<String> getAllCourses() {
+    public ArrayList<String> getAllCourseCodes() {
         ArrayList<String> courses = new ArrayList<>();
         String sql = "SELECT courseCode FROM courses;";
         try (Connection conn = DriverManager.getConnection(DB_URL);
@@ -33,6 +33,20 @@ public class CoursesController {
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 courses.add(rs.getString("courseCode"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return courses;
+    }
+    public ArrayList<String[]> getAllCourses() {
+        ArrayList<String[]> courses = new ArrayList<>();
+        String sql = "SELECT courseCode, courseID FROM courses;";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                courses.add(new String[]{rs.getString("courseCode"), rs.getString("courseID")});
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -65,5 +79,19 @@ public class CoursesController {
             e.printStackTrace();
             return false;
         }
+    }
+    public String getCourseCode(Integer courseID) {
+        String sql = "SELECT courseCode FROM courses WHERE courseID = ?;";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, courseID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("courseCode");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if no course found with the given ID
     }
 }

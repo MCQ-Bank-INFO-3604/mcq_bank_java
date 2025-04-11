@@ -63,19 +63,48 @@ public class TopicsController {
         }
     }
 
-    public ArrayList<String> getTopicsbyCourse(String courseCode) {
-        ArrayList<String> topics = new ArrayList<>();
-        String sql = "SELECT topicName FROM topics WHERE courseCode = ?;";
+    public ArrayList<String[]> getTopicsByCourse(Integer courseID) {
+        ArrayList<String[]> topics = new ArrayList<>();
+        String sql = "SELECT topicName, topicID FROM topics WHERE courseID = ?;";
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, courseCode);
+            pstmt.setInt(1, courseID);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                topics.add(rs.getString("topicName"));
+                topics.add(new String[]{rs.getString("topicName"), rs.getString("topicID")});
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return topics;
+    }
+
+    public ArrayList<String[]> getAllTopicsWithIDs() {
+        ArrayList<String[]> topics = new ArrayList<>();
+        String sql = "SELECT topicName, topicID FROM topics;";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                topics.add(new String[]{rs.getString("topicName"), rs.getString("topicID")});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return topics;
+    }
+    public String getTopicName(Integer topicID) {
+        String sql = "SELECT topicName FROM topics WHERE topicID = ?;";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, topicID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("topicName");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if no topic found with the given ID
     }
 }

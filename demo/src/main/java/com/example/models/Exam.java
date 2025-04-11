@@ -30,13 +30,12 @@ public class Exam {
                    + "examID INTEGER PRIMARY KEY AUTOINCREMENT,"
                    + "examTitle TEXT NOT NULL,"
                    + "numQuestions INTEGER,"
-                   + "course TEXT,"
-                   + "topic TEXT,"
-                   + "subTopic TEXT,"
+                   + "course INTEGER,"
                    + "dateCreated DATETIME,"
                    + "lastUsed DATETIME,"
                    + "lastEdited DATETIME,"
-                   + "performanceMetric FLOAT);";
+                   + "performance FLOAT,"
+                   + "FOREIGN KEY(course) REFERENCES courses(courseID));";
         
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement()) {

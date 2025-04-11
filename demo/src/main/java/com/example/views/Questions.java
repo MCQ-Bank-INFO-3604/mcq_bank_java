@@ -9,23 +9,39 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import com.example.controllers.CoursesController;
 import com.example.controllers.QuestionController;
-
+import com.example.controllers.SubtopicsController;
+import com.example.controllers.TopicsController;
 import java.awt.*;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
  * @author Rian Ramdin
  */
 public class Questions extends javax.swing.JPanel {
-    private QuestionController controller = new QuestionController();
+    private QuestionController qController = new QuestionController();
+    
+    private HashMap<String, Integer> courseCodeToIDMap = new HashMap<>();
+    private CoursesController cController = new CoursesController();
+    
+    private HashMap<String, Integer> topicNameToIDMap = new HashMap<>();
+    private TopicsController tController = new TopicsController();
+    
+    private HashMap<String, Integer> subtopicNameToIDMap = new HashMap<>();
+    private SubtopicsController sController = new SubtopicsController();
+    
     private Integer currentQuestionId = null;
     private JPanel lastHighlightedPanel = null;
-
+    
+    private static final String DEFAULT_ALL_OPTION = "--All--";
+    private static final String DEFAULT_NONE_OPTION = "--None--";
+    
     public Questions() {
         initComponents();
 
@@ -34,8 +50,10 @@ public class Questions extends javax.swing.JPanel {
         verticalScrollBar.setUnitIncrement(16);  // Faster scrolling
 
         populateDropdowns();
+        setupBrowseDropdownListeners();
+        setupManageDropdownListeners();
 
-        populateResultsPanel(controller.getQuestionsWithFilter()); // Populate the panel with data from the database
+        populateResultsPanel(qController.getQuestionsWithFilter()); // Populate the panel with data from the database
     }
 
     /**
@@ -518,7 +536,7 @@ public class Questions extends javax.swing.JPanel {
                 .addComponent(manageAnswersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(manageTagsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
 
         manageScrollTab.setViewportView(manageScrollContentPanel);
@@ -786,11 +804,11 @@ public class Questions extends javax.swing.JPanel {
         resultsPanel.setLayout(resultsPanelLayout);
         resultsPanelLayout.setHorizontalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 293, Short.MAX_VALUE)
+            .addGap(0, 602, Short.MAX_VALUE)
         );
         resultsPanelLayout.setVerticalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 457, Short.MAX_VALUE)
+            .addGap(0, 499, Short.MAX_VALUE)
         );
 
         resultsScrollPane.setViewportView(resultsPanel);
@@ -830,7 +848,7 @@ public class Questions extends javax.swing.JPanel {
     private void searchTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTFActionPerformed
         // TODO add your handling code here:
         String sqlQuery = buildQuestionQuery();
-        ResultSet filteredResults = controller.getQuestionsWithFilter(sqlQuery);
+        ResultSet filteredResults = qController.getQuestionsWithFilter(sqlQuery);
         populateResultsPanel(filteredResults);
     }//GEN-LAST:event_searchTFActionPerformed
 
@@ -873,79 +891,96 @@ public class Questions extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Question text is required", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        if (ansTF1.getText().trim().isEmpty() || ansTF2.getText().trim().isEmpty() || 
+    
+        if (ansTF1.getText().trim().isEmpty() || ansTF2.getText().trim().isEmpty() ||
             ansTF3.getText().trim().isEmpty() || ansTF4.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "All answer fields are required", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        if (!ansRadioButton1.isSelected() && !ansRadioButton2.isSelected() && 
+    
+        if (!ansRadioButton1.isSelected() && !ansRadioButton2.isSelected() &&
             !ansRadioButton3.isSelected() && !ansRadioButton4.isSelected()) {
             JOptionPane.showMessageDialog(this, "Please select the correct answer", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+    
         // Get the correct answer
         String correctAnswer = "";
         if (ansRadioButton1.isSelected()) correctAnswer = ansTF1.getText();
         else if (ansRadioButton2.isSelected()) correctAnswer = ansTF2.getText();
         else if (ansRadioButton3.isSelected()) correctAnswer = ansTF3.getText();
         else if (ansRadioButton4.isSelected()) correctAnswer = ansTF4.getText();
-
+    
         // Prepare question data
         String question = questionTF.getText();
-
+    
         // Initialize list to hold wrong answers
         ArrayList<String> wrongAnswers = new ArrayList<>();
-
+    
         // Add all answers that aren't the correct one
         if (!ansRadioButton1.isSelected()) wrongAnswers.add(ansTF1.getText());
         if (!ansRadioButton2.isSelected()) wrongAnswers.add(ansTF2.getText());
         if (!ansRadioButton3.isSelected()) wrongAnswers.add(ansTF3.getText());
         if (!ansRadioButton4.isSelected()) wrongAnswers.add(ansTF4.getText());
-
+    
         // Ensure we have exactly 3 wrong answers (in case of unexpected state)
         while (wrongAnswers.size() < 3) {
             wrongAnswers.add(""); // Add empty strings if somehow we don't have 3 wrong answers
         }
-
+    
         String wrong1 = wrongAnswers.get(0);
         String wrong2 = wrongAnswers.get(1);
         String wrong3 = wrongAnswers.get(2);
-
-        String course = (String)courseComboBox.getSelectedItem();
-        String topic = (String)topicComboBox.getSelectedItem();
-        String subtopic = (String)subtopicComboBox.getSelectedItem();
-        String difficulty = (String)difficultyComboBox.getSelectedItem();
-        
+    
+        String courseCode = (String) courseComboBox.getSelectedItem();
+        Integer courseID = courseCodeToIDMap.get(courseCode); // Get the courseID from the map
+        String topicName = (String) topicComboBox.getSelectedItem();
+        Integer topicID = topicNameToIDMap.get(topicName); // Get the topicID from the map
+        String subtopicName = (String) subtopicComboBox.getSelectedItem();
+        Integer subtopicID = subtopicNameToIDMap.get(subtopicName); // Get the subtopicID from the map
+        Float difficulty = 0.0f; // Default difficulty value
+        Float performance = 0.0f; // Default performance value
+        Float discrimination = 0.0f; // Default discrimination value
+    
+        //TODO: Handle image paths and checkboxes
+        Boolean hasImage = false; // Default value for image presence
+        String qImagePath = ""; // Placeholder for question image path
+        String cAnsImagePath = ""; // Placeholder for correct answer image path
+        String wAns1ImagePath = ""; // Placeholder for wrong answer 1 image path
+        String wAns2ImagePath = ""; // Placeholder for wrong answer 2 image path
+        String wAns3ImagePath = ""; // Placeholder for wrong answer 3 image path
+        String comment = ""; // Placeholder for comment
         try {
             if (currentQuestionId == null) {
                 // Create new question
-                boolean success = controller.insertQuestion(
+                boolean success = qController.insertQuestion(
                     question, correctAnswer, wrong1, wrong2, wrong3,
-                    course, topic, subtopic, difficulty
+                    courseID, topicID, subtopicID, difficulty, performance, discrimination,
+                    hasImage, qImagePath, cAnsImagePath, wAns1ImagePath, wAns2ImagePath,
+                    wAns3ImagePath, comment
                 );
-                
+    
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Question created successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                     // Refresh the results panel
-                    populateResultsPanel(controller.getQuestionsWithFilter());
+                    populateResultsPanel(qController.getQuestionsWithFilter());
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to create question", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 // Update existing question
-                boolean success = controller.editQuestion(
+                boolean success = qController.editQuestion(
                     currentQuestionId,
                     question, correctAnswer, wrong1, wrong2, wrong3,
-                    course, topic, subtopic, difficulty
+                    courseID, topicID, subtopicID, difficulty, performance, discrimination,
+                    hasImage, qImagePath, cAnsImagePath, wAns1ImagePath, wAns2ImagePath,
+                    wAns3ImagePath, comment
                 );
-                
+    
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Question updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                     // Refresh the results panel
-                    populateResultsPanel(controller.getQuestionsWithFilter());
+                    populateResultsPanel(qController.getQuestionsWithFilter());
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to update question", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -977,13 +1012,13 @@ public class Questions extends javax.swing.JPanel {
         
         if (confirm == JOptionPane.YES_OPTION) {
             try {
-                boolean success = controller.deleteQuestion(currentQuestionId);
+                boolean success = qController.deleteQuestion(currentQuestionId);
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Question deleted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                     currentQuestionId = null;
                     clearFields();
                     // Refresh the results panel
-                    populateResultsPanel(controller.getQuestionsWithFilter());
+                    populateResultsPanel(qController.getQuestionsWithFilter());
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to delete question", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -1051,19 +1086,22 @@ public class Questions extends javax.swing.JPanel {
         // Handle course filter (skip if "--All--" is selected)
         String courseFilter = (String)bCourseComboBox.getSelectedItem();
         if (courseFilter != null && !courseFilter.isEmpty() && !courseFilter.equals("--All--")) {
-            sql.append(" AND course = '").append(courseFilter).append("'");
+            Integer courseID = courseCodeToIDMap.get(courseFilter); // Get the courseID from the map
+            sql.append(" AND course = '").append(courseID).append("'");
         }
         
         // Handle topic filter (skip if "--All--" is selected)
         String topicFilter = (String)bTopicComboBox.getSelectedItem();
         if (topicFilter != null && !topicFilter.isEmpty() && !topicFilter.equals("--All--")) {
-            sql.append(" AND topic = '").append(topicFilter).append("'");
+            Integer topicID = topicNameToIDMap.get(topicFilter); // Get the topicID from the map
+            sql.append(" AND topic = '").append(topicID).append("'");
         }
         
         // Handle subtopic filter (skip if "--All--" is selected)
         String subtopicFilter = (String)bSubtopicComboBox.getSelectedItem();
         if (subtopicFilter != null && !subtopicFilter.isEmpty() && !subtopicFilter.equals("--All--")) {
-            sql.append(" AND subTopic = '").append(subtopicFilter).append("'");
+            Integer subtopicID = subtopicNameToIDMap.get(subtopicFilter); // Get the subtopicID from the map
+            sql.append(" AND subTopic = '").append(subtopicID).append("'");
         }
         
         // Apply search text
@@ -1180,7 +1218,7 @@ public class Questions extends javax.swing.JPanel {
             this.currentQuestionId = questionId;
 
             // Fetch question details from the database
-            ResultSet rs = controller.getQuestion(questionId);
+            ResultSet rs = qController.getQuestion(questionId);
             
             if (rs.next()) {
                 // Fill question text
@@ -1196,10 +1234,18 @@ public class Questions extends javax.swing.JPanel {
                 ansRadioButton1.setSelected(true);
                 
                 // Fill tags (course, topic, subtopic, difficulty)
-                courseComboBox.setSelectedItem(rs.getString("course"));
-                topicComboBox.setSelectedItem(rs.getString("topic"));
-                subtopicComboBox.setSelectedItem(rs.getString("subTopic"));
-                difficultyComboBox.setSelectedItem(rs.getString("difficulty"));
+                Integer courseID = rs.getInt("course");
+                Integer topicID = rs.getInt("topic");
+                Integer subtopicID = rs.getInt("subTopic");
+
+                String courseCode = cController.getCourseCode(courseID);
+                String topicName = tController.getTopicName(topicID);
+                String subtopicName = sController.getSubtopicName(subtopicID);
+                
+                courseComboBox.setSelectedItem(courseCode);
+                topicComboBox.setSelectedItem(topicName);
+                subtopicComboBox.setSelectedItem(subtopicName);
+                // difficultyComboBox.setSelectedItem(rs.getString("difficulty"));
                 
                 // Fill non-editable fields (dates, performance)
                 dateCreatedTF.setText(rs.getString("dateCreated"));
@@ -1210,7 +1256,7 @@ public class Questions extends javax.swing.JPanel {
                 dateUsedTF.setText(lastUsed == null ? "Never" : lastUsed);
 
                 usedCountTF.setText(String.valueOf(rs.getInt("timesUsed")));
-                perfTF.setText(String.valueOf(rs.getInt("performanceMetric")));
+                // perfTF.setText(String.valueOf(rs.getInt("performanceMetric")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1226,43 +1272,128 @@ public class Questions extends javax.swing.JPanel {
         courseComboBox.removeAllItems();
         topicComboBox.removeAllItems();
         subtopicComboBox.removeAllItems();
+        courseCodeToIDMap.clear();
+        topicNameToIDMap.clear();
+        subtopicNameToIDMap.clear();
     
-        // Add "--All--" option to browse tab dropdowns
-        bCourseComboBox.addItem("--All--");
-        bTopicComboBox.addItem("--All--");
-        bSubtopicComboBox.addItem("--All--");
+        // Add default options
+        bCourseComboBox.addItem(DEFAULT_ALL_OPTION);
+        bTopicComboBox.addItem(DEFAULT_ALL_OPTION);
+        bSubtopicComboBox.addItem(DEFAULT_ALL_OPTION);
+        courseComboBox.addItem(DEFAULT_NONE_OPTION);
+        topicComboBox.addItem(DEFAULT_NONE_OPTION);
+        subtopicComboBox.addItem(DEFAULT_NONE_OPTION);
     
         // Get distinct values from database
-        ArrayList<String> courses = controller.getDistinctCourses();
-        ArrayList<String> topics = controller.getDistinctTopics();
-        ArrayList<String> subtopics = controller.getDistinctSubtopics();
-    
-        // Populate browse tab dropdowns
-        for (String course : courses) {
-            bCourseComboBox.addItem(course);
-        }
-        for (String topic : topics) {
-            bTopicComboBox.addItem(topic);
-        }
-        for (String subtopic : subtopics) {
-            bSubtopicComboBox.addItem(subtopic);
+        ArrayList<String[]> courses = cController.getAllCourses();
+        
+        // Populate course dropdowns
+        for (String[] course : courses) {
+            String courseCode = course[0];
+            int courseID = Integer.parseInt(course[1]);
+            bCourseComboBox.addItem(courseCode);
+            courseComboBox.addItem(courseCode);
+            courseCodeToIDMap.put(courseCode, courseID);
         }
     
-        // Populate manage tab dropdowns (without "--All--" option)
-        for (String course : courses) {
-            if (!course.equals("--All--")) {
-                courseComboBox.addItem(course);
+        // Initially disable dependent dropdowns
+        bTopicComboBox.setEnabled(false);
+        bSubtopicComboBox.setEnabled(false);
+        topicComboBox.setEnabled(false);
+        subtopicComboBox.setEnabled(false);
+    }
+
+    private void setupBrowseDropdownListeners() {
+        bCourseComboBox.addActionListener(e -> {
+            String selectedCourse = (String) bCourseComboBox.getSelectedItem();
+            if (DEFAULT_ALL_OPTION.equals(selectedCourse)) {
+                bTopicComboBox.setEnabled(false);
+                bSubtopicComboBox.setEnabled(false);
+                bTopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+                bSubtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+            } else {
+                Integer courseID = courseCodeToIDMap.get(selectedCourse);
+                bTopicComboBox.setEnabled(true);
+                populateTopicsDropdown(bTopicComboBox, courseID, true);
             }
+        });
+
+        bTopicComboBox.addActionListener(e -> {
+            String selectedTopic = (String) bTopicComboBox.getSelectedItem();
+            if (DEFAULT_ALL_OPTION.equals(selectedTopic)) {
+                bSubtopicComboBox.setEnabled(false);
+                bSubtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+            } else {
+                bSubtopicComboBox.setEnabled(true);
+                populateSubtopicsDropdown(bSubtopicComboBox, selectedTopic, true);
+            }
+        });
+    }
+
+    private void setupManageDropdownListeners() {
+        courseComboBox.addActionListener(e -> {
+            String selectedCourse = (String) courseComboBox.getSelectedItem();
+            if (DEFAULT_NONE_OPTION.equals(selectedCourse)) {
+                topicComboBox.setEnabled(false);
+                subtopicComboBox.setEnabled(false);
+                topicComboBox.setSelectedItem(DEFAULT_NONE_OPTION);
+                subtopicComboBox.setSelectedItem(DEFAULT_NONE_OPTION);
+            } else {
+                Integer courseID = courseCodeToIDMap.get(selectedCourse);
+                topicComboBox.setEnabled(true);
+                populateTopicsDropdown(topicComboBox, courseID, false);
+            }
+        });
+
+        topicComboBox.addActionListener(e -> {
+            String selectedTopic = (String) topicComboBox.getSelectedItem();
+            if (DEFAULT_NONE_OPTION.equals(selectedTopic)) {
+                subtopicComboBox.setEnabled(false);
+                subtopicComboBox.setSelectedItem(DEFAULT_NONE_OPTION);
+            } else {
+                subtopicComboBox.setEnabled(true);
+                populateSubtopicsDropdown(subtopicComboBox, selectedTopic, false);
+            }
+        });
+    }
+
+    private void populateTopicsDropdown(JComboBox<String> topicDropdown, Integer courseID, boolean includeAllOption) {
+        topicDropdown.removeAllItems();
+        if (includeAllOption) {
+            topicDropdown.addItem(DEFAULT_ALL_OPTION);
+        } else {
+            topicDropdown.addItem(DEFAULT_NONE_OPTION);
         }
-        for (String topic : topics) {
-            if (!topic.equals("--All--")) {
-                topicComboBox.addItem(topic);
-            }
+
+        ArrayList<String[]> topics = tController.getTopicsByCourse(courseID);
+        for (String[] topic : topics) {
+            String topicName = topic[0];
+            topicDropdown.addItem(topicName);
+            topicNameToIDMap.put(topicName, Integer.parseInt(topic[1])); // Map topicName to topicID
         }
-        for (String subtopic : subtopics) {
-            if (!subtopic.equals("--All--")) {
-                subtopicComboBox.addItem(subtopic);
-            }
+    }
+
+    private void populateSubtopicsDropdown(JComboBox<String> subtopicDropdown, String topicName, boolean includeAllOption) {
+        subtopicDropdown.removeAllItems();
+        if (includeAllOption) {
+            subtopicDropdown.addItem(DEFAULT_ALL_OPTION);
+        } else {
+            subtopicDropdown.addItem(DEFAULT_NONE_OPTION);
+        }
+
+        // Get the topicID from the topicNameToIDMap
+        Integer topicID = topicNameToIDMap.get(topicName);
+        if (topicID == null) {
+            System.err.println("Error: topicID is null for topicName: " + topicName);
+            return; // Exit early if topicID is null
+        }
+
+        // Fetch subtopics using the topicID
+        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicID(topicID);
+        for (String[] subtopic : subtopics) {
+            String subtopicName = subtopic[0];
+            subtopicDropdown.addItem(subtopicName);
+            subtopicNameToIDMap.put(subtopicName, Integer.parseInt(subtopic[1])); // Map subtopicName to subtopicID
         }
     }
 
