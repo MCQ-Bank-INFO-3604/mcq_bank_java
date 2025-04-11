@@ -13,6 +13,7 @@ import com.example.controllers.QuestionController;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -23,6 +24,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -120,6 +123,10 @@ public class Exams extends javax.swing.JPanel {
         mDateEditedTF = new javax.swing.JFormattedTextField();
         mPerfLabel = new javax.swing.JLabel();
         mPerfTF = new javax.swing.JFormattedTextField();
+        mPerfTF1 = new javax.swing.JFormattedTextField();
+        mPerfLabel1 = new javax.swing.JLabel();
+        mPerfLabel2 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
         browseTab = new javax.swing.JPanel();
         bSearchPanel = new javax.swing.JPanel();
         bSearchTF = new javax.swing.JTextField();
@@ -175,7 +182,7 @@ public class Exams extends javax.swing.JPanel {
 
         controlsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Controls"));
 
-        newButton.setText("New");
+        newButton.setText("New Exam");
         newButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newButtonActionPerformed(evt);
@@ -183,7 +190,7 @@ public class Exams extends javax.swing.JPanel {
         });
         controlsPanel.add(newButton);
 
-        saveButton.setText("Save");
+        saveButton.setText("Save Exam");
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveButtonActionPerformed(evt);
@@ -191,7 +198,7 @@ public class Exams extends javax.swing.JPanel {
         });
         controlsPanel.add(saveButton);
 
-        clearButton.setText("Clear");
+        clearButton.setText("Clear Fields");
         clearButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearButtonActionPerformed(evt);
@@ -207,7 +214,7 @@ public class Exams extends javax.swing.JPanel {
         });
         controlsPanel.add(genButton);
 
-        exportButton.setText("Export");
+        exportButton.setText("Export Exam");
         exportButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportButtonActionPerformed(evt);
@@ -215,7 +222,7 @@ public class Exams extends javax.swing.JPanel {
         });
         controlsPanel.add(exportButton);
 
-        deleteButton.setText("Delete");
+        deleteButton.setText("Delete Exam");
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButtonActionPerformed(evt);
@@ -225,7 +232,16 @@ public class Exams extends javax.swing.JPanel {
 
         examPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Exam Title"));
 
+        examTitleTF.setForeground(new java.awt.Color(204, 204, 204));
         examTitleTF.setText("Exam Title");
+        examTitleTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                examTitleTFFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                examTitleTFFocusLost(evt);
+            }
+        });
 
         javax.swing.GroupLayout examPanelLayout = new javax.swing.GroupLayout(examPanel);
         examPanel.setLayout(examPanelLayout);
@@ -249,6 +265,16 @@ public class Exams extends javax.swing.JPanel {
 
         qSearchPanel.setLayout(new java.awt.BorderLayout());
 
+        qSearchTF.setForeground(new java.awt.Color(204, 204, 204));
+        qSearchTF.setText("Search Here");
+        qSearchTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                qSearchTFFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                qSearchTFFocusLost(evt);
+            }
+        });
         qSearchTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qSearchTFActionPerformed(evt);
@@ -608,6 +634,21 @@ public class Exams extends javax.swing.JPanel {
         mPerfTF.setText("0");
         mPerfTF.setFocusable(false);
 
+        mPerfTF1.setEditable(false);
+        mPerfTF1.setText("0");
+        mPerfTF1.setFocusable(false);
+        mPerfTF1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mPerfTF1ActionPerformed(evt);
+            }
+        });
+
+        mPerfLabel1.setText("Number of Questions:");
+
+        mPerfLabel2.setText("Course:");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout mTagsTabLayout = new javax.swing.GroupLayout(mTagsTab);
         mTagsTab.setLayout(mTagsTabLayout);
         mTagsTabLayout.setHorizontalGroup(
@@ -630,8 +671,16 @@ public class Exams extends javax.swing.JPanel {
                     .addGroup(mTagsTabLayout.createSequentialGroup()
                         .addComponent(mPerfLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(mPerfTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(194, Short.MAX_VALUE))
+                        .addComponent(mPerfTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mTagsTabLayout.createSequentialGroup()
+                        .addComponent(mPerfLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(mPerfTF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mTagsTabLayout.createSequentialGroup()
+                        .addComponent(mPerfLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(175, Short.MAX_VALUE))
         );
         mTagsTabLayout.setVerticalGroup(
             mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -652,7 +701,15 @@ public class Exams extends javax.swing.JPanel {
                 .addGroup(mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(mPerfTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(mPerfLabel))
-                .addContainerGap(268, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(mPerfTF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(mPerfLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(mPerfLabel2)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(203, Short.MAX_VALUE))
         );
 
         mOrganizePanel.addTab("Exam Tags", mTagsTab);
@@ -690,6 +747,16 @@ public class Exams extends javax.swing.JPanel {
 
         bSearchPanel.setLayout(new java.awt.BorderLayout());
 
+        bSearchTF.setForeground(new java.awt.Color(204, 204, 204));
+        bSearchTF.setText("Search Here");
+        bSearchTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                bSearchTFFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                bSearchTFFocusLost(evt);
+            }
+        });
         bSearchTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bSearchTFActionPerformed(evt);
@@ -947,9 +1014,44 @@ public class Exams extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_genButtonActionPerformed
 
-    private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_exportButtonActionPerformed
+    private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        if (currentExamId == null) {
+            JOptionPane.showMessageDialog(this, 
+                "Please create or select an exam first", 
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            // Ask user for file location
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Exam PDF");
+            fileChooser.setSelectedFile(new File("Exam_" + currentExamId + ".pdf"));
+            fileChooser.setFileFilter(new FileNameExtensionFilter("PDF Files", "pdf"));
+            
+            int userSelection = fileChooser.showSaveDialog(this);
+            
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+                // Ensure the file has .pdf extension
+                if (!fileToSave.getName().toLowerCase().endsWith(".pdf")) {
+                    fileToSave = new File(fileToSave.getAbsolutePath() + ".pdf");
+                }
+                
+                // Generate the PDF
+                eController.generateExamPDF(currentExamId, fileToSave.getAbsolutePath());
+                
+                JOptionPane.showMessageDialog(this, 
+                    "Exam PDF generated successfully at:\n" + fileToSave.getAbsolutePath(), 
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Error generating PDF: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         // TODO add your handling code here:
@@ -1133,6 +1235,58 @@ public class Exams extends javax.swing.JPanel {
         mDateEditedTF.setText("--New--");
         mPerfTF.setText("0");
     }//GEN-LAST:event_newButtonActionPerformed
+
+    private void examTitleTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_examTitleTFFocusGained
+        // TODO add your handling code here:
+        if(examTitleTF.getText().equals("Exam Title")){
+            examTitleTF.setText("");
+            examTitleTF.setForeground(new Color(0,0,0));
+        }
+    }//GEN-LAST:event_examTitleTFFocusGained
+
+    private void examTitleTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_examTitleTFFocusLost
+        // TODO add your handling code here:
+        if(examTitleTF.getText().equals("")){
+            examTitleTF.setText("Exam Title");
+            examTitleTF.setForeground(new Color(204,204,204));
+        }
+    }//GEN-LAST:event_examTitleTFFocusLost
+
+    private void qSearchTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_qSearchTFFocusGained
+        // TODO add your handling code here:
+        if(qSearchTF.getText().equals("Search Here")){
+            qSearchTF.setText("");
+            qSearchTF.setForeground(new Color(0,0,0));
+        }
+    }//GEN-LAST:event_qSearchTFFocusGained
+
+    private void qSearchTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_qSearchTFFocusLost
+        // TODO add your handling code here:
+        if(qSearchTF.getText().equals("")){
+            qSearchTF.setText("Search Here");
+            qSearchTF.setForeground(new Color(204,204,204));
+        }
+    }//GEN-LAST:event_qSearchTFFocusLost
+
+    private void bSearchTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_bSearchTFFocusGained
+        // TODO add your handling code here:
+        if(bSearchTF.getText().equals("Search Here")){
+            bSearchTF.setText("");
+            bSearchTF.setForeground(new Color(0,0,0));
+        }
+    }//GEN-LAST:event_bSearchTFFocusGained
+
+    private void bSearchTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_bSearchTFFocusLost
+        // TODO add your handling code here:
+        if(bSearchTF.getText().equals("")){
+            bSearchTF.setText("Search Here");
+            bSearchTF.setForeground(new Color(204,204,204));
+        }
+    }//GEN-LAST:event_bSearchTFFocusLost
+
+    private void mPerfTF1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mPerfTF1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mPerfTF1ActionPerformed
 
     private void clearFields() {
         // Reset the filter and sort options
@@ -1391,10 +1545,6 @@ public class Exams extends javax.swing.JPanel {
         mAddedPanel.removeAll();
         mAddedPanel.setLayout(new BoxLayout(mAddedPanel, BoxLayout.Y_AXIS));
         
-        // Clear answers panel
-        ansListPanel.removeAll();
-        ansListPanel.setLayout(new BoxLayout(ansListPanel, BoxLayout.Y_AXIS));
-    
         // Reset highlighted panel
         lastHighlightedPanel = null;
     
@@ -1418,14 +1568,80 @@ public class Exams extends javax.swing.JPanel {
                 JPanel questionPanel = new JPanel(new BorderLayout());
                 questionPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
                 questionPanel.putClientProperty("questionId", questionId);
-                questionPanel.setOpaque(true); // Required for background color to show
+                questionPanel.setOpaque(true);
     
                 // Add question text as a label
                 JLabel questionLabel = new JLabel(questionText);
                 questionPanel.add(questionLabel, BorderLayout.CENTER);
     
-                // Make the panel clickable
-                questionPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                // Create add button (initially hidden)
+                JButton addButton = new JButton("+ Add");
+                addButton.putClientProperty("questionId", questionId);
+                addButton.setVisible(false);
+                
+                // Style the button to be less intrusive
+                addButton.setMargin(new Insets(0, 5, 0, 5));
+                addButton.setContentAreaFilled(false);
+                addButton.setBorderPainted(false);
+                addButton.setOpaque(false);
+                addButton.setForeground(new Color(0, 100, 0)); // Dark green
+                
+                // Add button action
+                addButton.addActionListener(e -> {
+                    try {
+                        eController.addQuestionToExam(currentExamId, questionId);
+                        // Refresh the panels after addition
+                        ResultSet updatedExamQuestions = eController.getQuestionsFromExam(currentExamId);
+                        populateMListPanels(updatedExamQuestions, allQuestionsQuery);
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(Exams.this, 
+                            "Error adding question", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+
+                // Add this to your button's mouse listener
+                addButton.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        addButton.setVisible(true);
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        // Check if mouse left both button and panel
+                        if (!questionPanel.getBounds().contains(e.getPoint())) {
+                            addButton.setVisible(false);
+                            questionPanel.revalidate();
+                            questionPanel.repaint();
+                        }
+                    }
+                });
+                
+                // Add button to panel (hidden by default)
+                questionPanel.add(addButton, BorderLayout.EAST);
+    
+                // Add hover effect to show/hide button
+                questionPanel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        addButton.setVisible(true);
+                        questionPanel.revalidate();
+                        questionPanel.repaint();
+                    }
+    
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        // Only hide if mouse isn't over the button
+                        if (!addButton.getBounds().contains(e.getPoint())) {
+                            addButton.setVisible(false);
+                            questionPanel.revalidate();
+                            questionPanel.repaint();
+                        }
+                    }
+                });
+    
+                // Add click behavior for showing answers
                 questionPanel.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -1436,7 +1652,7 @@ public class Exams extends javax.swing.JPanel {
                         }
                         
                         // Highlight the clicked panel
-                        questionPanel.setBackground(new Color(173, 216, 230)); // Light blue color
+                        questionPanel.setBackground(new Color(173, 216, 230));
                         lastHighlightedPanel = questionPanel;
                         
                         // Show answers
@@ -1446,7 +1662,7 @@ public class Exams extends javax.swing.JPanel {
     
                 // Add to appropriate panel based on whether it's in the exam
                 if (examQuestionIds.contains(questionId)) {
-                    // Create Remove button for questions already in exam
+                    // For questions already in exam, show remove button
                     JButton removeButton = new JButton("Remove");
                     removeButton.putClientProperty("questionId", questionId);
                     
@@ -1458,38 +1674,26 @@ public class Exams extends javax.swing.JPanel {
                             populateMListPanels(updatedExamQuestions, allQuestionsQuery);
                         } catch (SQLException ex) {
                             ex.printStackTrace();
-                            JOptionPane.showMessageDialog(Exams.this, "Error removing question", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(Exams.this, 
+                                "Error removing question", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     });
                     
+                    questionPanel.removeAll();
+                    questionPanel.add(questionLabel, BorderLayout.CENTER);
                     questionPanel.add(removeButton, BorderLayout.EAST);
                     mAddedPanel.add(questionPanel);
                     mAddedPanel.add(Box.createRigidArea(new Dimension(0, 5)));
                 } else {
-                    // Create Add button for questions not in exam
-                    JButton addButton = new JButton("Add");
-                    addButton.putClientProperty("questionId", questionId);
-                    
-                    addButton.addActionListener(e -> {
-                        try {
-                            eController.addQuestionToExam(currentExamId, questionId);
-                            // Refresh the panels after addition
-                            ResultSet updatedExamQuestions = eController.getQuestionsFromExam(currentExamId);
-                            populateMListPanels(updatedExamQuestions, allQuestionsQuery);
-                        } catch (SQLException ex) {
-                            ex.printStackTrace();
-                            JOptionPane.showMessageDialog(Exams.this, "Error adding question", "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-                    });
-                    
-                    questionPanel.add(addButton, BorderLayout.EAST);
+                    // For questions not in exam, add to main panel with hover button
                     qResultsPanel.add(questionPanel);
                     qResultsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading questions", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                "Error loading questions", "Error", JOptionPane.ERROR_MESSAGE);
         }
     
         qResultsPanel.add(Box.createVerticalGlue());
@@ -1625,6 +1829,7 @@ public class Exams extends javax.swing.JPanel {
     private javax.swing.JButton genButton;
     private javax.swing.JPanel headerPanel;
     private javax.swing.JButton helpButton;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JPanel mAddedPanel;
     private javax.swing.JScrollPane mAddedScrollTab;
     private javax.swing.ButtonGroup mButtonGroup;
@@ -1644,7 +1849,10 @@ public class Exams extends javax.swing.JPanel {
     private javax.swing.JScrollPane mFilterScrollTab;
     private javax.swing.JTabbedPane mOrganizePanel;
     private javax.swing.JLabel mPerfLabel;
+    private javax.swing.JLabel mPerfLabel1;
+    private javax.swing.JLabel mPerfLabel2;
     private javax.swing.JFormattedTextField mPerfTF;
+    private javax.swing.JFormattedTextField mPerfTF1;
     private javax.swing.JRadioButton mSortRB1;
     private javax.swing.JRadioButton mSortRB10;
     private javax.swing.JRadioButton mSortRB11;
