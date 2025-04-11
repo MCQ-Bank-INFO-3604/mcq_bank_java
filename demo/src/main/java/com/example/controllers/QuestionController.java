@@ -17,8 +17,15 @@ import java.util.Date;
 public class QuestionController {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
 
-    public boolean insertQuestion(String question, String correctAnswer, String wrong1, String wrong2, String wrong3, String course, String topic, String subTopic, String difficulty) {
-        String sql = "INSERT INTO questions (question, correctAnswer, wrongAnswer1, wrongAnswer2, wrongAnswer3, course, topic, subTopic, difficulty, dateCreated, lastEdited, timesUsed, hasImage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    public boolean insertQuestion(
+        String question, String correctAnswer, String wrong1, String wrong2, String wrong3,
+        String course, String topic, String subTopic,
+        float difficulty, float performance, float discrimination) {
+        String sql = "INSERT INTO questions (" +
+                 "question, correctAnswer, wrongAnswer1, wrongAnswer2, wrongAnswer3, " +
+                 "course, topic, subTopic, comment, difficulty, performance, discrimination, " +
+                 "dateCreated, lastUsed, lastEdited, timesUsed, performanceMetric, hasImage, imagePath" +
+                 ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         
         // java.util.Date today=new Date();
         // java.sql.Date date=new java.sql.Date(today.getTime()); //your SQL date object
@@ -33,11 +40,17 @@ public class QuestionController {
             pstmt.setString(6, course);
             pstmt.setString(7, topic);
             pstmt.setString(8, subTopic);
-            pstmt.setString(9, difficulty);
-            pstmt.setString(10, date);
-            pstmt.setString(11, date);
-            pstmt.setInt(12, 0);
-            pstmt.setInt(13, 0);
+            pstmt.setString(9, ""); // comment (default empty)
+            pstmt.setFloat(10, difficulty);
+            pstmt.setFloat(11, performance);
+            pstmt.setFloat(12, discrimination);
+            pstmt.setString(13, date); // dateCreated
+            pstmt.setString(14, null); // lastUsed
+            pstmt.setString(15, date); // lastEdited
+            pstmt.setInt(16, 0); // timesUsed
+            pstmt.setFloat(17, 0.0f); // performanceMetric
+            pstmt.setBoolean(18, false); // hasImage
+            pstmt.setString(19, null); // imagePath
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0; // Return true if the insert was successful
         } catch (SQLException e) {
@@ -76,7 +89,10 @@ public class QuestionController {
                     String course = values[5].trim();
                     String topic = values[6].trim();
                     String subTopic = values[7].trim();
-                    String difficulty = values[8].trim();
+                    float difficulty = Float.parseFloat(values[9].trim());
+                    float performance = Float.parseFloat(values[10].trim());
+                    float discrimination = Float.parseFloat(values[11].trim());
+
     
                     // Pass data to the next step
                     insertQuestion(question, correctAnswer, wrong1, wrong2, wrong3, 
@@ -120,7 +136,7 @@ public class QuestionController {
     }
 
 
-    public boolean editQuestion(int questionID, String question, String correctAnswer, String wrong1, String wrong2, String wrong3, String course, String topic, String subTopic, String difficulty) {
+    public boolean editQuestion(int questionID, String question, String correctAnswer, String wrong1, String wrong2, String wrong3, String course, String topic, String subTopic, float difficulty) {
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         String sql = "UPDATE questions " +
                     "SET question = '" + question + "' ,"+
