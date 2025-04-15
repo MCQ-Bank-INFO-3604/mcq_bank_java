@@ -33,11 +33,11 @@ public class App {
 
         //READING FROM A CSV
         CSVImporter csvImporter = new CSVImporter();
-        String cFilename = "demo\\src\\main\\java\\com\\example\\courses_topics_subtopics.csv";
+        String cFilename = "src\\main\\java\\com\\example\\courses_topics_subtopics.csv";
         System.out.println("Insert course details from CSV: ");
         csvImporter.importCourseTopicSubtopicFromCSV(cFilename);
 
-        String qFilename = "demo\\src\\main\\java\\com\\example\\questions.csv";
+        String qFilename = "src\\main\\java\\com\\example\\questions.csv";
         System.out.println("Inserts questions from CSV: ");
         csvImporter.importQuestionsFromCSV(qFilename);
 
