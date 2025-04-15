@@ -96,7 +96,7 @@ public class QuestionController {
     
                     // Pass data to the next step
                     insertQuestion(question, correctAnswer, wrong1, wrong2, wrong3, 
-                                 course, topic, subTopic, difficulty);
+                                 course, topic, subTopic, difficulty, performance, discrimination);
                 } catch (ArrayIndexOutOfBoundsException e) {
                     System.err.println("Error processing line: " + line);
                     e.printStackTrace();
