@@ -117,16 +117,14 @@ public class Exams extends javax.swing.JPanel {
         mTagsTab = new javax.swing.JPanel();
         mDateCreatedLabel = new javax.swing.JLabel();
         mDateCreatedTF = new javax.swing.JFormattedTextField();
-        mDateAdminLabel = new javax.swing.JLabel();
-        mDateAdminTF = new javax.swing.JFormattedTextField();
         mDateEditedLabel = new javax.swing.JLabel();
         mDateEditedTF = new javax.swing.JFormattedTextField();
-        mPerfLabel = new javax.swing.JLabel();
-        mPerfTF = new javax.swing.JFormattedTextField();
-        mPerfTF1 = new javax.swing.JFormattedTextField();
-        mPerfLabel1 = new javax.swing.JLabel();
-        mPerfLabel2 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        mQNumberLabel = new javax.swing.JLabel();
+        mQNumberTF = new javax.swing.JFormattedTextField();
+        mDateAdminLabel = new javax.swing.JLabel();
+        mDateAdminSpinner = new javax.swing.JSpinner();
+        mExamCourseLabel = new javax.swing.JLabel();
+        mExamCourseComboBox = new javax.swing.JComboBox<>();
         browseTab = new javax.swing.JPanel();
         bSearchPanel = new javax.swing.JPanel();
         bSearchTF = new javax.swing.JTextField();
@@ -232,7 +230,6 @@ public class Exams extends javax.swing.JPanel {
 
         examPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Exam Title"));
 
-        examTitleTF.setForeground(new java.awt.Color(204, 204, 204));
         examTitleTF.setText("Exam Title");
         examTitleTF.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -265,7 +262,6 @@ public class Exams extends javax.swing.JPanel {
 
         qSearchPanel.setLayout(new java.awt.BorderLayout());
 
-        qSearchTF.setForeground(new java.awt.Color(204, 204, 204));
         qSearchTF.setText("Search Here");
         qSearchTF.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -335,7 +331,7 @@ public class Exams extends javax.swing.JPanel {
         ansListPanel.setLayout(ansListPanelLayout);
         ansListPanelLayout.setHorizontalGroup(
             ansListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 397, Short.MAX_VALUE)
+            .addGap(0, 359, Short.MAX_VALUE)
         );
         ansListPanelLayout.setVerticalGroup(
             ansListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -558,7 +554,7 @@ public class Exams extends javax.swing.JPanel {
                     .addComponent(mSortRB9)
                     .addComponent(mSortRB10)
                     .addComponent(mSortRB11))
-                .addContainerGap(193, Short.MAX_VALUE))
+                .addContainerGap(231, Short.MAX_VALUE))
         );
         mSortTabLayout.setVerticalGroup(
             mSortTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -590,20 +586,15 @@ public class Exams extends javax.swing.JPanel {
 
         mOrganizePanel.addTab("Sort", mSortTab);
 
-        mAddedScrollTab.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        mAddedPanel.setMinimumSize(new java.awt.Dimension(16, 16));
-        mAddedPanel.setPreferredSize(null);
-
         javax.swing.GroupLayout mAddedPanelLayout = new javax.swing.GroupLayout(mAddedPanel);
         mAddedPanel.setLayout(mAddedPanelLayout);
         mAddedPanelLayout.setHorizontalGroup(
             mAddedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 373, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         mAddedPanelLayout.setVerticalGroup(
             mAddedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 378, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         mAddedScrollTab.setViewportView(mAddedPanel);
@@ -616,38 +607,30 @@ public class Exams extends javax.swing.JPanel {
         mDateCreatedTF.setText("--New--");
         mDateCreatedTF.setFocusable(false);
 
-        mDateAdminLabel.setText("Date Administered:");
-
-        mDateAdminTF.setEditable(false);
-        mDateAdminTF.setText("Never");
-        mDateAdminTF.setFocusable(false);
-
         mDateEditedLabel.setText("Last Edited:");
 
         mDateEditedTF.setEditable(false);
         mDateEditedTF.setText("--New--");
         mDateEditedTF.setFocusable(false);
 
-        mPerfLabel.setText("Performance:");
+        mQNumberLabel.setText("Number of Questions:");
 
-        mPerfTF.setEditable(false);
-        mPerfTF.setText("0");
-        mPerfTF.setFocusable(false);
-
-        mPerfTF1.setEditable(false);
-        mPerfTF1.setText("0");
-        mPerfTF1.setFocusable(false);
-        mPerfTF1.addActionListener(new java.awt.event.ActionListener() {
+        mQNumberTF.setEditable(false);
+        mQNumberTF.setText("0");
+        mQNumberTF.setFocusable(false);
+        mQNumberTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mPerfTF1ActionPerformed(evt);
+                mQNumberTFActionPerformed(evt);
             }
         });
 
-        mPerfLabel1.setText("Number of Questions:");
+        mDateAdminLabel.setText("Date Administered:");
 
-        mPerfLabel2.setText("Course:");
+        mDateAdminSpinner.setModel(new javax.swing.SpinnerDateModel());
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        mExamCourseLabel.setText("Course:");
+
+        mExamCourseComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout mTagsTabLayout = new javax.swing.GroupLayout(mTagsTab);
         mTagsTab.setLayout(mTagsTabLayout);
@@ -661,26 +644,22 @@ public class Exams extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(mDateCreatedTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(mTagsTabLayout.createSequentialGroup()
-                        .addComponent(mDateAdminLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(mDateAdminTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(mTagsTabLayout.createSequentialGroup()
                         .addComponent(mDateEditedLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(mDateEditedTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(mTagsTabLayout.createSequentialGroup()
-                        .addComponent(mPerfLabel)
+                        .addComponent(mQNumberLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(mPerfTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(mQNumberTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(mTagsTabLayout.createSequentialGroup()
-                        .addComponent(mPerfLabel1)
+                        .addComponent(mDateAdminLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(mPerfTF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(mDateAdminSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(mTagsTabLayout.createSequentialGroup()
-                        .addComponent(mPerfLabel2)
+                        .addComponent(mExamCourseLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(175, Short.MAX_VALUE))
+                        .addComponent(mExamCourseComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(141, Short.MAX_VALUE))
         );
         mTagsTabLayout.setVerticalGroup(
             mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -691,25 +670,21 @@ public class Exams extends javax.swing.JPanel {
                     .addComponent(mDateCreatedLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mDateAdminTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mDateAdminLabel))
+                    .addComponent(mDateEditedLabel)
+                    .addComponent(mDateEditedTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mDateEditedTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mDateEditedLabel))
+                    .addComponent(mQNumberLabel)
+                    .addComponent(mQNumberTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mPerfTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mPerfLabel))
+                    .addComponent(mDateAdminLabel)
+                    .addComponent(mDateAdminSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mPerfTF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mPerfLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mPerfLabel2)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(203, Short.MAX_VALUE))
+                    .addComponent(mExamCourseLabel)
+                    .addComponent(mExamCourseComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(240, Short.MAX_VALUE))
         );
 
         mOrganizePanel.addTab("Exam Tags", mTagsTab);
@@ -747,7 +722,6 @@ public class Exams extends javax.swing.JPanel {
 
         bSearchPanel.setLayout(new java.awt.BorderLayout());
 
-        bSearchTF.setForeground(new java.awt.Color(204, 204, 204));
         bSearchTF.setText("Search Here");
         bSearchTF.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -1162,7 +1136,7 @@ public class Exams extends javax.swing.JPanel {
                     // Update the exam tags with new data
                     mDateCreatedTF.setText(latestExam.getString("dateCreated"));
                     mDateEditedTF.setText(mDateCreatedTF.getText());
-                    mPerfTF.setText("0");
+//                    mPerfTF.setText("0");
                     
                     // Refresh the browse panel
                     populateBResultsPanel(eController.getExamsWithFilter());
@@ -1231,9 +1205,9 @@ public class Exams extends javax.swing.JPanel {
         // Reset the exam title and other fields
         examTitleTF.setText("");
         mDateCreatedTF.setText("--New--");
-        mDateAdminTF.setText("Never");
+//        mDateAdminTF.setText("Never");
         mDateEditedTF.setText("--New--");
-        mPerfTF.setText("0");
+//        mPerfTF.setText("0");
     }//GEN-LAST:event_newButtonActionPerformed
 
     private void examTitleTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_examTitleTFFocusGained
@@ -1284,9 +1258,9 @@ public class Exams extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_bSearchTFFocusLost
 
-    private void mPerfTF1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mPerfTF1ActionPerformed
+    private void mQNumberTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mQNumberTFActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_mPerfTF1ActionPerformed
+    }//GEN-LAST:event_mQNumberTFActionPerformed
 
     private void clearFields() {
         // Reset the filter and sort options
@@ -1773,9 +1747,9 @@ public class Exams extends javax.swing.JPanel {
                 // Fill exam tags
                 mDateCreatedTF.setText(rs.getString("dateCreated"));
                 String dateAdmin = rs.getString("lastUsed");
-                mDateAdminTF.setText(dateAdmin == null ? "Never" : dateAdmin);
+//                mDateAdminTF.setText(dateAdmin == null ? "Never" : dateAdmin);
                 mDateEditedTF.setText(rs.getString("lastEdited"));
-                mPerfTF.setText(String.valueOf(rs.getInt("performanceMetric")));
+//                mPerfTF.setText(String.valueOf(rs.getInt("performanceMetric")));
             
                 // Populate questions
                 ResultSet examQuestions = eController.getQuestionsFromExam(examId);
@@ -1829,14 +1803,13 @@ public class Exams extends javax.swing.JPanel {
     private javax.swing.JButton genButton;
     private javax.swing.JPanel headerPanel;
     private javax.swing.JButton helpButton;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JPanel mAddedPanel;
     private javax.swing.JScrollPane mAddedScrollTab;
     private javax.swing.ButtonGroup mButtonGroup;
     private javax.swing.JComboBox<String> mCourseComboBox;
     private javax.swing.JPanel mCoursePanel;
     private javax.swing.JLabel mDateAdminLabel;
-    private javax.swing.JFormattedTextField mDateAdminTF;
+    private javax.swing.JSpinner mDateAdminSpinner;
     private javax.swing.JLabel mDateCreatedLabel;
     private javax.swing.JFormattedTextField mDateCreatedTF;
     private javax.swing.JLabel mDateEditedLabel;
@@ -1845,14 +1818,13 @@ public class Exams extends javax.swing.JPanel {
     private javax.swing.JCheckBox mDiffHardCB;
     private javax.swing.JCheckBox mDiffMedCB;
     private javax.swing.JPanel mDifficultyPanel;
+    private javax.swing.JComboBox<String> mExamCourseComboBox;
+    private javax.swing.JLabel mExamCourseLabel;
     private javax.swing.JPanel mFilterPanel;
     private javax.swing.JScrollPane mFilterScrollTab;
     private javax.swing.JTabbedPane mOrganizePanel;
-    private javax.swing.JLabel mPerfLabel;
-    private javax.swing.JLabel mPerfLabel1;
-    private javax.swing.JLabel mPerfLabel2;
-    private javax.swing.JFormattedTextField mPerfTF;
-    private javax.swing.JFormattedTextField mPerfTF1;
+    private javax.swing.JLabel mQNumberLabel;
+    private javax.swing.JFormattedTextField mQNumberTF;
     private javax.swing.JRadioButton mSortRB1;
     private javax.swing.JRadioButton mSortRB10;
     private javax.swing.JRadioButton mSortRB11;
