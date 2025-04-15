@@ -4,8 +4,11 @@
  */
 package com.example.views;
 
-import javax.swing.*;
-
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -19,6 +22,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.SwingUtilities;
+
+import com.example.controllers.QuestionController;
 
 /**
  *
@@ -64,6 +80,7 @@ public class Questions extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         ansButtonGroup = new javax.swing.ButtonGroup();
         sortButtonGroup = new javax.swing.ButtonGroup();
@@ -102,17 +119,7 @@ public class Questions extends javax.swing.JPanel {
         ansImageCB4 = new javax.swing.JCheckBox();
         ansImageButton4 = new javax.swing.JButton();
         manageTagsPanel = new javax.swing.JPanel();
-        tagsEditablePanel = new javax.swing.JPanel();
-        courseLabel = new javax.swing.JLabel();
-        courseComboBox = new javax.swing.JComboBox<>();
-        topicLabel = new javax.swing.JLabel();
-        topicComboBox = new javax.swing.JComboBox<>();
-        subtopicLabel = new javax.swing.JLabel();
-        subtopicComboBox = new javax.swing.JComboBox<>();
-        difficultyLabel = new javax.swing.JLabel();
-        difficultyComboBox = new javax.swing.JComboBox<>();
-        tagsFiller = new javax.swing.Box.Filler(new java.awt.Dimension(40, 100), new java.awt.Dimension(40, 100), new java.awt.Dimension(40, 100));
-        tagsNonEditablePanel = new javax.swing.JPanel();
+        historyTagsPanel = new javax.swing.JPanel();
         dateCreatedLabel = new javax.swing.JLabel();
         dateCreatedTF = new javax.swing.JTextField();
         dateEditedLabel = new javax.swing.JLabel();
@@ -121,8 +128,23 @@ public class Questions extends javax.swing.JPanel {
         dateUsedTF = new javax.swing.JTextField();
         usedCountLabel = new javax.swing.JLabel();
         usedCountTF = new javax.swing.JTextField();
-        perfLabel = new javax.swing.JLabel();
-        perfTF = new javax.swing.JTextField();
+        categoryTagsPanel = new javax.swing.JPanel();
+        courseLabel = new javax.swing.JLabel();
+        courseComboBox = new javax.swing.JComboBox<>();
+        topicLabel = new javax.swing.JLabel();
+        topicComboBox = new javax.swing.JComboBox<>();
+        subtopicLabel = new javax.swing.JLabel();
+        subtopicComboBox = new javax.swing.JComboBox<>();
+        perfTagsPanel = new javax.swing.JPanel();
+        difficultyLabel = new javax.swing.JLabel();
+        difficultySpinner = new javax.swing.JSpinner();
+        performanceLabel = new javax.swing.JLabel();
+        performanceSpinner = new javax.swing.JSpinner();
+        discriminationLabel = new javax.swing.JLabel();
+        discriminationSpinner = new javax.swing.JSpinner();
+        commentPanel = new javax.swing.JPanel();
+        commentScrollPane = new javax.swing.JScrollPane();
+        commentTextArea = new javax.swing.JTextArea();
         browseTab = new javax.swing.JPanel();
         bOrganizeTabbedPane = new javax.swing.JTabbedPane();
         bFilterScrollTab = new javax.swing.JScrollPane();
@@ -184,9 +206,11 @@ public class Questions extends javax.swing.JPanel {
 
         add(headerPanel, java.awt.BorderLayout.PAGE_START);
 
+        manageScrollContentPanel.setPreferredSize(new java.awt.Dimension(621, 510));
+
         manageControlsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Controls"));
 
-        newButton.setText("New");
+        newButton.setText("New Question");
         newButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newButtonActionPerformed(evt);
@@ -194,7 +218,7 @@ public class Questions extends javax.swing.JPanel {
         });
         manageControlsPanel.add(newButton);
 
-        saveButton.setText("Save");
+        saveButton.setText("Save Question");
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveButtonActionPerformed(evt);
@@ -202,7 +226,7 @@ public class Questions extends javax.swing.JPanel {
         });
         manageControlsPanel.add(saveButton);
 
-        clearButton.setText("Clear");
+        clearButton.setText("Clear Fields");
         clearButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearButtonActionPerformed(evt);
@@ -210,7 +234,7 @@ public class Questions extends javax.swing.JPanel {
         });
         manageControlsPanel.add(clearButton);
 
-        deleteButton.setText("Delete");
+        deleteButton.setText("Delete Question");
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButtonActionPerformed(evt);
@@ -221,6 +245,14 @@ public class Questions extends javax.swing.JPanel {
         manageQuestionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Question"));
 
         questionTF.setText("Question Text");
+        questionTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                questionTFFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                questionTFFocusLost(evt);
+            }
+        });
 
         qImageButton.setText("Choose Image");
 
@@ -262,24 +294,56 @@ public class Questions extends javax.swing.JPanel {
         ansButtonGroup.add(ansRadioButton1);
 
         ansTF1.setText("Answer 1");
+        ansTF1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                ansTF1FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                ansTF1FocusLost(evt);
+            }
+        });
 
         ansImageButton1.setText("Choose Image");
 
         ansButtonGroup.add(ansRadioButton2);
 
         ansTF2.setText("Answer 2");
+        ansTF2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                ansTF2FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                ansTF2FocusLost(evt);
+            }
+        });
 
         ansImageButton2.setText("Choose Image");
 
         ansButtonGroup.add(ansRadioButton3);
 
         ansTF3.setText("Answer 3");
+        ansTF3.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                ansTF3FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                ansTF3FocusLost(evt);
+            }
+        });
 
         ansImageButton3.setText("Choose Image");
 
         ansButtonGroup.add(ansRadioButton4);
 
         ansTF4.setText("Answer 4");
+        ansTF4.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                ansTF4FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                ansTF4FocusLost(evt);
+            }
+        });
 
         ansImageButton4.setText("Choose Image");
 
@@ -355,138 +419,214 @@ public class Questions extends javax.swing.JPanel {
 
         manageTagsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Tags"));
 
-        courseLabel.setText("Course:");
-
-        courseComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "course1", "course2", "course3", "course4" }));
-
-        topicLabel.setText("Topic:");
-
-        topicComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "topic1", "topic2", "topic3", "topic4" }));
-
-        subtopicLabel.setText("Subtopic:");
-
-        subtopicComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "subtopic1", "subtopic2", "subtopic3", "subtopic4" }));
-
-        difficultyLabel.setText("Difficulty:");
-
-        difficultyComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Easy", "Medium", "Hard" }));
-
-        javax.swing.GroupLayout tagsEditablePanelLayout = new javax.swing.GroupLayout(tagsEditablePanel);
-        tagsEditablePanel.setLayout(tagsEditablePanelLayout);
-        tagsEditablePanelLayout.setHorizontalGroup(
-            tagsEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(tagsEditablePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(tagsEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(subtopicLabel)
-                    .addComponent(courseLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(topicLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(difficultyLabel, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tagsEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(topicComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(courseComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(subtopicComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(difficultyComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        tagsEditablePanelLayout.setVerticalGroup(
-            tagsEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tagsEditablePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(tagsEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(courseLabel)
-                    .addComponent(courseComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tagsEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(topicLabel)
-                    .addComponent(topicComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tagsEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(subtopicComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(subtopicLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tagsEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(difficultyComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(difficultyLabel))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        historyTagsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("History Tags"));
+        historyTagsPanel.setLayout(new java.awt.GridBagLayout());
 
         dateCreatedLabel.setText("Date Created:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 5, 5);
+        historyTagsPanel.add(dateCreatedLabel, gridBagConstraints);
 
         dateCreatedTF.setEditable(false);
         dateCreatedTF.setText("--New--");
         dateCreatedTF.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        historyTagsPanel.add(dateCreatedTF, gridBagConstraints);
 
         dateEditedLabel.setText("Last Edited:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 10;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 5, 5);
+        historyTagsPanel.add(dateEditedLabel, gridBagConstraints);
 
         dateEditedTF.setEditable(false);
         dateEditedTF.setText("--New--");
         dateEditedTF.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 12;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        historyTagsPanel.add(dateEditedTF, gridBagConstraints);
 
         dateUsedLabel.setText("Last Used:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 5, 5);
+        historyTagsPanel.add(dateUsedLabel, gridBagConstraints);
 
         dateUsedTF.setEditable(false);
         dateUsedTF.setText("Never");
         dateUsedTF.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 7;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        historyTagsPanel.add(dateUsedTF, gridBagConstraints);
 
         usedCountLabel.setText("Times Used:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 15;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 5, 5);
+        historyTagsPanel.add(usedCountLabel, gridBagConstraints);
 
         usedCountTF.setEditable(false);
         usedCountTF.setText("0");
         usedCountTF.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 17;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        historyTagsPanel.add(usedCountTF, gridBagConstraints);
 
-        perfLabel.setText("Performance:");
+        categoryTagsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Category Tags"));
+        categoryTagsPanel.setLayout(new java.awt.GridBagLayout());
 
-        perfTF.setEditable(false);
-        perfTF.setText("0");
-        perfTF.setFocusable(false);
+        courseLabel.setText("Course:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 5, 5);
+        categoryTagsPanel.add(courseLabel, gridBagConstraints);
 
-        javax.swing.GroupLayout tagsNonEditablePanelLayout = new javax.swing.GroupLayout(tagsNonEditablePanel);
-        tagsNonEditablePanel.setLayout(tagsNonEditablePanelLayout);
-        tagsNonEditablePanelLayout.setHorizontalGroup(
-            tagsNonEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(tagsNonEditablePanelLayout.createSequentialGroup()
+        courseComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "course1", "course2", "course3", "course4" }));
+        courseComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                courseComboBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        categoryTagsPanel.add(courseComboBox, gridBagConstraints);
+
+        topicLabel.setText("Topic:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 5, 5);
+        categoryTagsPanel.add(topicLabel, gridBagConstraints);
+
+        topicComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "topic1", "topic2", "topic3", "topic4" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 53;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        categoryTagsPanel.add(topicComboBox, gridBagConstraints);
+
+        subtopicLabel.setText("Subtopic:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 5, 5);
+        categoryTagsPanel.add(subtopicLabel, gridBagConstraints);
+
+        subtopicComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "subtopic1", "subtopic2", "subtopic3", "subtopic4" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.ipadx = 32;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        categoryTagsPanel.add(subtopicComboBox, gridBagConstraints);
+
+        perfTagsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Performance Metrics"));
+        perfTagsPanel.setToolTipText("");
+        perfTagsPanel.setLayout(new java.awt.GridBagLayout());
+
+        difficultyLabel.setText("Difficulty:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 5, 5);
+        perfTagsPanel.add(difficultyLabel, gridBagConstraints);
+
+        difficultySpinner.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        perfTagsPanel.add(difficultySpinner, gridBagConstraints);
+
+        performanceLabel.setText("Performance:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 5, 5);
+        perfTagsPanel.add(performanceLabel, gridBagConstraints);
+
+        performanceSpinner.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        perfTagsPanel.add(performanceSpinner, gridBagConstraints);
+
+        discriminationLabel.setText("Discrimination:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 5, 5);
+        perfTagsPanel.add(discriminationLabel, gridBagConstraints);
+
+        discriminationSpinner.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        perfTagsPanel.add(discriminationSpinner, gridBagConstraints);
+
+        commentPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Comment"));
+
+        commentScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        commentTextArea.setColumns(20);
+        commentTextArea.setRows(5);
+        commentScrollPane.setViewportView(commentTextArea);
+
+        javax.swing.GroupLayout commentPanelLayout = new javax.swing.GroupLayout(commentPanel);
+        commentPanel.setLayout(commentPanelLayout);
+        commentPanelLayout.setHorizontalGroup(
+            commentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(commentPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(tagsNonEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(usedCountLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(perfLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(dateUsedLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(dateEditedLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(dateCreatedLabel, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tagsNonEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(dateCreatedTF)
-                    .addComponent(dateEditedTF)
-                    .addComponent(dateUsedTF)
-                    .addComponent(usedCountTF)
-                    .addComponent(perfTF, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(commentScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
+                .addContainerGap())
         );
-        tagsNonEditablePanelLayout.setVerticalGroup(
-            tagsNonEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(tagsNonEditablePanelLayout.createSequentialGroup()
+        commentPanelLayout.setVerticalGroup(
+            commentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(commentPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(tagsNonEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dateCreatedLabel)
-                    .addComponent(dateCreatedTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(tagsNonEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dateEditedLabel)
-                    .addComponent(dateEditedTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(tagsNonEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dateUsedLabel)
-                    .addComponent(dateUsedTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(tagsNonEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(usedCountLabel)
-                    .addComponent(usedCountTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tagsNonEditablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(perfLabel)
-                    .addComponent(perfTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(commentScrollPane)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout manageTagsPanelLayout = new javax.swing.GroupLayout(manageTagsPanel);
@@ -495,21 +635,28 @@ public class Questions extends javax.swing.JPanel {
             manageTagsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(manageTagsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tagsEditablePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tagsFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tagsNonEditablePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(manageTagsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(manageTagsPanelLayout.createSequentialGroup()
+                        .addComponent(historyTagsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(manageTagsPanelLayout.createSequentialGroup()
+                        .addComponent(categoryTagsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(perfTagsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(commentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         manageTagsPanelLayout.setVerticalGroup(
             manageTagsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(manageTagsPanelLayout.createSequentialGroup()
+                .addComponent(historyTagsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(manageTagsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tagsEditablePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tagsFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(tagsNonEditablePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(commentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(perfTagsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(categoryTagsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout manageScrollContentPanelLayout = new javax.swing.GroupLayout(manageScrollContentPanel);
@@ -521,8 +668,8 @@ public class Questions extends javax.swing.JPanel {
                 .addGroup(manageScrollContentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(manageTagsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(manageControlsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(manageQuestionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(manageAnswersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(manageAnswersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(manageQuestionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         manageScrollContentPanelLayout.setVerticalGroup(
@@ -536,7 +683,7 @@ public class Questions extends javax.swing.JPanel {
                 .addComponent(manageAnswersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(manageTagsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(54, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         manageScrollTab.setViewportView(manageScrollContentPanel);
@@ -652,7 +799,7 @@ public class Questions extends javax.swing.JPanel {
             bSubtopicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bSubtopicPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(bSubtopicComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(bSubtopicComboBox, 0, 161, Short.MAX_VALUE)
                 .addContainerGap())
         );
         bSubtopicPanelLayout.setVerticalGroup(
@@ -749,7 +896,7 @@ public class Questions extends javax.swing.JPanel {
                     .addComponent(sortRB9)
                     .addComponent(sortRB10)
                     .addComponent(sortRB11))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
         bSortTabLayout.setVerticalGroup(
             bSortTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -783,6 +930,16 @@ public class Questions extends javax.swing.JPanel {
 
         searchPanel.setLayout(new java.awt.BorderLayout());
 
+        searchTF.setText("Search Here");
+        searchTF.setToolTipText("");
+        searchTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                searchTFFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                searchTFFocusLost(evt);
+            }
+        });
         searchTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchTFActionPerformed(evt);
@@ -804,7 +961,7 @@ public class Questions extends javax.swing.JPanel {
         resultsPanel.setLayout(resultsPanelLayout);
         resultsPanelLayout.setHorizontalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 602, Short.MAX_VALUE)
+            .addGap(0, 585, Short.MAX_VALUE)
         );
         resultsPanelLayout.setVerticalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -820,7 +977,7 @@ public class Questions extends javax.swing.JPanel {
             .addGroup(browseTabLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(browseTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
                     .addComponent(resultsScrollPane))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bOrganizeTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -831,7 +988,7 @@ public class Questions extends javax.swing.JPanel {
             .addGroup(browseTabLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(browseTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bOrganizeTabbedPane)
+                    .addComponent(bOrganizeTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
                     .addGroup(browseTabLayout.createSequentialGroup()
                         .addComponent(searchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -876,12 +1033,12 @@ public class Questions extends javax.swing.JPanel {
         clearFields();
         
         // Set default values
-        difficultyComboBox.setSelectedIndex(0);
+        difficultySpinner.setValue(0);
         dateCreatedTF.setText("--New--");
         dateEditedTF.setText("--New--");
         dateUsedTF.setText("Never");
         usedCountTF.setText("0");
-        perfTF.setText("0");
+        //perfTF.setText("0");
     }//GEN-LAST:event_newButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
@@ -1028,6 +1185,106 @@ public class Questions extends javax.swing.JPanel {
             }
         }
     }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void ansTF1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ansTF1FocusGained
+        // TODO add your handling code here:
+        if(ansTF1.getText().equals("Answer 1")){
+            ansTF1.setText("");
+            ansTF1.setForeground(new Color(0,0,0));
+        }
+    }//GEN-LAST:event_ansTF1FocusGained
+
+    private void ansTF1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ansTF1FocusLost
+        // TODO add your handling code here:
+        if(ansTF1.getText().equals("")){
+            ansTF1.setText("Answer 1");
+            ansTF1.setForeground(new Color(204,204,204));
+        }
+    }//GEN-LAST:event_ansTF1FocusLost
+
+    private void ansTF2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ansTF2FocusGained
+        // TODO add your handling code here:
+        if(ansTF2.getText().equals("Answer 2")){
+            ansTF2.setText("");
+            ansTF2.setForeground(new Color(0,0,0));
+        }
+    }//GEN-LAST:event_ansTF2FocusGained
+
+    private void ansTF2FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ansTF2FocusLost
+        // TODO add your handling code here:
+        if(ansTF2.getText().equals("")){
+            ansTF2.setText("Answer 2");
+            ansTF2.setForeground(new Color(204,204,204));
+        }
+    }//GEN-LAST:event_ansTF2FocusLost
+
+    private void ansTF3FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ansTF3FocusGained
+        // TODO add your handling code here:
+        if(ansTF3.getText().equals("Answer 3")){
+            ansTF3.setText("");
+            ansTF3.setForeground(new Color(0,0,0));
+        }
+    }//GEN-LAST:event_ansTF3FocusGained
+
+    private void ansTF3FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ansTF3FocusLost
+        // TODO add your handling code here:
+        if(ansTF3.getText().equals("")){
+            ansTF3.setText("Answer 3");
+            ansTF3.setForeground(new Color(204,204,204));
+        }
+    }//GEN-LAST:event_ansTF3FocusLost
+
+    private void ansTF4FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ansTF4FocusGained
+        // TODO add your handling code here:
+        if(ansTF4.getText().equals("Answer 4")){
+            ansTF4.setText("");
+            ansTF4.setForeground(new Color(0,0,0));
+        }
+    }//GEN-LAST:event_ansTF4FocusGained
+
+    private void ansTF4FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ansTF4FocusLost
+        // TODO add your handling code here:
+        if(ansTF4.getText().equals("")){
+            ansTF4.setText("Answer 4");
+            ansTF4.setForeground(new Color(204,204,204));
+        }
+    }//GEN-LAST:event_ansTF4FocusLost
+
+    private void questionTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_questionTFFocusGained
+        // TODO add your handling code here:
+        if(questionTF.getText().equals("Question Text")){
+            questionTF.setText("");
+            questionTF.setForeground(new Color(0,0,0));
+        }
+    }//GEN-LAST:event_questionTFFocusGained
+
+    private void questionTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_questionTFFocusLost
+        // TODO add your handling code here:
+        if(questionTF.getText().equals("")){
+            questionTF.setText("Question Text");
+            questionTF.setForeground(new Color(204,204,204));
+        }
+    }//GEN-LAST:event_questionTFFocusLost
+
+    private void searchTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_searchTFFocusGained
+        // TODO add your handling code here:
+        if(searchTF.getText().equals("Search Here")){
+            searchTF.setText("");
+            searchTF.setForeground(new Color(0,0,0));
+        }
+    }//GEN-LAST:event_searchTFFocusGained
+
+    private void searchTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_searchTFFocusLost
+        // TODO add your handling code here:
+        if(searchTF.getText().equals("")){
+            searchTF.setText("Search Here");
+            searchTF.setForeground(new Color(204,204,204));
+        }
+    }//GEN-LAST:event_searchTFFocusLost
+
+    private void courseComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_courseComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_courseComboBoxActionPerformed
     
     private void clearFields() {
         // Clear text fields
@@ -1052,7 +1309,14 @@ public class Questions extends javax.swing.JPanel {
         courseComboBox.setSelectedIndex(0);
         topicComboBox.setSelectedIndex(0);
         subtopicComboBox.setSelectedIndex(0);
-        difficultyComboBox.setSelectedIndex(0);
+        
+        //Reset Spinners
+        difficultySpinner.setValue(0);
+        performanceSpinner.setValue(0);
+        discriminationSpinner.setValue(0);
+        
+        //Clear text area
+        commentTextArea.setText("");
     }
 
     private String buildQuestionQuery() {
@@ -1433,7 +1697,11 @@ public class Questions extends javax.swing.JPanel {
     private javax.swing.JPanel bUsedPanel;
     private javax.swing.JCheckBox bUsedYesCB;
     private javax.swing.JPanel browseTab;
+    private javax.swing.JPanel categoryTagsPanel;
     private javax.swing.JButton clearButton;
+    private javax.swing.JPanel commentPanel;
+    private javax.swing.JScrollPane commentScrollPane;
+    private javax.swing.JTextArea commentTextArea;
     private javax.swing.JComboBox<String> courseComboBox;
     private javax.swing.JLabel courseLabel;
     private javax.swing.JLabel dateCreatedLabel;
@@ -1443,10 +1711,13 @@ public class Questions extends javax.swing.JPanel {
     private javax.swing.JLabel dateUsedLabel;
     private javax.swing.JTextField dateUsedTF;
     private javax.swing.JButton deleteButton;
-    private javax.swing.JComboBox<String> difficultyComboBox;
     private javax.swing.JLabel difficultyLabel;
+    private javax.swing.JSpinner difficultySpinner;
+    private javax.swing.JLabel discriminationLabel;
+    private javax.swing.JSpinner discriminationSpinner;
     private javax.swing.JPanel headerPanel;
     private javax.swing.JButton helpButton;
+    private javax.swing.JPanel historyTagsPanel;
     private javax.swing.JTextField imagePathTF;
     private javax.swing.JPanel manageAnswersPanel;
     private javax.swing.JPanel manageControlsPanel;
@@ -1455,8 +1726,9 @@ public class Questions extends javax.swing.JPanel {
     private javax.swing.JScrollPane manageScrollTab;
     private javax.swing.JPanel manageTagsPanel;
     private javax.swing.JButton newButton;
-    private javax.swing.JLabel perfLabel;
-    private javax.swing.JTextField perfTF;
+    private javax.swing.JPanel perfTagsPanel;
+    private javax.swing.JLabel performanceLabel;
+    private javax.swing.JSpinner performanceSpinner;
     private javax.swing.JButton qImageButton;
     private javax.swing.JCheckBox qImageCB;
     private javax.swing.JTextField questionTF;
@@ -1483,9 +1755,6 @@ public class Questions extends javax.swing.JPanel {
     private javax.swing.JRadioButton sortRB9;
     private javax.swing.JComboBox<String> subtopicComboBox;
     private javax.swing.JLabel subtopicLabel;
-    private javax.swing.JPanel tagsEditablePanel;
-    private javax.swing.Box.Filler tagsFiller;
-    private javax.swing.JPanel tagsNonEditablePanel;
     private javax.swing.JComboBox<String> topicComboBox;
     private javax.swing.JLabel topicLabel;
     private javax.swing.JLabel usedCountLabel;

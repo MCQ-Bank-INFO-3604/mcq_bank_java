@@ -36,6 +36,7 @@ public class Home extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         homePanel = new javax.swing.JPanel();
         headerPanel = new javax.swing.JPanel();
@@ -81,9 +82,10 @@ public class Home extends javax.swing.JFrame {
 
         homePanel.add(headerPanel, java.awt.BorderLayout.PAGE_START);
 
-        contentPanel.setLayout(new javax.swing.BoxLayout(contentPanel, javax.swing.BoxLayout.Y_AXIS));
-        contentPanel.add(filler1);
+        contentPanel.setLayout(new java.awt.GridBagLayout());
+        contentPanel.add(filler1, new java.awt.GridBagConstraints());
 
+        questionsButton.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         questionsButton.setText("Questions");
         questionsButton.setAlignmentX(0.5F);
         questionsButton.setMaximumSize(new java.awt.Dimension(175, 35));
@@ -94,10 +96,19 @@ public class Home extends javax.swing.JFrame {
                 questionsButtonActionPerformed(evt);
             }
         });
-        contentPanel.add(questionsButton);
-        contentPanel.add(filler2);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 20;
+        gridBagConstraints.ipady = 20;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(10, 40, 10, 40);
+        contentPanel.add(questionsButton, gridBagConstraints);
+        contentPanel.add(filler2, new java.awt.GridBagConstraints());
 
-        examsButton.setText("Exams");
+        examsButton.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        examsButton.setText("Examinations");
         examsButton.setAlignmentX(0.5F);
         examsButton.setMaximumSize(new java.awt.Dimension(175, 35));
         examsButton.setMinimumSize(new java.awt.Dimension(175, 35));
@@ -107,10 +118,19 @@ public class Home extends javax.swing.JFrame {
                 examsButtonActionPerformed(evt);
             }
         });
-        contentPanel.add(examsButton);
-        contentPanel.add(filler3);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 20;
+        gridBagConstraints.ipady = 20;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(10, 40, 10, 40);
+        contentPanel.add(examsButton, gridBagConstraints);
+        contentPanel.add(filler3, new java.awt.GridBagConstraints());
 
-        coursesButton.setText("Courses");
+        coursesButton.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        coursesButton.setText("Configure Courses");
         coursesButton.setAlignmentX(0.5F);
         coursesButton.setMaximumSize(new java.awt.Dimension(175, 35));
         coursesButton.setMinimumSize(new java.awt.Dimension(175, 35));
@@ -120,8 +140,16 @@ public class Home extends javax.swing.JFrame {
                 coursesButtonActionPerformed(evt);
             }
         });
-        contentPanel.add(coursesButton);
-        contentPanel.add(filler4);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 20;
+        gridBagConstraints.ipady = 20;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(10, 40, 10, 40);
+        contentPanel.add(coursesButton, gridBagConstraints);
+        contentPanel.add(filler4, new java.awt.GridBagConstraints());
 
         homePanel.add(contentPanel, java.awt.BorderLayout.CENTER);
 
