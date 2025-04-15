@@ -90,7 +90,7 @@ public class App {
         examController.addQuestionToExam(1,9);
         examController.addQuestionToExam(1,10);
 
-        examController.generateExamPDF(1);
+//        examController.generateExamPDF(1);
         // rs = examController.getQuestionsFromExam(1);
         // examView.printExamQuestions(rs);
 

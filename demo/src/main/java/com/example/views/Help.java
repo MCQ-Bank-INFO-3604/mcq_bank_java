@@ -27,13 +27,36 @@ public class Help extends javax.swing.JDialog {
         String text;
         switch (helpType) {
             case 1:
-                text = "Select Questions to add or browse questions\nSelect Exams to add or browse exams\nSelect Courses to view courses and their topics and sub-topics";
+                text = "Select Questions to add or browse questions\nSelect Exams to add or browse exams\nSelect Configure Courses to add or view courses and their topics and sub-topics";
                 break;
             case 2:
-                text = "Select the Manage tab to add, edit or delete questions\nSelect the Browse tab to view all the questions";
+                text = """
+                       Select the Manage tab to add, edit or delete questions.
+                       Select the Browse tab to view all the questions.
+                       
+                       Manage tab control button functions:
+                       • New Question – Clears the fields to add a new question.
+                       • Save Question – Saves the current question to the database.
+                       • Clear Fields – Resets all input fields.
+                       • Delete Question – Removes the selected question from the database.
+                       
+                       To indicate the correct answer out of the four, select the radio button next to the correct answer
+                       """;
                 break;
             case 3:
-                text = "Select the Manage tab to add or remove questions from an exam\nSelect the Browse tab to view all the exams";
+                text = """
+                       Select the Manage tab to add or remove questions from an exam
+                       Select the Browse tab to view all the exams
+                       
+                       Manage tab control button functions:
+                        • New Exam – Clears the fields to add a new exam.
+                        • Save Exam – Saves the current exam to the database.
+                        • Clear Fields – Resets all input fields.
+                        • Generate Questions – Form that adds questions to the current exam based on selected tags
+                        • Export Exam – Exports exam in selected format.
+                        • Delete Exam – Removes the selected exam from the database.
+                
+                        """;
                 break;
             case 4:
                 text = "Select a Course Code to add or remove it's related topics or sub-topics";

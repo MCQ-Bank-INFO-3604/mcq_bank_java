@@ -1,5 +1,7 @@
 package com.example.controllers;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,15 +9,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -207,52 +209,65 @@ public class ExamController {
     }
 
 
-    public void generateExamPDF(int examID) throws SQLException{
-        ResultSet rs = getQuestionsFromExam(examID);
-        ResultSet rs2 = getExam(examID);
-        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        int autoNum=1;
+public void generateExamPDF(int examID, String filePath) throws SQLException, DocumentException, IOException {
+    ResultSet rs = getQuestionsFromExam(examID);
+    ResultSet rs2 = getExam(examID);
+    String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+    int autoNum = 1;
 
-        String sql = "UPDATE exams " +
-                     "SET lastUsed = '" + date + "' WHERE examID = '" + examID + "';";
-
-        try {
-            Connection conn = DriverManager.getConnection(DB_URL);
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return;
-        }                
+    // Update last used date
+    String sql = "UPDATE exams SET lastUsed = ? WHERE examID = ?";
+    try (Connection conn = DriverManager.getConnection(DB_URL);
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, date);
+        pstmt.setInt(2, examID);
+        pstmt.executeUpdate();
+    }
+    
+    Document document = new Document();
+    try {
+        PdfWriter.getInstance(document, new FileOutputStream(filePath));
+        document.open();
         
-        Document document = new Document();
-        try {
-            PdfWriter.getInstance(document, new FileOutputStream("Exam1.pdf"));
-            document.open();
-            document.add(new Paragraph("Exam ID: " + Integer.toString(examID)));
-            document.add(new Paragraph("Exam Title: " + rs2.getString("examTitle")));
-            document.add(new Paragraph("Course: " + rs2.getString("course")));
-            document.add(new Paragraph("Number of Questions : " + Integer.toString(rs2.getInt("numQuestions"))));
+        // Add exam header
+        document.add(new Paragraph("Exam ID: " + examID, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
+        document.add(new Paragraph("Exam Title: " + rs2.getString("examTitle"), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
+        document.add(new Paragraph("Course: " + rs2.getString("course")));
+        document.add(new Paragraph("Number of Questions: " + rs2.getInt("numQuestions")));
+        document.add(new Paragraph("\n"));
 
-            while (rs != null && rs.next())
-            {
-                ResultSet question = questionController.getQuestion(rs.getInt("questionID"));   
-                List<String> li = new ArrayList<>();
-                li.add(question.getString("correctAnswer"));
-                li.add(question.getString("wrongAnswer1"));
-                li.add(question.getString("wrongAnswer2"));
-                li.add(question.getString("wrongAnswer3"));
-                Collections.shuffle(li);              
+        // Add questions
+        while (rs != null && rs.next()) {
+            ResultSet question = questionController.getQuestion(rs.getInt("questionID"));   
+            List<String> li = new ArrayList<>();
+            li.add(question.getString("correctAnswer"));
+            li.add(question.getString("wrongAnswer1"));
+            li.add(question.getString("wrongAnswer2"));
+            li.add(question.getString("wrongAnswer3"));
+            Collections.shuffle(li);              
 
-                document.add(new Paragraph("\n"+Integer.toString(autoNum) + ". " + question.getString("question") + "\nA: " + li.get(0) + "\nB: " + li.get(1) + "\nC: " + li.get(2) + "\nD: " + li.get(3) +"\n"));
-                autoNum++;
-            }
+            // Format question
+            Paragraph questionPara = new Paragraph();
+            questionPara.add(new Chunk(autoNum + ". ", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+            questionPara.add(question.getString("question"));
+            document.add(questionPara);
             
-            document.add(new Paragraph("\nEnd of Exam!"));
-            document.close();
-        } catch (DocumentException | IOException e) {
-            e.printStackTrace();
+            // Format answers
+            document.add(new Paragraph("A. " + li.get(0)));
+            document.add(new Paragraph("B. " + li.get(1)));
+            document.add(new Paragraph("C. " + li.get(2)));
+            document.add(new Paragraph("D. " + li.get(3)));
+            document.add(new Paragraph("\n"));
+            
+            autoNum++;
         }
+        
+        document.add(new Paragraph("End of Exam", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+    } finally {
+        if (document != null && document.isOpen()) {
+            document.close();
+        }
+    }
     }
 
 }
