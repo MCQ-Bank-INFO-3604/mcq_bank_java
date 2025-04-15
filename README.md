@@ -30,6 +30,20 @@ This project is a Java-based desktop application designed to store multiple-choi
    git clone <repository-url>
    cd mcq_bank_java/demo
 
+2. **Build the Project:**
+   Use Maven to build the project:
+   ```mvn clean install
+
+3. **Run the Application:**
+   You can run the application by executing the App class:
+   ```mvn exec:java -Dexec.mainClass="com.example.App"
+
+4. **Run Tests:**
+   Execute the unit and integration tests using Maven:
+   ```mvn test
+
+
+
 ---
 
 ## Testing
@@ -39,3 +53,26 @@ Questions: Tests for creating, deleting, and managing questions.
 Exams: Tests for creating, deleting, and managing exams.
 Courses: Tests for creating, deleting, and managing courses.
 Test files are located in the src/test/java/com/example directory.
+
+---
+
+## Dependencies
+The project uses the following dependencies:
+
+JUnit: For unit and integration testing.
+SQLite JDBC: For database connectivity.
+FlatLaf: For UI styling.
+iTextPDF: For generating PDF reports.
+Dependencies are managed via Maven. See the pom.xml file for details.
+
+---
+
+## Database
+The application uses an SQLite database (mcq_bank.db) with the following tables:
+
+questions
+exams
+courses
+topics
+subtopics
+Ensure the database file is accessible in the project directory.
