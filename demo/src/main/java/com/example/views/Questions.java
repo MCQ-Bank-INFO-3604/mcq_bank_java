@@ -27,6 +27,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -1005,6 +1006,7 @@ public class Questions extends javax.swing.JPanel {
     private void searchTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTFActionPerformed
         // TODO add your handling code here:
         String sqlQuery = buildQuestionQuery();
+        System.out.println("SQL Query: " + sqlQuery);
         ResultSet filteredResults = qController.getQuestionsWithFilter(sqlQuery);
         populateResultsPanel(filteredResults);
     }//GEN-LAST:event_searchTFActionPerformed
@@ -1370,8 +1372,12 @@ public class Questions extends javax.swing.JPanel {
         
         // Apply search text
         String searchText = searchTF.getText().trim();
-        if (!searchText.isEmpty()) {
-            sql.append(" AND question LIKE '%").append(searchText).append("%'");
+        if (searchText != null && !searchText.isEmpty() && !searchText.equals("Search Here")) {
+            sql.append(" AND (question LIKE '%").append(searchText).append("%'")
+               .append(" OR correctAnswer LIKE '%").append(searchText).append("%'")
+               .append(" OR wrongAnswer1 LIKE '%").append(searchText).append("%'")
+               .append(" OR wrongAnswer2 LIKE '%").append(searchText).append("%'")
+               .append(" OR wrongAnswer3 LIKE '%").append(searchText).append("%')");
         }
         
         // Apply sorting

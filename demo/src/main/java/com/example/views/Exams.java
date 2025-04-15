@@ -1095,7 +1095,6 @@ public class Exams extends javax.swing.JPanel {
     private void qSearchTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qSearchTFActionPerformed
         // TODO add your handling code here:
         String sqlQuery = buildQuestionQuery();
-        System.out.println(sqlQuery);
         ResultSet examQuestions = eController.getQuestionsFromExam(currentExamId);
         populateMListPanels(examQuestions, sqlQuery);
     }//GEN-LAST:event_qSearchTFActionPerformed
@@ -1316,13 +1315,14 @@ public class Exams extends javax.swing.JPanel {
 
         // Handle course filter
         String selectedCourse = (String) bCourseComboBox.getSelectedItem();
-        if (selectedCourse != null && !selectedCourse.equals("--All--")) {
-            sqlQuery.append(" AND course = '").append(selectedCourse).append("'");
+        if (selectedCourse != null && !selectedCourse.isEmpty() && !selectedCourse.equals("--All--")) {
+            Integer courseID = courseCodeToIDMap.get(selectedCourse);
+            sqlQuery.append(" AND course = '").append(courseID).append("'");
         }
 
         // Handle search term
         String searchTerm = bSearchTF.getText().trim();
-        if (!searchTerm.isEmpty()) {
+        if (searchTerm != null && !searchTerm.isEmpty() && !searchTerm.equals("Search Here")) {
             sqlQuery.append(" AND examTitle LIKE '%").append(searchTerm).append("%'");
         }
 
@@ -1338,6 +1338,7 @@ public class Exams extends javax.swing.JPanel {
             default -> sqlQuery.append(" ORDER BY examID ASC");
         }
 
+        System.out.println(sqlQuery.toString());
         return sqlQuery.toString();
     }
 
@@ -1381,8 +1382,10 @@ public class Exams extends javax.swing.JPanel {
 
         // Handle topic filter
         String selectedTopic = (String) mTopicComboBox.getSelectedItem();
+        System.out.println("Selected Topic: " + selectedTopic);
         if (selectedTopic != null && !selectedTopic.equals("--All--")) {
             Integer topicID = topicNameToIDMap.get(selectedTopic);
+            System.out.println("Topic ID: " + topicID);
             sqlQuery.append(" AND topic = '").append(topicID).append("'");
         }
 
@@ -1395,7 +1398,7 @@ public class Exams extends javax.swing.JPanel {
 
         // Handle search term
         String searchTerm = qSearchTF.getText().trim();
-        if (!searchTerm.isEmpty()) {
+        if (searchTerm != null && !searchTerm.isEmpty() && !searchTerm.equals("Search Here")) {
             sqlQuery.append(" AND question LIKE '%").append(searchTerm).append("%'");
         }
 
@@ -1416,6 +1419,7 @@ public class Exams extends javax.swing.JPanel {
             default -> sqlQuery.append(" ORDER BY questionID"); // Default sorting
         }
         
+        System.out.println(sqlQuery.toString());
         return sqlQuery.toString();
     }
 
@@ -1604,6 +1608,10 @@ public class Exams extends javax.swing.JPanel {
         mAddedPanel.removeAll();
         mAddedPanel.setLayout(new BoxLayout(mAddedPanel, BoxLayout.Y_AXIS));
         
+        // Clear answers panel
+        ansListPanel.removeAll();
+        ansListPanel.setLayout(new BoxLayout(ansListPanel, BoxLayout.Y_AXIS));
+    
         // Reset highlighted panel
         lastHighlightedPanel = null;
     
@@ -1627,80 +1635,14 @@ public class Exams extends javax.swing.JPanel {
                 JPanel questionPanel = new JPanel(new BorderLayout());
                 questionPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
                 questionPanel.putClientProperty("questionId", questionId);
-                questionPanel.setOpaque(true);
+                questionPanel.setOpaque(true); // Required for background color to show
     
                 // Add question text as a label
                 JLabel questionLabel = new JLabel(questionText);
                 questionPanel.add(questionLabel, BorderLayout.CENTER);
     
-                // Create add button (initially hidden)
-                JButton addButton = new JButton("+ Add");
-                addButton.putClientProperty("questionId", questionId);
-                addButton.setVisible(false);
-                
-                // Style the button to be less intrusive
-                addButton.setMargin(new Insets(0, 5, 0, 5));
-                addButton.setContentAreaFilled(false);
-                addButton.setBorderPainted(false);
-                addButton.setOpaque(false);
-                addButton.setForeground(new Color(0, 100, 0)); // Dark green
-                
-                // Add button action
-                addButton.addActionListener(e -> {
-                    try {
-                        eController.addQuestionToExam(currentExamId, questionId);
-                        // Refresh the panels after addition
-                        ResultSet updatedExamQuestions = eController.getQuestionsFromExam(currentExamId);
-                        populateMListPanels(updatedExamQuestions, allQuestionsQuery);
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(Exams.this, 
-                            "Error adding question", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                });
-
-                // Add this to your button's mouse listener
-                addButton.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        addButton.setVisible(true);
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        // Check if mouse left both button and panel
-                        if (!questionPanel.getBounds().contains(e.getPoint())) {
-                            addButton.setVisible(false);
-                            questionPanel.revalidate();
-                            questionPanel.repaint();
-                        }
-                    }
-                });
-                
-                // Add button to panel (hidden by default)
-                questionPanel.add(addButton, BorderLayout.EAST);
-    
-                // Add hover effect to show/hide button
-                questionPanel.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        addButton.setVisible(true);
-                        questionPanel.revalidate();
-                        questionPanel.repaint();
-                    }
-    
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        // Only hide if mouse isn't over the button
-                        if (!addButton.getBounds().contains(e.getPoint())) {
-                            addButton.setVisible(false);
-                            questionPanel.revalidate();
-                            questionPanel.repaint();
-                        }
-                    }
-                });
-    
-                // Add click behavior for showing answers
+                // Make the panel clickable
+                questionPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 questionPanel.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -1711,7 +1653,7 @@ public class Exams extends javax.swing.JPanel {
                         }
                         
                         // Highlight the clicked panel
-                        questionPanel.setBackground(new Color(173, 216, 230));
+                        questionPanel.setBackground(new Color(173, 216, 230)); // Light blue color
                         lastHighlightedPanel = questionPanel;
                         
                         // Show answers
@@ -1721,7 +1663,7 @@ public class Exams extends javax.swing.JPanel {
     
                 // Add to appropriate panel based on whether it's in the exam
                 if (examQuestionIds.contains(questionId)) {
-                    // For questions already in exam, show remove button
+                    // Create Remove button for questions already in exam
                     JButton removeButton = new JButton("Remove");
                     removeButton.putClientProperty("questionId", questionId);
                     
@@ -1733,26 +1675,38 @@ public class Exams extends javax.swing.JPanel {
                             populateMListPanels(updatedExamQuestions, allQuestionsQuery);
                         } catch (SQLException ex) {
                             ex.printStackTrace();
-                            JOptionPane.showMessageDialog(Exams.this, 
-                                "Error removing question", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(Exams.this, "Error removing question", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     });
                     
-                    questionPanel.removeAll();
-                    questionPanel.add(questionLabel, BorderLayout.CENTER);
                     questionPanel.add(removeButton, BorderLayout.EAST);
                     mAddedPanel.add(questionPanel);
                     mAddedPanel.add(Box.createRigidArea(new Dimension(0, 5)));
                 } else {
-                    // For questions not in exam, add to main panel with hover button
+                    // Create Add button for questions not in exam
+                    JButton addButton = new JButton("Add");
+                    addButton.putClientProperty("questionId", questionId);
+                    
+                    addButton.addActionListener(e -> {
+                        try {
+                            eController.addQuestionToExam(currentExamId, questionId);
+                            // Refresh the panels after addition
+                            ResultSet updatedExamQuestions = eController.getQuestionsFromExam(currentExamId);
+                            populateMListPanels(updatedExamQuestions, allQuestionsQuery);
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                            JOptionPane.showMessageDialog(Exams.this, "Error adding question", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    });
+                    
+                    questionPanel.add(addButton, BorderLayout.EAST);
                     qResultsPanel.add(questionPanel);
                     qResultsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, 
-                "Error loading questions", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading questions", "Error", JOptionPane.ERROR_MESSAGE);
         }
     
         qResultsPanel.add(Box.createVerticalGlue());
@@ -1763,6 +1717,7 @@ public class Exams extends javax.swing.JPanel {
         mAddedPanel.revalidate();
         mAddedPanel.repaint();
     }
+
 
     private void showQuestionAnswers(int questionId, String questionText) {
         ansListPanel.removeAll();
