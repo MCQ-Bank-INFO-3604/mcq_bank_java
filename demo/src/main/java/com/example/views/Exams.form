@@ -99,7 +99,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="questionsPanel" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mOrganizePanel" max="-2" attributes="0"/>
+                              <Component id="mOrganizePanel" min="-2" pref="379" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -360,7 +360,7 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <EmptySpace min="0" pref="359" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="393" max="32767" attributes="0"/>
                           </Group>
                         </DimensionLayout>
                         <DimensionLayout dim="1">
@@ -394,14 +394,16 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
+                              <Group type="102" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="mSubtopicPanel" alignment="0" max="32767" attributes="0"/>
                                       <Component id="mCoursePanel" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="mDifficultyPanel" alignment="0" max="32767" attributes="0"/>
                                       <Component id="mUsedPanel" alignment="0" max="32767" attributes="0"/>
                                       <Component id="mTopicPanel" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="mDifficultyPanel" max="32767" attributes="0"/>
+                                      <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="jPanel2" alignment="0" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
@@ -415,12 +417,16 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="mDifficultyPanel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="mCoursePanel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="mTopicPanel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="mSubtopicPanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="7" max="32767" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -483,42 +489,40 @@
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="mDiffEasyCB" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="mDiffHardCB" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="mDiffMedCB" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                          <Component id="jSpinner2" pref="120" max="32767" attributes="0"/>
+                                          <Component id="jSpinner1" max="32767" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="mDiffEasyCB" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mDiffMedCB" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jSpinner1" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mDiffHardCB" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jSpinner2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
                           </Layout>
                           <SubComponents>
-                            <Component class="javax.swing.JCheckBox" name="mDiffEasyCB">
+                            <Component class="javax.swing.JSpinner" name="jSpinner1">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="Easy"/>
+                                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                                  <SpinnerModel initial="0.0" maximum="1.0" minimum="0.0" numberType="java.lang.Float" stepSize="0.01" type="number"/>
+                                </Property>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JCheckBox" name="mDiffMedCB">
+                            <Component class="javax.swing.JSpinner" name="jSpinner2">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="Medium"/>
-                              </Properties>
-                            </Component>
-                            <Component class="javax.swing.JCheckBox" name="mDiffHardCB">
-                              <Properties>
-                                <Property name="text" type="java.lang.String" value="Hard"/>
+                                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                                  <SpinnerModel initial="1.0" maximum="1.0" minimum="0.0" numberType="java.lang.Float" stepSize="0.01" type="number"/>
+                                </Property>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -631,7 +635,7 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mSubtopicComboBox" max="32767" attributes="0"/>
+                                      <Component id="mSubtopicComboBox" pref="333" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -664,11 +668,113 @@
                             </Component>
                           </SubComponents>
                         </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel1">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Performance"/>
+                              </Border>
+                            </Property>
+                          </Properties>
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                          <Component id="jSpinner4" pref="120" max="32767" attributes="0"/>
+                                          <Component id="jSpinner3" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jSpinner3" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jSpinner4" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Component class="javax.swing.JSpinner" name="jSpinner3">
+                              <Properties>
+                                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                                  <SpinnerModel initial="0.0" maximum="1.0" minimum="0.0" numberType="java.lang.Float" stepSize="0.01" type="number"/>
+                                </Property>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JSpinner" name="jSpinner4">
+                              <Properties>
+                                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                                  <SpinnerModel initial="1.0" maximum="1.0" minimum="0.0" numberType="java.lang.Float" stepSize="0.01" type="number"/>
+                                </Property>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel2">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Discrimination"/>
+                              </Border>
+                            </Property>
+                          </Properties>
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                          <Component id="jSpinner6" pref="120" max="32767" attributes="0"/>
+                                          <Component id="jSpinner5" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jSpinner5" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jSpinner6" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Component class="javax.swing.JSpinner" name="jSpinner5">
+                              <Properties>
+                                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                                  <SpinnerModel initial="0.0" maximum="1.0" minimum="0.0" numberType="java.lang.Float" stepSize="0.01" type="number"/>
+                                </Property>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JSpinner" name="jSpinner6">
+                              <Properties>
+                                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                                  <SpinnerModel initial="1.0" maximum="1.0" minimum="0.0" numberType="java.lang.Float" stepSize="0.01" type="number"/>
+                                </Property>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
                       </SubComponents>
                     </Container>
                   </SubComponents>
                 </Container>
-                <Container class="javax.swing.JPanel" name="mSortTab">
+                <Container class="javax.swing.JScrollPane" name="jScrollPane1">
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                       <JTabbedPaneConstraints tabName="Sort">
@@ -677,148 +783,207 @@
                     </Constraint>
                   </Constraints>
 
-                  <Layout>
-                    <DimensionLayout dim="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="mSortRB1" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mSortRB2" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mSortRB3" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mSortRB4" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mSortRB5" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mSortRB6" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mSortRB7" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mSortRB8" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mSortRB9" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mSortRB10" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mSortRB11" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace pref="231" max="32767" attributes="0"/>
-                          </Group>
-                      </Group>
-                    </DimensionLayout>
-                    <DimensionLayout dim="1">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB2" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB3" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB4" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB5" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB6" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB7" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB8" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB9" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB10" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mSortRB11" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="83" max="32767" attributes="0"/>
-                          </Group>
-                      </Group>
-                    </DimensionLayout>
-                  </Layout>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB1">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="selected" type="boolean" value="true"/>
-                        <Property name="text" type="java.lang.String" value="Default"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB2">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Images First"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB3">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Text First"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB4">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Last Used (Oldest First)"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB5">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Last Used (Newest First)"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB6">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Date Created (Oldest First)"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB7">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Date Created (Newest First)"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB8">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Times Used (Least First)"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB9">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Times Used (Most First)"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB10">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Difficulty (Easy First)"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="mSortRB11">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="mButtonGroup"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Difficulty (Hard First)"/>
-                      </Properties>
-                    </Component>
+                    <Container class="javax.swing.JPanel" name="mSortTab">
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="mSortRB1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="mSortRB2" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="mSortRB3" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="mSortRB9" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="mSortRB10" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="mSortRB11" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="mSortRB4" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="mSortRB5" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="mSortRB6" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="mSortRB7" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="mSortRB8" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jRadioButton2" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="32767" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="jRadioButton1" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jRadioButton3" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jRadioButton4" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB1" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB2" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB3" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB4" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB5" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB6" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB7" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB8" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB9" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB10" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mSortRB11" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jRadioButton1" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jRadioButton2" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jRadioButton3" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jRadioButton4" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB1">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="selected" type="boolean" value="true"/>
+                            <Property name="text" type="java.lang.String" value="Default"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB2">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Images First"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB3">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Text First"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB4">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Last Used (Oldest First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB5">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Last Used (Newest First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB6">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Date Created (Oldest First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB7">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Date Created (Newest First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB8">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Times Used (Least First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB9">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Times Used (Most First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB10">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Difficulty (Easy First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="mSortRB11">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Difficulty (Hard First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="jRadioButton1">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Performance (Lowest First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="jRadioButton2">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Performance (Highest First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="jRadioButton3">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Discrimination (Lowest First)"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="jRadioButton4">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="mButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Discrimination (Highest First)"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
                   </SubComponents>
                 </Container>
                 <Container class="javax.swing.JScrollPane" name="mAddedScrollTab">
@@ -890,7 +1055,7 @@
                                       <Component id="mExamCourseComboBox" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace pref="141" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -922,7 +1087,7 @@
                                   <Component id="mExamCourseLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="mExamCourseComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="240" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1145,12 +1310,11 @@
                           <Layout>
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="bAdminPanel" alignment="0" max="32767" attributes="0"/>
                                           <Component id="bCoursePanel" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="bGradedPanel" alignment="0" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -1161,8 +1325,6 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="bAdminPanel" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="bGradedPanel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="bCoursePanel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -1188,7 +1350,7 @@
                                               <Component id="bAdminYesCB" alignment="0" min="-2" max="-2" attributes="0"/>
                                               <Component id="bAdminNoCB" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                          <EmptySpace min="0" pref="158" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1210,51 +1372,6 @@
                                   </Properties>
                                 </Component>
                                 <Component class="javax.swing.JCheckBox" name="bAdminNoCB">
-                                  <Properties>
-                                    <Property name="text" type="java.lang.String" value="No"/>
-                                  </Properties>
-                                </Component>
-                              </SubComponents>
-                            </Container>
-                            <Container class="javax.swing.JPanel" name="bGradedPanel">
-                              <Properties>
-                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                                    <TitledBorder title="Graded"/>
-                                  </Border>
-                                </Property>
-                              </Properties>
-
-                              <Layout>
-                                <DimensionLayout dim="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="bGradedYesCB" alignment="0" min="-2" max="-2" attributes="0"/>
-                                              <Component id="bGradedNoCB" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                                </DimensionLayout>
-                                <DimensionLayout dim="1">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="bGradedYesCB" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="bGradedNoCB" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="32767" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                                </DimensionLayout>
-                              </Layout>
-                              <SubComponents>
-                                <Component class="javax.swing.JCheckBox" name="bGradedYesCB">
-                                  <Properties>
-                                    <Property name="text" type="java.lang.String" value="Yes"/>
-                                  </Properties>
-                                </Component>
-                                <Component class="javax.swing.JCheckBox" name="bGradedNoCB">
                                   <Properties>
                                     <Property name="text" type="java.lang.String" value="No"/>
                                   </Properties>
@@ -1408,7 +1525,7 @@
                             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                               <ComponentRef name="bButtonGroup"/>
                             </Property>
-                            <Property name="text" type="java.lang.String" value="Performance (Lowest First)"/>
+                            <Property name="text" type="java.lang.String" value="Date Edited (Oldest First)"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JRadioButton" name="bSortRB7">
@@ -1416,7 +1533,7 @@
                             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                               <ComponentRef name="bButtonGroup"/>
                             </Property>
-                            <Property name="text" type="java.lang.String" value="Performance (Highest First)"/>
+                            <Property name="text" type="java.lang.String" value="Date Edited (Newest First)"/>
                           </Properties>
                         </Component>
                       </SubComponents>

@@ -41,7 +41,7 @@ public class App {
         System.out.println("Inserts questions from CSV: ");
         csvImporter.importQuestionsFromCSV(qFilename);
 
-        examController.insertExam("Test Exam",0, 1, 0.0f);
+        examController.insertExam("Test Exam", 1, null);
 
         examController.addQuestionToExam(1,1);
         examController.addQuestionToExam(1,2);

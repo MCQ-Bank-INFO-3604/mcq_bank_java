@@ -26,21 +26,23 @@ public class ExamController {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
     private QuestionController questionController = new QuestionController();
 
-    public void insertExam(String examTitle, int numQuestions, Integer course, Float performance) {
-        String sql = "INSERT INTO exams (examTitle, numQuestions, course, performance, dateCreated, lastEdited) VALUES (?, ?, ?, ?, ?, ?);";
+    public Boolean insertExam(String examTitle, Integer course, String dateAdministered) {
+        String sql = "INSERT INTO exams (examTitle, numQuestions, course, dateCreated, lastEdited, lastUsed) VALUES (?, ?, ?, ?, ?, ?);";
         
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, examTitle);
-            pstmt.setInt(2, numQuestions);
+            pstmt.setInt(2, 0);
             pstmt.setInt(3, course);
-            pstmt.setFloat(4, performance);
+            pstmt.setString(4, date);
             pstmt.setString(5, date);
-            pstmt.setString(6, date);
+            pstmt.setString(6, dateAdministered);
             pstmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -162,18 +164,17 @@ public class ExamController {
         }
     }
 
-    public boolean editExam(int examID, String newTitle, String newCourse, Float newPerformance, String newLastUsed) throws SQLException {
-        String sql = "UPDATE exams SET examTitle = ?, course = ?, performance = ?, lastUsed = ?, lastEdited = ? WHERE examID = ?";
+    public boolean editExam(int examID, String newTitle, Integer newCourse, String newLastUsed) throws SQLException {
+        String sql = "UPDATE exams SET examTitle = ?, course = ?, lastUsed = ?, lastEdited = ? WHERE examID = ?";
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, newTitle);
-            pstmt.setString(2, newCourse);
-            pstmt.setFloat(3, newPerformance);
-            pstmt.setString(4, newLastUsed);
-            pstmt.setString(5, date);
-            pstmt.setInt(6, examID);
+            pstmt.setInt(2, newCourse);
+            pstmt.setString(3, newLastUsed);
+            pstmt.setString(4, date);
+            pstmt.setInt(5, examID);
             pstmt.executeUpdate();
         }
 
@@ -218,8 +219,12 @@ public class ExamController {
                 }
 
                 // Update the question's lastUsed if it has changed
-                if (!newerLastUsed.equals(questionLastUsed)) {
+                if (newerLastUsed != null && !newerLastUsed.isEmpty()) {
+                    // If the newerLastUsed is not null or empty, update the question's lastUsed
                     updateQuestionLastUsed(questionID, newerLastUsed);
+                } else {
+                    // If both are null or empty, set it to null
+                    newerLastUsed = null;
                 }
             }
         }

@@ -158,15 +158,20 @@ public class Questions extends javax.swing.JPanel {
         bUsedYesCB = new javax.swing.JCheckBox();
         bUsedNoCB = new javax.swing.JCheckBox();
         bDifficultyPanel = new javax.swing.JPanel();
-        bDiffEasyCb = new javax.swing.JCheckBox();
-        bDiffMedCB = new javax.swing.JCheckBox();
-        bDiffHardCB = new javax.swing.JCheckBox();
+        jSpinner1 = new javax.swing.JSpinner();
+        jSpinner2 = new javax.swing.JSpinner();
         bCoursePanel = new javax.swing.JPanel();
         bCourseComboBox = new javax.swing.JComboBox<>();
         bTopicPanel = new javax.swing.JPanel();
         bTopicComboBox = new javax.swing.JComboBox<>();
         bSubtopicPanel = new javax.swing.JPanel();
         bSubtopicComboBox = new javax.swing.JComboBox<>();
+        jPanel1 = new javax.swing.JPanel();
+        jSpinner3 = new javax.swing.JSpinner();
+        jSpinner4 = new javax.swing.JSpinner();
+        jPanel2 = new javax.swing.JPanel();
+        jSpinner5 = new javax.swing.JSpinner();
+        jSpinner6 = new javax.swing.JSpinner();
         bSortTab = new javax.swing.JPanel();
         sortRB1 = new javax.swing.JRadioButton();
         sortRB2 = new javax.swing.JRadioButton();
@@ -179,6 +184,10 @@ public class Questions extends javax.swing.JPanel {
         sortRB9 = new javax.swing.JRadioButton();
         sortRB10 = new javax.swing.JRadioButton();
         sortRB11 = new javax.swing.JRadioButton();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jRadioButton2 = new javax.swing.JRadioButton();
+        jRadioButton3 = new javax.swing.JRadioButton();
+        jRadioButton4 = new javax.swing.JRadioButton();
         searchPanel = new javax.swing.JPanel();
         searchTF = new javax.swing.JTextField();
         searchButton = new javax.swing.JButton();
@@ -763,32 +772,29 @@ public class Questions extends javax.swing.JPanel {
 
         bDifficultyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Difficulty"));
 
-        bDiffEasyCb.setText("Easy");
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
 
-        bDiffMedCB.setText("Medium");
-
-        bDiffHardCB.setText("Hard");
+        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
 
         javax.swing.GroupLayout bDifficultyPanelLayout = new javax.swing.GroupLayout(bDifficultyPanel);
         bDifficultyPanel.setLayout(bDifficultyPanelLayout);
         bDifficultyPanelLayout.setHorizontalGroup(
             bDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bDifficultyPanelLayout.createSequentialGroup()
-                .addGroup(bDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bDiffEasyCb)
-                    .addComponent(bDiffMedCB)
-                    .addComponent(bDiffHardCB))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bDifficultyPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(bDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSpinner2)
+                    .addComponent(jSpinner1))
+                .addContainerGap())
         );
         bDifficultyPanelLayout.setVerticalGroup(
             bDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bDifficultyPanelLayout.createSequentialGroup()
-                .addComponent(bDiffEasyCb)
+                .addContainerGap()
+                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bDiffMedCB)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bDiffHardCB)
-                .addGap(0, 6, Short.MAX_VALUE))
+                .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         bCoursePanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Course"));
@@ -799,7 +805,7 @@ public class Questions extends javax.swing.JPanel {
         bCoursePanel.setLayout(bCoursePanelLayout);
         bCoursePanelLayout.setHorizontalGroup(
             bCoursePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bCoursePanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bCoursePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(bCourseComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -843,7 +849,7 @@ public class Questions extends javax.swing.JPanel {
             bSubtopicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bSubtopicPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(bSubtopicComboBox, 0, 161, Short.MAX_VALUE)
+                .addComponent(bSubtopicComboBox, 0, 152, Short.MAX_VALUE)
                 .addContainerGap())
         );
         bSubtopicPanelLayout.setVerticalGroup(
@@ -854,6 +860,60 @@ public class Questions extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Performance"));
+
+        jSpinner3.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jSpinner4.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSpinner3)
+                    .addComponent(jSpinner4))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Discrimination"));
+
+        jSpinner5.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jSpinner6.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSpinner6)
+                    .addComponent(jSpinner5))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout bFilterPanelLayout = new javax.swing.GroupLayout(bFilterPanel);
         bFilterPanel.setLayout(bFilterPanelLayout);
         bFilterPanelLayout.setHorizontalGroup(
@@ -861,11 +921,13 @@ public class Questions extends javax.swing.JPanel {
             .addGroup(bFilterPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(bFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bSubtopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bCoursePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bDifficultyPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bUsedPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bTopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(bSubtopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bTopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bCoursePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bDifficultyPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         bFilterPanelLayout.setVerticalGroup(
@@ -876,12 +938,16 @@ public class Questions extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bDifficultyPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bCoursePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bTopicPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bSubtopicPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         bFilterScrollTab.setViewportView(bFilterPanel);
@@ -922,6 +988,18 @@ public class Questions extends javax.swing.JPanel {
         sortButtonGroup.add(sortRB11);
         sortRB11.setText("Difficulty (Hard First)");
 
+        sortButtonGroup.add(jRadioButton1);
+        jRadioButton1.setText("Performance (Lowest First)");
+
+        sortButtonGroup.add(jRadioButton2);
+        jRadioButton2.setText("Performance (Highest First)");
+
+        sortButtonGroup.add(jRadioButton3);
+        jRadioButton3.setText("Discrimination (Lowest First)");
+
+        sortButtonGroup.add(jRadioButton4);
+        jRadioButton4.setText("Discrimination (Highest First)");
+
         javax.swing.GroupLayout bSortTabLayout = new javax.swing.GroupLayout(bSortTab);
         bSortTab.setLayout(bSortTabLayout);
         bSortTabLayout.setHorizontalGroup(
@@ -939,8 +1017,12 @@ public class Questions extends javax.swing.JPanel {
                     .addComponent(sortRB8)
                     .addComponent(sortRB9)
                     .addComponent(sortRB10)
-                    .addComponent(sortRB11))
-                .addContainerGap(13, Short.MAX_VALUE))
+                    .addComponent(sortRB11)
+                    .addComponent(jRadioButton1)
+                    .addComponent(jRadioButton2)
+                    .addComponent(jRadioButton3)
+                    .addComponent(jRadioButton4))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         bSortTabLayout.setVerticalGroup(
             bSortTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -967,7 +1049,15 @@ public class Questions extends javax.swing.JPanel {
                 .addComponent(sortRB10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sortRB11)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton4)
+                .addContainerGap(126, Short.MAX_VALUE))
         );
 
         bOrganizeTabbedPane.addTab("Sort", bSortTab);
@@ -1005,11 +1095,11 @@ public class Questions extends javax.swing.JPanel {
         resultsPanel.setLayout(resultsPanelLayout);
         resultsPanelLayout.setHorizontalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 585, Short.MAX_VALUE)
+            .addGap(0, 584, Short.MAX_VALUE)
         );
         resultsPanelLayout.setVerticalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 499, Short.MAX_VALUE)
+            .addGap(0, 535, Short.MAX_VALUE)
         );
 
         resultsScrollPane.setViewportView(resultsPanel);
@@ -1021,7 +1111,7 @@ public class Questions extends javax.swing.JPanel {
             .addGroup(browseTabLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(browseTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+                    .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
                     .addComponent(resultsScrollPane))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bOrganizeTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1032,7 +1122,7 @@ public class Questions extends javax.swing.JPanel {
             .addGroup(browseTabLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(browseTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bOrganizeTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                    .addComponent(bOrganizeTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE)
                     .addGroup(browseTabLayout.createSequentialGroup()
                         .addComponent(searchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1392,22 +1482,32 @@ public class Questions extends javax.swing.JPanel {
             sql.append(" AND timesUsed = 0");
         }
         
-        // Handle multiple difficulty selections
-        ArrayList<String> selectedDifficulties = new ArrayList<>();
-        if (bDiffEasyCb.isSelected()) {
-            selectedDifficulties.add("'Easy'");
+        // Handle range of difficulties
+        Float startDifficulty = (Float) jSpinner1.getValue();
+        Float endDifficulty = (Float) jSpinner2.getValue();
+        if (startDifficulty != null) {
+            sql.append(" AND difficulty >= '").append(startDifficulty).append("'");
         }
-        if (bDiffMedCB.isSelected()) {
-            selectedDifficulties.add("'Medium'");
+        if (endDifficulty != null) {
+            sql.append(" AND difficulty <= '").append(endDifficulty).append("'");
         }
-        if (bDiffHardCB.isSelected()) {
-            selectedDifficulties.add("'Hard'");
+
+        Float startPerformance = (Float) jSpinner3.getValue();
+        Float endPerformance = (Float) jSpinner4.getValue();
+        if (startPerformance != null) {
+            sql.append(" AND performance >= '").append(startPerformance).append("'");
         }
-        
-        if (!selectedDifficulties.isEmpty()) {
-            sql.append(" AND difficulty IN (")
-               .append(String.join(", ", selectedDifficulties))
-               .append(")");
+        if (endPerformance != null) {
+            sql.append(" AND performance <= '").append(endPerformance).append("'");
+        }
+
+        Float startDiscrimination = (Float) jSpinner5.getValue();
+        Float endDiscrimination = (Float) jSpinner6.getValue();
+        if (startDiscrimination != null) {
+            sql.append(" AND discrimination >= '").append(startDiscrimination).append("'");
+        }
+        if (endDiscrimination != null) {
+            sql.append(" AND discrimination <= '").append(endDiscrimination).append("'");
         }
         
         // Handle course filter (skip if "--All--" is selected)
@@ -1452,8 +1552,12 @@ public class Questions extends javax.swing.JPanel {
             case "DateCreatedNewestFirst" -> sql.append(" ORDER BY dateCreated DESC");
             case "TimesUsedLeastFirst" -> sql.append(" ORDER BY timesUsed ASC");
             case "TimesUsedMostFirst" -> sql.append(" ORDER BY timesUsed DESC");
-            case "DifficultyEasyFirst" -> sql.append(" ORDER BY CASE difficulty WHEN 'Easy' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Hard' THEN 3 END");
-            case "DifficultyHardFirst" -> sql.append(" ORDER BY CASE difficulty WHEN 'Hard' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Easy' THEN 3 END");
+            case "DifficultyEasyFirst" -> sql.append(" ORDER BY difficulty ASC");
+            case "DifficultyHardFirst" -> sql.append(" ORDER BY difficulty DESC");
+            case "PerformanceLowestFirst" -> sql.append(" ORDER BY performance ASC");
+            case "PerformanceHighestFirst" -> sql.append(" ORDER BY performance DESC");
+            case "DiscriminationLowestFirst" -> sql.append(" ORDER BY discrimination ASC");
+            case "DiscriminationHighestFirst" -> sql.append(" ORDER BY discrimination DESC");
             default -> sql.append(" ORDER BY questionID"); // Default sorting
         }
         
@@ -1472,6 +1576,10 @@ public class Questions extends javax.swing.JPanel {
         if (sortRB9.isSelected()) return "TimesUsedMostFirst";
         if (sortRB10.isSelected()) return "DifficultyEasyFirst";
         if (sortRB11.isSelected()) return "DifficultyHardFirst";
+        if (jRadioButton1.isSelected()) return "PerformanceLowestFirst";
+        if (jRadioButton2.isSelected()) return "PerformanceHighestFirst";
+        if (jRadioButton3.isSelected()) return "DiscriminationLowestFirst";
+        if (jRadioButton4.isSelected()) return "DiscriminationHighestFirst";
         return "Default"; // Fallback
     }
 
@@ -1861,9 +1969,6 @@ public class Questions extends javax.swing.JPanel {
     private javax.swing.JTextField ansTF4;
     private javax.swing.JComboBox<String> bCourseComboBox;
     private javax.swing.JPanel bCoursePanel;
-    private javax.swing.JCheckBox bDiffEasyCb;
-    private javax.swing.JCheckBox bDiffHardCB;
-    private javax.swing.JCheckBox bDiffMedCB;
     private javax.swing.JPanel bDifficultyPanel;
     private javax.swing.JPanel bFilterPanel;
     private javax.swing.JScrollPane bFilterScrollTab;
@@ -1899,6 +2004,18 @@ public class Questions extends javax.swing.JPanel {
     private javax.swing.JButton helpButton;
     private javax.swing.JPanel historyTagsPanel;
     private javax.swing.JTextField imagePathTF;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JRadioButton jRadioButton3;
+    private javax.swing.JRadioButton jRadioButton4;
+    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JSpinner jSpinner2;
+    private javax.swing.JSpinner jSpinner3;
+    private javax.swing.JSpinner jSpinner4;
+    private javax.swing.JSpinner jSpinner5;
+    private javax.swing.JSpinner jSpinner6;
     private javax.swing.JPanel manageAnswersPanel;
     private javax.swing.JPanel manageControlsPanel;
     private javax.swing.JPanel manageQuestionPanel;
