@@ -11,11 +11,24 @@ import java.util.ArrayList;
 public class SubtopicsController {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";  
 
-    public boolean insertSubtopic(String subtopicName) {
-        String sql = "INSERT INTO subtopics (subtopicName) VALUES (?);";
+    public boolean insertSubtopic(String subtopicName, Integer topicId) {
+        // Check if the subtopic already exists
+        String select = "SELECT subtopicID FROM subtopics WHERE subtopicName = ? AND topicID = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement stmt = conn.prepareStatement(select)) {
+            stmt.setString(1, subtopicName);
+            stmt.setInt(2, topicId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return false; // Subtopic already exists
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        String sql = "INSERT INTO subtopics (subtopicName, topicID) VALUES (?, ?);";
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, subtopicName);
+            pstmt.setInt(2, topicId);
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0; // Return true if the insert was successful
         } catch (SQLException e) {
@@ -23,6 +36,7 @@ public class SubtopicsController {
             return false; // Return false if there was an error
         }
     }
+
     public ArrayList<String> getAllSubtopics() {
         ArrayList<String> subtopics = new ArrayList<>();
         String sql = "SELECT subtopicName FROM subtopics;";
@@ -37,6 +51,7 @@ public class SubtopicsController {
         }
         return subtopics;
     }
+
     public ArrayList<String[]> getAllSubtopicsWithIDs() {
         ArrayList<String[]> subtopics = new ArrayList<>();
         String sql = "SELECT subtopicName, subtopicID FROM subtopics;";
@@ -51,11 +66,12 @@ public class SubtopicsController {
         }
         return subtopics;
     }
-    public boolean deleteSubtopic(String subtopicName) {
-        String sql = "DELETE FROM subtopics WHERE subtopicName = ?;";
+
+    public boolean deleteSubtopic(Integer subtopicId) {
+        String sql = "DELETE FROM subtopics WHERE subtopicID = ?;";
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, subtopicName);
+            pstmt.setInt(1, subtopicId);
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0; // Return true if the delete was successful
         } catch (SQLException e) {
@@ -63,12 +79,13 @@ public class SubtopicsController {
             return false; // Return false if there was an error
         }
     }
-    public boolean updateSubtopic(String oldSubtopicName, String newSubtopicName) {
-        String sql = "UPDATE subtopics SET subtopicName = ? WHERE subtopicName = ?;";
+
+    public boolean updateSubtopic(Integer SubtopicId, String newSubtopicName) {
+        String sql = "UPDATE subtopics SET subtopicName = ? WHERE subtopicID = ?;";
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, newSubtopicName);
-            pstmt.setString(2, oldSubtopicName);
+            pstmt.setInt(2, SubtopicId);
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0; // Return true if the update was successful
         } catch (SQLException e) {
@@ -77,7 +94,7 @@ public class SubtopicsController {
         }
     }
     
-    public ArrayList<String[]> getSubtopicsByTopicID(Integer topicID) {
+    public ArrayList<String[]> getSubtopicsByTopicId(Integer topicID) {
         ArrayList<String[]> subtopics = new ArrayList<>();
         String sql = "SELECT subtopicName, subtopicID FROM subtopics WHERE topicID = ?;";
         try (Connection conn = DriverManager.getConnection(DB_URL);
@@ -92,6 +109,7 @@ public class SubtopicsController {
         }
         return subtopics;
     }
+
     public String getSubtopicName(Integer subtopicID) {
         String sql = "SELECT subtopicName FROM subtopics WHERE subtopicID = ?;";
         try (Connection conn = DriverManager.getConnection(DB_URL);
@@ -105,6 +123,22 @@ public class SubtopicsController {
             e.printStackTrace();
         }
         return null; // Return null if no subtopic found with the given ID
+    }
+
+    public Integer getSubtopicIdByNameAndTopicId(String subtopicName, Integer topicID) {
+        String sql = "SELECT subtopicID FROM subtopics WHERE subtopicName = ? AND topicID = ?;";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, subtopicName);
+            pstmt.setInt(2, topicID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("subtopicID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if no subtopic found with the given name and topic ID
     }
 }
  

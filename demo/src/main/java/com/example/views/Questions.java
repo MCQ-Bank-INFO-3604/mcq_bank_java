@@ -16,7 +16,6 @@ import com.example.controllers.CoursesController;
 import com.example.controllers.QuestionController;
 import com.example.controllers.SubtopicsController;
 import com.example.controllers.TopicsController;
-import java.awt.*;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,8 +33,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingUtilities;
-
-import com.example.controllers.QuestionController;
 
 /**
  *
@@ -1508,8 +1505,8 @@ public class Questions extends javax.swing.JPanel {
                 Integer topicID = rs.getInt("topic");
                 Integer subtopicID = rs.getInt("subTopic");
 
-                String courseCode = cController.getCourseCode(courseID);
-                String topicName = tController.getTopicName(topicID);
+                String courseCode = cController.getCourseCodeById(courseID);
+                String topicName = tController.getTopicNameById(topicID);
                 String subtopicName = sController.getSubtopicName(subtopicID);
                 
                 courseComboBox.setSelectedItem(courseCode);
@@ -1635,7 +1632,7 @@ public class Questions extends javax.swing.JPanel {
             topicDropdown.addItem(DEFAULT_NONE_OPTION);
         }
 
-        ArrayList<String[]> topics = tController.getTopicsByCourse(courseID);
+        ArrayList<String[]> topics = tController.getTopicsByCourseId(courseID);
         for (String[] topic : topics) {
             String topicName = topic[0];
             topicDropdown.addItem(topicName);
@@ -1659,7 +1656,7 @@ public class Questions extends javax.swing.JPanel {
         }
 
         // Fetch subtopics using the topicID
-        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicID(topicID);
+        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicId(topicID);
         for (String[] subtopic : subtopics) {
             String subtopicName = subtopic[0];
             subtopicDropdown.addItem(subtopicName);

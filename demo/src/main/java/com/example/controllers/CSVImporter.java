@@ -37,7 +37,7 @@ public class CSVImporter {
                 int topicID = getOrInsertTopic(conn, topicName, courseID);
                 int subtopicID = getOrInsertSubtopic(conn, subtopicName, topicID);
 
-                System.out.println("Imported: Course=" + courseName + ", Topic=" + topicName + ", Subtopic=" + subtopicName);
+                System.out.println("Imported: Course=" + courseName + " ID: " + courseID + ", Topic=" + topicName + ", Subtopic=" + subtopicName);
             }
 
         } catch (IOException | SQLException e) {

@@ -356,7 +356,7 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
         topicDropdown.removeAllItems();
         topicDropdown.addItem(DEFAULT_ALL_OPTION);
 
-        ArrayList<String[]> topics = tController.getTopicsByCourse(course);
+        ArrayList<String[]> topics = tController.getTopicsByCourseId(course);
         for (String[] topic : topics) {
             String topicName = topic[0];
             topicDropdown.addItem(topicName);
@@ -367,7 +367,7 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
         subtopicDropdown.removeAllItems();
         subtopicDropdown.addItem(DEFAULT_ALL_OPTION);
 
-        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicID(topic);
+        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicId(topic);
         for (String[] subtopic : subtopics) {
             String subtopicName = subtopic[0];
             subtopicDropdown.addItem(subtopicName);

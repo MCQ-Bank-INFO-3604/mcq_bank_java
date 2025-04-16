@@ -18,7 +18,6 @@ import com.example.controllers.TopicsController;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -30,8 +29,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -1502,10 +1499,11 @@ public class Exams extends javax.swing.JPanel {
         topicDropdown.removeAllItems();
         topicDropdown.addItem(DEFAULT_ALL_OPTION);
 
-        ArrayList<String[]> topics = tController.getTopicsByCourse(course);
+        ArrayList<String[]> topics = tController.getTopicsByCourseId(course);
         for (String[] topic : topics) {
             String topicName = topic[0];
             topicDropdown.addItem(topicName);
+            topicNameToIDMap.put(topicName, Integer.parseInt(topic[1])); // Map topicName to topicID
         }
     }
 
@@ -1521,7 +1519,7 @@ public class Exams extends javax.swing.JPanel {
         }
 
         // Fetch subtopics using the topicID
-        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicID(topicID);
+        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicId(topicID);
         for (String[] subtopic : subtopics) {
             String subtopicName = subtopic[0];
             subtopicDropdown.addItem(subtopicName);
