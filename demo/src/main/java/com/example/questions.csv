@@ -1,0 +1,22 @@
+question,correctAnswer,wrong1,wrong2,wrong3,course,topic,subtopic,difficulty,performance,discrimination,hasImage,questionImagePath,correctAnswerImagePath,wrongAnswer1ImagePath,wrongAnswer2ImagePath,wrongAnswer3ImagePath,comment
+What does a variable store in programming?,A value,An operation,A keyword,A condition,1,1,1,0.4,0.6,0.5,false,,,,,,Variables are fundamental.
+Which control structure repeats code?,Loop,If,Switch,Case,1,1,2,0.3,0.7,0.6,false,,,,,,Basic logic control.
+What is inheritance in OOP?,Mechanism to reuse code,Changing data types,Loop structure,Conditional flow,1,2,4,0.5,0.5,0.4,false,,,,,,Used in Java and Python.
+Which data structure uses FIFO?,Queue,Stack,Tree,Graph,2,3,5,0.6,0.8,0.5,false,,,,,,Queue: First In First Out.
+Which sort algorithm is fastest in most cases?,Quick Sort,Bubble Sort,Selection Sort,Insertion Sort,3,5,9,0.8,0.9,0.7,false,,,,,,Depends on data but generally Quick Sort.
+Which function finds a target by halving the list?,Binary Search,Linear Search,DFS,BFS,3,6,11,0.5,0.6,0.5,false,,,,,,Requires sorted input.
+What is the derivative of x²?,2x,x,x²,2x²,4,1,14,0.7,0.8,0.9,false,,,,,,Simple power rule.
+Which integral gives area under a curve?,Definite Integral,Indefinite Integral,Derivative,Limit,4,2,15,0.4,0.6,0.4,false,,,,,,Key concept in Calculus.
+What is a matrix with only 1s and 0s called?,Binary Matrix,Identity Matrix,Symmetric Matrix,Transpose Matrix,5,4,17,0.5,0.7,0.6,false,,,,,,Often used in graphs.
+What motion is parabolic?,Projectile motion,Circular motion,Rotational motion,Linear motion,6,6,19,0.3,0.5,0.5,false,,,,,,Common in physics problems.
+What law relates voltage and current?,Ohm's Law,Faraday’s Law,Newton’s Law,Hubble’s Law,7,8,22,0.4,0.8,0.5,false,,,,,,V = IR.
+Which bond shares electrons?,Covalent Bond,Ionic Bond,Hydrogen Bond,Metallic Bond,9,11,27,0.5,0.5,0.5,false,,,,,,Occurs in molecules like H2O.
+What is the simplest hydrocarbon?,Methane,Ethene,Ethane,Butane,10,12,29,0.3,0.6,0.6,false,,,,,,Formula CH₄.
+Which molecule carries genetic information?,DNA,RNA,Protein,Lipid,11,14,31,0.7,0.9,0.9,false,,,,,,Double-helix structure.
+What process causes species to change over time?,Natural Selection,Genetic Drift,Evolution,Mutation,12,15,34,0.6,0.8,0.7,false,,,,,,Introduced by Darwin.
+Who is the founder of psychoanalysis?,Sigmund Freud,B.F. Skinner,Jean Piaget,Carl Rogers,13,17,37,0.6,0.7,0.5,false,,,,,,Focus on unconscious mind.
+What memory lasts seconds?,Short-Term Memory,Long-Term Memory,Flash Memory,Iconic Memory,14,18,39,0.5,0.6,0.5,false,,,,,,Also called working memory.
+Which sentence contains a thesis statement?,The main idea is stated clearly,There are many paragraphs,This is an outline,I will describe apples,15,20,42,0.3,0.5,0.4,false,,,,,,Important in essay writing.
+Which civilization developed cuneiform?,Mesopotamia,Egypt,Rome,Greece,16,21,44,0.4,0.7,0.6,false,,,,,,One of the earliest scripts.
+What determines price in microeconomics?,Supply and Demand,Inflation,GDP,Interest Rates,17,23,49,0.5,0.5,0.6,false,,,,,,Fundamental concept.
+Which field studies moral theories?,Ethics,Logic,Metaphysics,Epistemology,18,25,52,0.4,0.4,0.3,false,,,,,,Related to right and wrong.

@@ -5,27 +5,32 @@
 package com.example.views;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.event.MouseEvent;
+import java.io.File;
 
+import com.example.controllers.CoursesController;
 import com.example.controllers.ExamController;
 import com.example.controllers.QuestionController;
+import com.example.controllers.SubtopicsController;
+import com.example.controllers.TopicsController;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -34,8 +39,29 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class Exams extends javax.swing.JPanel {
     private ExamController eController = new ExamController();
     private QuestionController qController = new QuestionController();
+    
+    private HashMap<String, Integer> courseCodeToIDMap = new HashMap<>();
+    private CoursesController cController = new CoursesController();
+    
+    private HashMap<String, Integer> topicNameToIDMap = new HashMap<>();
+    private TopicsController tController = new TopicsController();
+    
+    private HashMap<String, Integer> subtopicNameToIDMap = new HashMap<>();
+    private SubtopicsController sController = new SubtopicsController();
+    
     private Integer currentExamId = null;
-    private JPanel lastHighlightedPanel = null; // Class-level variable to track the last highlighted panel
+    private JPanel lastHighlightedPanel = null;
+
+    private static final String DEFAULT_ALL_OPTION = "--All--";
+    private static final Date DEFAULT_DATE;
+
+    static {
+        // Initialize the default date (1970-01-01)
+        Calendar cal = Calendar.getInstance();
+        cal.set(1970, Calendar.JANUARY, 1, 0, 0, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        DEFAULT_DATE = cal.getTime();
+    }
 
     public Exams() {
         initComponents();
@@ -43,8 +69,14 @@ public class Exams extends javax.swing.JPanel {
         // Configure scrolling speed
         JScrollBar verticalScrollBar = qResultsScrollPane.getVerticalScrollBar();
         verticalScrollBar.setUnitIncrement(16); // Set the scroll speed (in pixels) for each click
-
+        
+        JSpinner.DateEditor editor = new JSpinner.DateEditor(mDateAdminSpinner, "dd-MM-yyyy");
+        mDateAdminSpinner.setEditor(editor);
+        mDateAdminSpinner.setValue(DEFAULT_DATE);
+        
         populateDropdowns();
+        setupManageDropdownListeners();
+
 
         populateBResultsPanel(eController.getExamsWithFilter());
     }
@@ -91,15 +123,21 @@ public class Exams extends javax.swing.JPanel {
         mUsedYesCB = new javax.swing.JCheckBox();
         mUsedNoCB = new javax.swing.JCheckBox();
         mDifficultyPanel = new javax.swing.JPanel();
-        mDiffEasyCB = new javax.swing.JCheckBox();
-        mDiffMedCB = new javax.swing.JCheckBox();
-        mDiffHardCB = new javax.swing.JCheckBox();
+        jSpinner1 = new javax.swing.JSpinner();
+        jSpinner2 = new javax.swing.JSpinner();
         mCoursePanel = new javax.swing.JPanel();
         mCourseComboBox = new javax.swing.JComboBox<>();
         mTopicPanel = new javax.swing.JPanel();
         mTopicComboBox = new javax.swing.JComboBox<>();
         mSubtopicPanel = new javax.swing.JPanel();
         mSubtopicComboBox = new javax.swing.JComboBox<>();
+        jPanel1 = new javax.swing.JPanel();
+        jSpinner3 = new javax.swing.JSpinner();
+        jSpinner4 = new javax.swing.JSpinner();
+        jPanel2 = new javax.swing.JPanel();
+        jSpinner5 = new javax.swing.JSpinner();
+        jSpinner6 = new javax.swing.JSpinner();
+        jScrollPane1 = new javax.swing.JScrollPane();
         mSortTab = new javax.swing.JPanel();
         mSortRB1 = new javax.swing.JRadioButton();
         mSortRB2 = new javax.swing.JRadioButton();
@@ -112,6 +150,10 @@ public class Exams extends javax.swing.JPanel {
         mSortRB9 = new javax.swing.JRadioButton();
         mSortRB10 = new javax.swing.JRadioButton();
         mSortRB11 = new javax.swing.JRadioButton();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jRadioButton2 = new javax.swing.JRadioButton();
+        jRadioButton3 = new javax.swing.JRadioButton();
+        jRadioButton4 = new javax.swing.JRadioButton();
         mAddedScrollTab = new javax.swing.JScrollPane();
         mAddedPanel = new javax.swing.JPanel();
         mTagsTab = new javax.swing.JPanel();
@@ -138,9 +180,6 @@ public class Exams extends javax.swing.JPanel {
         bAdminPanel = new javax.swing.JPanel();
         bAdminYesCB = new javax.swing.JCheckBox();
         bAdminNoCB = new javax.swing.JCheckBox();
-        bGradedPanel = new javax.swing.JPanel();
-        bGradedYesCB = new javax.swing.JCheckBox();
-        bGradedNoCB = new javax.swing.JCheckBox();
         bCoursePanel = new javax.swing.JPanel();
         bCourseComboBox = new javax.swing.JComboBox<>();
         bSortTab = new javax.swing.JPanel();
@@ -331,7 +370,7 @@ public class Exams extends javax.swing.JPanel {
         ansListPanel.setLayout(ansListPanelLayout);
         ansListPanelLayout.setHorizontalGroup(
             ansListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 359, Short.MAX_VALUE)
+            .addGap(0, 393, Short.MAX_VALUE)
         );
         ansListPanelLayout.setVerticalGroup(
             ansListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -377,31 +416,28 @@ public class Exams extends javax.swing.JPanel {
 
         mDifficultyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Difficulty"));
 
-        mDiffEasyCB.setText("Easy");
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
 
-        mDiffMedCB.setText("Medium");
-
-        mDiffHardCB.setText("Hard");
+        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
 
         javax.swing.GroupLayout mDifficultyPanelLayout = new javax.swing.GroupLayout(mDifficultyPanel);
         mDifficultyPanel.setLayout(mDifficultyPanelLayout);
         mDifficultyPanelLayout.setHorizontalGroup(
             mDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mDifficultyPanelLayout.createSequentialGroup()
-                .addGroup(mDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mDiffEasyCB)
-                    .addComponent(mDiffHardCB)
-                    .addComponent(mDiffMedCB))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(mDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jSpinner2, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addComponent(jSpinner1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         mDifficultyPanelLayout.setVerticalGroup(
             mDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mDifficultyPanelLayout.createSequentialGroup()
-                .addComponent(mDiffEasyCB)
+                .addContainerGap()
+                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mDiffMedCB)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mDiffHardCB)
+                .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -457,7 +493,7 @@ public class Exams extends javax.swing.JPanel {
             mSubtopicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mSubtopicPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(mSubtopicComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(mSubtopicComboBox, 0, 333, Short.MAX_VALUE)
                 .addContainerGap())
         );
         mSubtopicPanelLayout.setVerticalGroup(
@@ -465,6 +501,60 @@ public class Exams extends javax.swing.JPanel {
             .addGroup(mSubtopicPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(mSubtopicComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Performance"));
+
+        jSpinner3.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jSpinner4.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jSpinner4, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addComponent(jSpinner3))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Discrimination"));
+
+        jSpinner5.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jSpinner6.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jSpinner6, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addComponent(jSpinner5))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -477,9 +567,11 @@ public class Exams extends javax.swing.JPanel {
                 .addGroup(mFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(mSubtopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(mCoursePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(mDifficultyPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(mUsedPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(mTopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(mTopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(mDifficultyPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         mFilterPanelLayout.setVerticalGroup(
@@ -490,12 +582,16 @@ public class Exams extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mDifficultyPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mCoursePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mTopicPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mSubtopicPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(7, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mFilterScrollTab.setViewportView(mFilterPanel);
@@ -536,6 +632,18 @@ public class Exams extends javax.swing.JPanel {
         mButtonGroup.add(mSortRB11);
         mSortRB11.setText("Difficulty (Hard First)");
 
+        mButtonGroup.add(jRadioButton1);
+        jRadioButton1.setText("Performance (Lowest First)");
+
+        mButtonGroup.add(jRadioButton2);
+        jRadioButton2.setText("Performance (Highest First)");
+
+        mButtonGroup.add(jRadioButton3);
+        jRadioButton3.setText("Discrimination (Lowest First)");
+
+        mButtonGroup.add(jRadioButton4);
+        jRadioButton4.setText("Discrimination (Highest First)");
+
         javax.swing.GroupLayout mSortTabLayout = new javax.swing.GroupLayout(mSortTab);
         mSortTab.setLayout(mSortTabLayout);
         mSortTabLayout.setHorizontalGroup(
@@ -543,18 +651,27 @@ public class Exams extends javax.swing.JPanel {
             .addGroup(mSortTabLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(mSortTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mSortRB1)
-                    .addComponent(mSortRB2)
-                    .addComponent(mSortRB3)
-                    .addComponent(mSortRB4)
-                    .addComponent(mSortRB5)
-                    .addComponent(mSortRB6)
-                    .addComponent(mSortRB7)
-                    .addComponent(mSortRB8)
-                    .addComponent(mSortRB9)
-                    .addComponent(mSortRB10)
-                    .addComponent(mSortRB11))
-                .addContainerGap(231, Short.MAX_VALUE))
+                    .addGroup(mSortTabLayout.createSequentialGroup()
+                        .addGroup(mSortTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(mSortRB1)
+                            .addComponent(mSortRB2)
+                            .addComponent(mSortRB3)
+                            .addComponent(mSortRB9)
+                            .addComponent(mSortRB10)
+                            .addComponent(mSortRB11)
+                            .addComponent(mSortRB4)
+                            .addComponent(mSortRB5)
+                            .addComponent(mSortRB6)
+                            .addComponent(mSortRB7)
+                            .addComponent(mSortRB8)
+                            .addComponent(jRadioButton2))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(mSortTabLayout.createSequentialGroup()
+                        .addGroup(mSortTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jRadioButton1)
+                            .addComponent(jRadioButton3)
+                            .addComponent(jRadioButton4))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         mSortTabLayout.setVerticalGroup(
             mSortTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -581,10 +698,20 @@ public class Exams extends javax.swing.JPanel {
                 .addComponent(mSortRB10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mSortRB11)
-                .addContainerGap(83, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton4)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        mOrganizePanel.addTab("Sort", mSortTab);
+        jScrollPane1.setViewportView(mSortTab);
+
+        mOrganizePanel.addTab("Sort", jScrollPane1);
 
         javax.swing.GroupLayout mAddedPanelLayout = new javax.swing.GroupLayout(mAddedPanel);
         mAddedPanel.setLayout(mAddedPanelLayout);
@@ -659,7 +786,7 @@ public class Exams extends javax.swing.JPanel {
                         .addComponent(mExamCourseLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(mExamCourseComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(141, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         mTagsTabLayout.setVerticalGroup(
             mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -684,7 +811,7 @@ public class Exams extends javax.swing.JPanel {
                 .addGroup(mTagsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(mExamCourseLabel)
                     .addComponent(mExamCourseComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(240, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mOrganizePanel.addTab("Exam Tags", mTagsTab);
@@ -701,7 +828,7 @@ public class Exams extends javax.swing.JPanel {
                     .addGroup(manageTabLayout.createSequentialGroup()
                         .addComponent(questionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(mOrganizePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(mOrganizePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         manageTabLayout.setVerticalGroup(
@@ -777,7 +904,7 @@ public class Exams extends javax.swing.JPanel {
                 .addGroup(bAdminPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(bAdminYesCB)
                     .addComponent(bAdminNoCB))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 158, Short.MAX_VALUE))
         );
         bAdminPanelLayout.setVerticalGroup(
             bAdminPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -785,31 +912,6 @@ public class Exams extends javax.swing.JPanel {
                 .addComponent(bAdminYesCB)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bAdminNoCB)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        bGradedPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Graded"));
-
-        bGradedYesCB.setText("Yes");
-
-        bGradedNoCB.setText("No");
-
-        javax.swing.GroupLayout bGradedPanelLayout = new javax.swing.GroupLayout(bGradedPanel);
-        bGradedPanel.setLayout(bGradedPanelLayout);
-        bGradedPanelLayout.setHorizontalGroup(
-            bGradedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bGradedPanelLayout.createSequentialGroup()
-                .addGroup(bGradedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bGradedYesCB)
-                    .addComponent(bGradedNoCB))
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        bGradedPanelLayout.setVerticalGroup(
-            bGradedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bGradedPanelLayout.createSequentialGroup()
-                .addComponent(bGradedYesCB)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bGradedNoCB)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -842,8 +944,7 @@ public class Exams extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(bFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(bAdminPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bCoursePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bGradedPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(bCoursePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         bFilterPanelLayout.setVerticalGroup(
@@ -851,8 +952,6 @@ public class Exams extends javax.swing.JPanel {
             .addGroup(bFilterPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(bAdminPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bGradedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bCoursePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -879,10 +978,10 @@ public class Exams extends javax.swing.JPanel {
         bSortRB5.setText("Date Created (Newest First)");
 
         bButtonGroup.add(bSortRB6);
-        bSortRB6.setText("Performance (Lowest First)");
+        bSortRB6.setText("Date Edited (Oldest First)");
 
         bButtonGroup.add(bSortRB7);
-        bSortRB7.setText("Performance (Highest First)");
+        bSortRB7.setText("Date Edited (Newest First)");
 
         javax.swing.GroupLayout bSortTabLayout = new javax.swing.GroupLayout(bSortTab);
         bSortTab.setLayout(bSortTabLayout);
@@ -988,7 +1087,8 @@ public class Exams extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_genButtonActionPerformed
 
-    private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {                                            
+    private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
+        // TODO add your handling code here:
         if (currentExamId == null) {
             JOptionPane.showMessageDialog(this, 
                 "Please create or select an exam first", 
@@ -999,24 +1099,24 @@ public class Exams extends javax.swing.JPanel {
         try {
             // Ask user for file location
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Save Exam PDF");
-            fileChooser.setSelectedFile(new File("Exam_" + currentExamId + ".pdf"));
-            fileChooser.setFileFilter(new FileNameExtensionFilter("PDF Files", "pdf"));
+            fileChooser.setDialogTitle("Save Exam Document");
+            fileChooser.setSelectedFile(new File("Exam_" + currentExamId + ".docx"));
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Word Documents", "docx"));
             
             int userSelection = fileChooser.showSaveDialog(this);
             
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
                 // Ensure the file has .pdf extension
-                if (!fileToSave.getName().toLowerCase().endsWith(".pdf")) {
-                    fileToSave = new File(fileToSave.getAbsolutePath() + ".pdf");
+                if (!fileToSave.getName().toLowerCase().endsWith(".docx")) {
+                    fileToSave = new File(fileToSave.getAbsolutePath() + ".docx");
                 }
                 
                 // Generate the PDF
-                eController.generateExamPDF(currentExamId, fileToSave.getAbsolutePath());
+                eController.generateExamDocx(currentExamId, fileToSave.getAbsolutePath());
                 
                 JOptionPane.showMessageDialog(this, 
-                    "Exam PDF generated successfully at:\n" + fileToSave.getAbsolutePath(), 
+                    "Exam document generated successfully at:\n" + fileToSave.getAbsolutePath(), 
                     "Success", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (Exception e) {
@@ -1025,7 +1125,7 @@ public class Exams extends javax.swing.JPanel {
                 "Error generating PDF: " + e.getMessage(), 
                 "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
+    }//GEN-LAST:event_exportButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         // TODO add your handling code here:
@@ -1074,7 +1174,6 @@ public class Exams extends javax.swing.JPanel {
     private void qSearchTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qSearchTFActionPerformed
         // TODO add your handling code here:
         String sqlQuery = buildQuestionQuery();
-        System.out.println(sqlQuery);
         ResultSet examQuestions = eController.getQuestionsFromExam(currentExamId);
         populateMListPanels(examQuestions, sqlQuery);
     }//GEN-LAST:event_qSearchTFActionPerformed
@@ -1109,81 +1208,61 @@ public class Exams extends javax.swing.JPanel {
     }//GEN-LAST:event_bSearchButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        // TODO add your handling code here:
-        // Validate required fields
-        if (examTitleTF.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Exam title is required", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    // Get exam title from the text field
+    String examTitle = examTitleTF.getText().trim();
+    if (examTitle.isEmpty() || examTitle.equals("Exam Title")) {
+        JOptionPane.showMessageDialog(this, "Exam title is required", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        // Get exam data from UI components
-        String examTitle = examTitleTF.getText().trim();
-        String course = (String) mCourseComboBox.getSelectedItem();
-        String topic = (String) mTopicComboBox.getSelectedItem();
-        String subTopic = (String) mSubtopicComboBox.getSelectedItem();
+    // Get course ID from the combo box
+    String courseCode = (String) mExamCourseComboBox.getSelectedItem();
+    Integer courseID = courseCodeToIDMap.get(courseCode);
 
-        try {
-            if (currentExamId == null) {
-                // Create new exam - we'll use numQuestions=0 initially since we'll add questions separately
-                eController.insertExam(examTitle, 0, course, topic, subTopic);
-                
-                // Get the ID of the newly created exam
-                ResultSet latestExam = eController.getExamsWithFilter("SELECT * FROM exams ORDER BY examID DESC LIMIT 1");
-                if (latestExam != null && latestExam.next()) {
-                    currentExamId = latestExam.getInt("examID");
-                    JOptionPane.showMessageDialog(this, "Exam created successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    
-                    // Update the exam tags with new data
-                    mDateCreatedTF.setText(latestExam.getString("dateCreated"));
-                    mDateEditedTF.setText(mDateCreatedTF.getText());
-//                    mPerfTF.setText("0");
-                    
-                    // Refresh the browse panel
-                    populateBResultsPanel(eController.getExamsWithFilter());
-                } else {
-                    JOptionPane.showMessageDialog(this, "Failed to create exam", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+    // Get dateAdmin from the spinner
+    Date dateAdministered = (Date) mDateAdminSpinner.getValue();
+    if (dateAdministered != null && dateAdministered.equals(DEFAULT_DATE)) {
+        dateAdministered = null; // Set to null if it matches DEFAULT_DATE
+    }
+    String dateAdminStr = dateAdministered != null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateAdministered) : null;
+
+    try {
+        if (currentExamId == null) {
+            // Insert new exam
+            Boolean success = eController.insertExam(examTitle, courseID, dateAdminStr);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Exam created successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                // For existing exam, we need to update the title and metadata
-                // Since we don't have a direct update method, we'll use the question operations to trigger updates
-                
-                // First get the current questions
-                Set<Integer> currentQuestionIds = new HashSet<>();
-                ResultSet currentQuestions = eController.getQuestionsFromExam(currentExamId);
-                while (currentQuestions != null && currentQuestions.next()) {
-                    currentQuestionIds.add(currentQuestions.getInt("questionID"));
-                }
-                
-                // To "update" the exam, we'll remove and re-add one question to trigger the update mechanism
-                if (!currentQuestionIds.isEmpty()) {
-                    int firstQuestionId = currentQuestionIds.iterator().next();
-                    try {
-                        // This will trigger the lastEdited update
-                        eController.removeQuestionFromExam(currentExamId, firstQuestionId);
-                        eController.addQuestionToExam(currentExamId, firstQuestionId);
-                        
-                        JOptionPane.showMessageDialog(this, "Exam updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
-                        
-                        // Update last edited date
-                        mDateEditedTF.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-                        
-                        // Refresh the browse panel
-                        populateBResultsPanel(eController.getExamsWithFilter());
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(this, "Failed to update exam", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    // No questions in exam - can't trigger update through question operations
-                    JOptionPane.showMessageDialog(this, 
-                        "Exam title saved but metadata not updated (add at least one question)", 
-                        "Warning", JOptionPane.WARNING_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(this, "Failed to create exam", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error saving exam: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            // Edit existing exam
+            boolean success = eController.editExam(currentExamId, examTitle, courseID, dateAdminStr);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Exam updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to update exam", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
-    }//GEN-LAST:event_saveButtonActionPerformed
+
+        // Reload exam data
+        if (currentExamId != null) {
+            loadExamData(currentExamId);
+        } else {
+            // Fetch the latest exam ID and reload
+            ResultSet latestExam = eController.getExamsWithFilter("SELECT * FROM exams ORDER BY examID DESC LIMIT 1");
+            if (latestExam != null && latestExam.next()) {
+                currentExamId = latestExam.getInt("examID");
+                loadExamData(currentExamId);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error saving exam: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}//GEN-LAST:event_saveButtonActionPerformed
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         // TODO add your handling code here:
@@ -1195,6 +1274,8 @@ public class Exams extends javax.swing.JPanel {
         currentExamId = null;
         clearFields();
 
+        mDateAdminSpinner.setValue(DEFAULT_DATE);
+        mQNumberTF.setText("0");
         qResultsPanel.removeAll();
         qResultsPanel.revalidate();
         qResultsPanel.repaint();
@@ -1264,16 +1345,12 @@ public class Exams extends javax.swing.JPanel {
 
     private void clearFields() {
         // Reset the filter and sort options
-        bAdminYesCB.setSelected(false);
-        bAdminNoCB.setSelected(false);
-        bGradedYesCB.setSelected(false);
-        bGradedNoCB.setSelected(false);
-        bCourseComboBox.setSelectedIndex(0);
-        bSearchTF.setText("");
-        mButtonGroup.clearSelection();
+        mButtonGroup.setSelected(mSortRB1.getModel(), true);
         ansListPanel.removeAll();
         ansListPanel.revalidate();
         ansListPanel.repaint();
+
+        mDateAdminSpinner.setValue(DEFAULT_DATE);
     }
 
     private String buildExamQuery() {
@@ -1286,22 +1363,16 @@ public class Exams extends javax.swing.JPanel {
             sqlQuery.append(" AND lastUsed IS NULL");
         }
 
-        // TODO: Add Graded filter when implemented
-        // if (bGradedYesCB.isSelected() && !bGradedNoCB.isSelected()) {
-        //     sqlQuery.append(" AND graded = 1");
-        // } else if (bGradedNoCB.isSelected() && !bGradedYesCB.isSelected()) {
-        //     sqlQuery.append(" AND graded = 0");
-        // }
-
         // Handle course filter
         String selectedCourse = (String) bCourseComboBox.getSelectedItem();
-        if (selectedCourse != null && !selectedCourse.equals("--All--")) {
-            sqlQuery.append(" AND course = '").append(selectedCourse).append("'");
+        if (selectedCourse != null && !selectedCourse.isEmpty() && !selectedCourse.equals("--All--")) {
+            Integer courseID = courseCodeToIDMap.get(selectedCourse);
+            sqlQuery.append(" AND course = '").append(courseID).append("'");
         }
 
         // Handle search term
         String searchTerm = bSearchTF.getText().trim();
-        if (!searchTerm.isEmpty()) {
+        if (searchTerm != null && !searchTerm.isEmpty() && !searchTerm.equals("Search Here")) {
             sqlQuery.append(" AND examTitle LIKE '%").append(searchTerm).append("%'");
         }
 
@@ -1312,11 +1383,12 @@ public class Exams extends javax.swing.JPanel {
             case "DateAdministeredNewestFirst" -> sqlQuery.append(" ORDER BY lastUsed DESC");
             case "DateCreatedOldestFirst" -> sqlQuery.append(" ORDER BY dateCreated ASC");
             case "DateCreatedNewestFirst" -> sqlQuery.append(" ORDER BY dateCreated DESC");
-            case "PerformanceLowestFirst" -> sqlQuery.append(" ORDER BY performanceMetric ASC");
-            case "PerformanceHighestFirst" -> sqlQuery.append(" ORDER BY performanceMetric DESC");
+            case "DateEditedOldestFirst" -> sqlQuery.append(" ORDER BY lastEdited ASC");
+            case "DateEditedNewestFirst" -> sqlQuery.append(" ORDER BY lastEdited DESC");
             default -> sqlQuery.append(" ORDER BY examID ASC");
         }
 
+        System.out.println(sqlQuery.toString());
         return sqlQuery.toString();
     }
 
@@ -1326,8 +1398,8 @@ public class Exams extends javax.swing.JPanel {
         if (bSortRB3.isSelected()) return "DateAdministeredNewestFirst";
         if (bSortRB4.isSelected()) return "DateCreatedOldestFirst";
         if (bSortRB5.isSelected()) return "DateCreatedNewestFirst";
-        if (bSortRB6.isSelected()) return "PerformanceLowestFirst";
-        if (bSortRB7.isSelected()) return "PerformanceHighestFirst";
+        if (bSortRB6.isSelected()) return "DateEditedOldestFirst";
+        if (bSortRB7.isSelected()) return "DateEditedNewestFirst";
         return "Default";
     }
 
@@ -1341,37 +1413,60 @@ public class Exams extends javax.swing.JPanel {
             sqlQuery.append(" AND lastUsed IS NULL");
         }
 
-        ArrayList<String> selectedDifficulties = new ArrayList<>();
-        if (mDiffEasyCB.isSelected()) selectedDifficulties.add("'Easy'");
-        if (mDiffMedCB.isSelected()) selectedDifficulties.add("'Medium'");
-        if (mDiffHardCB.isSelected()) selectedDifficulties.add("'Hard'");
-        if (!selectedDifficulties.isEmpty()) {
-            sqlQuery.append(" AND difficulty IN (")
-                    .append(String.join(", ", selectedDifficulties))
-                    .append(")");
+        // Handle difficulty range
+        Float startDifficulty = (Float) jSpinner1.getValue();
+        Float endDifficulty = (Float) jSpinner2.getValue();
+        if (startDifficulty != null && !startDifficulty.isNaN() && startDifficulty != 0) {
+            sqlQuery.append(" AND difficulty >= ").append(startDifficulty);
+        }
+        if (endDifficulty != null && !endDifficulty.isNaN() && endDifficulty != 0) {
+            sqlQuery.append(" AND difficulty <= ").append(endDifficulty);
         }
 
+        Float startPerformance = (Float) jSpinner3.getValue();
+        Float endPerformance = (Float) jSpinner4.getValue();
+        if (startPerformance != null && !startPerformance.isNaN() && startPerformance != 0) {
+            sqlQuery.append(" AND performance >= ").append(startPerformance);
+        }
+        if (endPerformance != null && !endPerformance.isNaN() && endPerformance != 0) {
+            sqlQuery.append(" AND performance <= ").append(endPerformance);
+        }
+
+        Float startDiscrimination = (Float) jSpinner5.getValue();
+        Float endDiscrimination = (Float) jSpinner6.getValue();
+        if (startDiscrimination != null && !startDiscrimination.isNaN() && startDiscrimination != 0) {
+            sqlQuery.append(" AND discrimination >= ").append(startDiscrimination);
+        }
+        if (endDiscrimination != null && !endDiscrimination.isNaN() && endDiscrimination != 0) {
+            sqlQuery.append(" AND discrimination <= ").append(endDiscrimination);
+        }
+        
         // Handle course filter
         String selectedCourse = (String) mCourseComboBox.getSelectedItem();
         if (selectedCourse != null && !selectedCourse.equals("--All--")) {
-            sqlQuery.append(" AND course = '").append(selectedCourse).append("'");
+            Integer courseID = courseCodeToIDMap.get(selectedCourse);
+            sqlQuery.append(" AND course = '").append(courseID).append("'");
         }
 
         // Handle topic filter
         String selectedTopic = (String) mTopicComboBox.getSelectedItem();
+        System.out.println("Selected Topic: " + selectedTopic);
         if (selectedTopic != null && !selectedTopic.equals("--All--")) {
-            sqlQuery.append(" AND topic = '").append(selectedTopic).append("'");
+            Integer topicID = topicNameToIDMap.get(selectedTopic);
+            System.out.println("Topic ID: " + topicID);
+            sqlQuery.append(" AND topic = '").append(topicID).append("'");
         }
 
         // Handle subtopic filter
         String selectedSubtopic = (String) mSubtopicComboBox.getSelectedItem();
         if (selectedSubtopic != null && !selectedSubtopic.equals("--All--")) {
-            sqlQuery.append(" AND subTopic = '").append(selectedSubtopic).append("'");
+            Integer subtopicID = subtopicNameToIDMap.get(selectedSubtopic);
+            sqlQuery.append(" AND subTopic = '").append(subtopicID).append("'");
         }
 
         // Handle search term
         String searchTerm = qSearchTF.getText().trim();
-        if (!searchTerm.isEmpty()) {
+        if (searchTerm != null && !searchTerm.isEmpty() && !searchTerm.equals("Search Here")) {
             sqlQuery.append(" AND question LIKE '%").append(searchTerm).append("%'");
         }
 
@@ -1387,11 +1482,16 @@ public class Exams extends javax.swing.JPanel {
             case "DateCreatedNewestFirst" -> sqlQuery.append(" ORDER BY dateCreated DESC");
             case "TimesUsedLeastFirst" -> sqlQuery.append(" ORDER BY timesUsed ASC");
             case "TimesUsedMostFirst" -> sqlQuery.append(" ORDER BY timesUsed DESC");
-            case "DifficultyEasyFirst" -> sqlQuery.append(" ORDER BY CASE difficulty WHEN 'Easy' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Hard' THEN 3 END");
-            case "DifficultyHardFirst" -> sqlQuery.append(" ORDER BY CASE difficulty WHEN 'Hard' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Easy' THEN 3 END");
+            case "DifficultyEasyFirst" -> sqlQuery.append(" ORDER BY difficulty ASC");
+            case "DifficultyHardFirst" -> sqlQuery.append(" ORDER BY difficulty DESC");
+            case "PerformanceLowestFirst" -> sqlQuery.append(" ORDER BY performanceMetric ASC");
+            case "PerformanceHighestFirst" -> sqlQuery.append(" ORDER BY performanceMetric DESC");
+            case "DiscriminationLowestFirst" -> sqlQuery.append(" ORDER BY discrimination ASC");
+            case "DiscriminationHighestFirst" -> sqlQuery.append(" ORDER BY discrimination DESC");
             default -> sqlQuery.append(" ORDER BY questionID"); // Default sorting
         }
         
+        System.out.println(sqlQuery.toString());
         return sqlQuery.toString();
     }
 
@@ -1407,6 +1507,10 @@ public class Exams extends javax.swing.JPanel {
         if (mSortRB9.isSelected()) return "TimesUsedMostFirst";
         if (mSortRB10.isSelected()) return "DifficultyEasyFirst";
         if (mSortRB11.isSelected()) return "DifficultyHardFirst";
+        if (jRadioButton1.isSelected()) return "PerformanceLowestFirst";
+        if (jRadioButton2.isSelected()) return "PerformanceHighestFirst";
+        if (jRadioButton3.isSelected()) return "DiscriminationLowestFirst";
+        if (jRadioButton4.isSelected()) return "DiscriminationHighestFirst";
         return "Default"; // Default sorting
     }
 
@@ -1416,30 +1520,94 @@ public class Exams extends javax.swing.JPanel {
         mTopicComboBox.removeAllItems();
         mSubtopicComboBox.removeAllItems();
         bCourseComboBox.removeAllItems();
+        mExamCourseComboBox.removeAllItems();
+        courseCodeToIDMap.clear();
+        topicNameToIDMap.clear();
+        subtopicNameToIDMap.clear();
 
         // Add "--All--" option
-        mCourseComboBox.addItem("--All--");
-        mTopicComboBox.addItem("--All--");
-        mSubtopicComboBox.addItem("--All--");
-        bCourseComboBox.addItem("--All--");
+        mCourseComboBox.addItem(DEFAULT_ALL_OPTION);
+        mTopicComboBox.addItem(DEFAULT_ALL_OPTION);
+        mSubtopicComboBox.addItem(DEFAULT_ALL_OPTION);
+        bCourseComboBox.addItem(DEFAULT_ALL_OPTION);
 
         // Get distinct values from the database
-        ArrayList<String> courses = qController.getDistinctCourses();
-        ArrayList<String> topics = qController.getDistinctTopics();
-        ArrayList<String> subtopics = qController.getDistinctSubtopics();
-
+        ArrayList<String[]> courses = cController.getAllCourses();
+    
         // Populate the dropdowns
-        for (String course : courses) {
-            mCourseComboBox.addItem(course);
-            bCourseComboBox.addItem(course);
+        for (String[] course : courses) {
+            String courseCode = course[0];
+            int courseID = Integer.parseInt(course[1]);
+            bCourseComboBox.addItem(courseCode);
+            mCourseComboBox.addItem(courseCode);
+            mExamCourseComboBox.addItem(courseCode);
+            courseCodeToIDMap.put(courseCode, courseID);
         }
-        for (String topic : topics) {
-            mTopicComboBox.addItem(topic);
-        }
-        for (String subtopic : subtopics) {
-            mSubtopicComboBox.addItem(subtopic);
+
+        // Initially disable dependent dropdowns
+        mTopicComboBox.setEnabled(false);
+        mSubtopicComboBox.setEnabled(false);
+    }
+
+    private void setupManageDropdownListeners() {
+        mCourseComboBox.addActionListener(e -> {
+            String selectedCourse = (String) mCourseComboBox.getSelectedItem();
+            if (DEFAULT_ALL_OPTION.equals(selectedCourse)) {
+                mTopicComboBox.setEnabled(false);
+                mSubtopicComboBox.setEnabled(false);
+                mTopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+                mSubtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+            } else {
+                Integer courseID = courseCodeToIDMap.get(selectedCourse);
+                mTopicComboBox.setEnabled(true);
+                populateTopicsDropdown(mTopicComboBox, courseID);
+            }
+        });
+
+        mTopicComboBox.addActionListener(e -> {
+            String selectedTopic = (String) mTopicComboBox.getSelectedItem();
+            if (DEFAULT_ALL_OPTION.equals(selectedTopic)) {
+                mSubtopicComboBox.setEnabled(false);
+                mSubtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+            } else {
+                mSubtopicComboBox.setEnabled(true);
+                populateSubtopicsDropdown(mSubtopicComboBox, selectedTopic);
+            }
+        });
+    }
+    
+    private void populateTopicsDropdown(JComboBox<String> topicDropdown, Integer course) {
+        topicDropdown.removeAllItems();
+        topicDropdown.addItem(DEFAULT_ALL_OPTION);
+
+        ArrayList<String[]> topics = tController.getTopicsByCourseId(course);
+        for (String[] topic : topics) {
+            String topicName = topic[0];
+            topicDropdown.addItem(topicName);
+            topicNameToIDMap.put(topicName, Integer.parseInt(topic[1])); // Map topicName to topicID
         }
     }
+
+    private void populateSubtopicsDropdown(JComboBox<String> subtopicDropdown, String topicName) {
+        subtopicDropdown.removeAllItems();
+        subtopicDropdown.addItem(DEFAULT_ALL_OPTION);
+
+        // Get the topicID from the topicNameToIDMap
+        Integer topicID = topicNameToIDMap.get(topicName);
+        if (topicID == null) {
+            System.err.println("Error: topicID is null for topicName: " + topicName);
+            return; // Exit early if topicID is null
+        }
+
+        // Fetch subtopics using the topicID
+        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicId(topicID);
+        for (String[] subtopic : subtopics) {
+            String subtopicName = subtopic[0];
+            subtopicDropdown.addItem(subtopicName);
+            subtopicNameToIDMap.put(subtopicName, Integer.parseInt(subtopic[1])); // Map subtopicName to subtopicID
+        }
+    }
+
 
     private void populateBResultsPanel(ResultSet rs) {
         // Clear existing components
@@ -1519,6 +1687,10 @@ public class Exams extends javax.swing.JPanel {
         mAddedPanel.removeAll();
         mAddedPanel.setLayout(new BoxLayout(mAddedPanel, BoxLayout.Y_AXIS));
         
+        // Clear answers panel
+        ansListPanel.removeAll();
+        ansListPanel.setLayout(new BoxLayout(ansListPanel, BoxLayout.Y_AXIS));
+    
         // Reset highlighted panel
         lastHighlightedPanel = null;
     
@@ -1542,80 +1714,14 @@ public class Exams extends javax.swing.JPanel {
                 JPanel questionPanel = new JPanel(new BorderLayout());
                 questionPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
                 questionPanel.putClientProperty("questionId", questionId);
-                questionPanel.setOpaque(true);
+                questionPanel.setOpaque(true); // Required for background color to show
     
                 // Add question text as a label
                 JLabel questionLabel = new JLabel(questionText);
                 questionPanel.add(questionLabel, BorderLayout.CENTER);
     
-                // Create add button (initially hidden)
-                JButton addButton = new JButton("+ Add");
-                addButton.putClientProperty("questionId", questionId);
-                addButton.setVisible(false);
-                
-                // Style the button to be less intrusive
-                addButton.setMargin(new Insets(0, 5, 0, 5));
-                addButton.setContentAreaFilled(false);
-                addButton.setBorderPainted(false);
-                addButton.setOpaque(false);
-                addButton.setForeground(new Color(0, 100, 0)); // Dark green
-                
-                // Add button action
-                addButton.addActionListener(e -> {
-                    try {
-                        eController.addQuestionToExam(currentExamId, questionId);
-                        // Refresh the panels after addition
-                        ResultSet updatedExamQuestions = eController.getQuestionsFromExam(currentExamId);
-                        populateMListPanels(updatedExamQuestions, allQuestionsQuery);
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(Exams.this, 
-                            "Error adding question", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                });
-
-                // Add this to your button's mouse listener
-                addButton.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        addButton.setVisible(true);
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        // Check if mouse left both button and panel
-                        if (!questionPanel.getBounds().contains(e.getPoint())) {
-                            addButton.setVisible(false);
-                            questionPanel.revalidate();
-                            questionPanel.repaint();
-                        }
-                    }
-                });
-                
-                // Add button to panel (hidden by default)
-                questionPanel.add(addButton, BorderLayout.EAST);
-    
-                // Add hover effect to show/hide button
-                questionPanel.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        addButton.setVisible(true);
-                        questionPanel.revalidate();
-                        questionPanel.repaint();
-                    }
-    
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        // Only hide if mouse isn't over the button
-                        if (!addButton.getBounds().contains(e.getPoint())) {
-                            addButton.setVisible(false);
-                            questionPanel.revalidate();
-                            questionPanel.repaint();
-                        }
-                    }
-                });
-    
-                // Add click behavior for showing answers
+                // Make the panel clickable
+                questionPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 questionPanel.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -1626,7 +1732,7 @@ public class Exams extends javax.swing.JPanel {
                         }
                         
                         // Highlight the clicked panel
-                        questionPanel.setBackground(new Color(173, 216, 230));
+                        questionPanel.setBackground(new Color(173, 216, 230)); // Light blue color
                         lastHighlightedPanel = questionPanel;
                         
                         // Show answers
@@ -1636,7 +1742,7 @@ public class Exams extends javax.swing.JPanel {
     
                 // Add to appropriate panel based on whether it's in the exam
                 if (examQuestionIds.contains(questionId)) {
-                    // For questions already in exam, show remove button
+                    // Create Remove button for questions already in exam
                     JButton removeButton = new JButton("Remove");
                     removeButton.putClientProperty("questionId", questionId);
                     
@@ -1648,26 +1754,38 @@ public class Exams extends javax.swing.JPanel {
                             populateMListPanels(updatedExamQuestions, allQuestionsQuery);
                         } catch (SQLException ex) {
                             ex.printStackTrace();
-                            JOptionPane.showMessageDialog(Exams.this, 
-                                "Error removing question", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(Exams.this, "Error removing question", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     });
                     
-                    questionPanel.removeAll();
-                    questionPanel.add(questionLabel, BorderLayout.CENTER);
                     questionPanel.add(removeButton, BorderLayout.EAST);
                     mAddedPanel.add(questionPanel);
                     mAddedPanel.add(Box.createRigidArea(new Dimension(0, 5)));
                 } else {
-                    // For questions not in exam, add to main panel with hover button
+                    // Create Add button for questions not in exam
+                    JButton addButton = new JButton("Add");
+                    addButton.putClientProperty("questionId", questionId);
+                    
+                    addButton.addActionListener(e -> {
+                        try {
+                            eController.addQuestionToExam(currentExamId, questionId);
+                            // Refresh the panels after addition
+                            ResultSet updatedExamQuestions = eController.getQuestionsFromExam(currentExamId);
+                            populateMListPanels(updatedExamQuestions, allQuestionsQuery);
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                            JOptionPane.showMessageDialog(Exams.this, "Error adding question", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    });
+                    
+                    questionPanel.add(addButton, BorderLayout.EAST);
                     qResultsPanel.add(questionPanel);
                     qResultsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, 
-                "Error loading questions", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading questions", "Error", JOptionPane.ERROR_MESSAGE);
         }
     
         qResultsPanel.add(Box.createVerticalGlue());
@@ -1678,6 +1796,7 @@ public class Exams extends javax.swing.JPanel {
         mAddedPanel.revalidate();
         mAddedPanel.repaint();
     }
+
 
     private void showQuestionAnswers(int questionId, String questionText) {
         ansListPanel.removeAll();
@@ -1736,27 +1855,52 @@ public class Exams extends javax.swing.JPanel {
     private void loadExamData(int examId) {
         try {
             this.currentExamId = examId;
-
+            System.out.println("Loading exam data for ID: " + examId);
             // Fetch exam details from the database
             ResultSet rs = eController.getExam(examId);
 
             if (rs.next()) {
+                System.out.println("Exam ID: " + rs.getInt("examID"));
                 // Fill exam title
                 examTitleTF.setText(rs.getString("examTitle"));
 
                 // Fill exam tags
-                mDateCreatedTF.setText(rs.getString("dateCreated"));
-                String dateAdmin = rs.getString("lastUsed");
-//                mDateAdminTF.setText(dateAdmin == null ? "Never" : dateAdmin);
-                mDateEditedTF.setText(rs.getString("lastEdited"));
-//                mPerfTF.setText(String.valueOf(rs.getInt("performanceMetric")));
-            
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
+                String dateCreatedStr = rs.getString("dateCreated");
+                String dateEditedStr = rs.getString("lastEdited");
+                String dateAdminStr = rs.getString("lastUsed");
+
+                if (dateCreatedStr != null) {
+                    mDateCreatedTF.setText(outputFormat.format(inputFormat.parse(dateCreatedStr)));
+                } else {
+                    mDateCreatedTF.setText("--New--");
+                }
+                if (dateEditedStr != null) {
+                    mDateEditedTF.setText(outputFormat.format(inputFormat.parse(dateEditedStr)));
+                } else {
+                    mDateEditedTF.setText("--New--");
+                }
+                if (dateAdminStr != null) {
+                    mDateAdminSpinner.setValue(inputFormat.parse(dateAdminStr));
+                } else {
+                    mDateAdminSpinner.setValue(DEFAULT_DATE);
+                }
+
+                Integer numQuestions = rs.getInt("numQuestions");
+                mQNumberTF.setText(numQuestions != null ? numQuestions.toString() : "0");
+
+                Integer courseId = rs.getInt("course");
+                String courseCode = cController.getCourseCodeById(courseId);
+                mExamCourseComboBox.setSelectedItem(courseCode);
+
                 // Populate questions
                 ResultSet examQuestions = eController.getQuestionsFromExam(examId);
                 populateMListPanels(examQuestions, "SELECT * FROM questions WHERE 1=1");
+            } else {
+                JOptionPane.showMessageDialog(this, "Exam not found", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-        } catch (SQLException e) {
+        } catch (SQLException | ParseException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Failed to load exam data.", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -1773,9 +1917,6 @@ public class Exams extends javax.swing.JPanel {
     private javax.swing.JPanel bCoursePanel;
     private javax.swing.JPanel bFilterPanel;
     private javax.swing.JScrollPane bFilterScrollTab;
-    private javax.swing.JCheckBox bGradedNoCB;
-    private javax.swing.JPanel bGradedPanel;
-    private javax.swing.JCheckBox bGradedYesCB;
     private javax.swing.JPanel bOrganizePanel;
     private javax.swing.JTabbedPane bOrganizeTabbedPane;
     private javax.swing.JPanel bResultsPanel;
@@ -1803,6 +1944,19 @@ public class Exams extends javax.swing.JPanel {
     private javax.swing.JButton genButton;
     private javax.swing.JPanel headerPanel;
     private javax.swing.JButton helpButton;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JRadioButton jRadioButton3;
+    private javax.swing.JRadioButton jRadioButton4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JSpinner jSpinner2;
+    private javax.swing.JSpinner jSpinner3;
+    private javax.swing.JSpinner jSpinner4;
+    private javax.swing.JSpinner jSpinner5;
+    private javax.swing.JSpinner jSpinner6;
     private javax.swing.JPanel mAddedPanel;
     private javax.swing.JScrollPane mAddedScrollTab;
     private javax.swing.ButtonGroup mButtonGroup;
@@ -1814,9 +1968,6 @@ public class Exams extends javax.swing.JPanel {
     private javax.swing.JFormattedTextField mDateCreatedTF;
     private javax.swing.JLabel mDateEditedLabel;
     private javax.swing.JFormattedTextField mDateEditedTF;
-    private javax.swing.JCheckBox mDiffEasyCB;
-    private javax.swing.JCheckBox mDiffHardCB;
-    private javax.swing.JCheckBox mDiffMedCB;
     private javax.swing.JPanel mDifficultyPanel;
     private javax.swing.JComboBox<String> mExamCourseComboBox;
     private javax.swing.JLabel mExamCourseLabel;

@@ -10,25 +10,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-
 
 public class QuestionController {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
 
-    public boolean insertQuestion(
-        String question, String correctAnswer, String wrong1, String wrong2, String wrong3,
-        String course, String topic, String subTopic,
-        float difficulty, float performance, float discrimination) {
-        String sql = "INSERT INTO questions (" +
-                 "question, correctAnswer, wrongAnswer1, wrongAnswer2, wrongAnswer3, " +
-                 "course, topic, subTopic, comment, difficulty, performance, discrimination, " +
-                 "dateCreated, lastUsed, lastEdited, timesUsed, performanceMetric, hasImage, imagePath" +
-                 ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    public boolean insertQuestion(String question, String correctAnswer, String wrong1, String wrong2, String wrong3, Integer course, Integer topic, Integer subTopic, Float difficulty, Float performance, Float discrimination, Boolean hasImage, String questionImagePath, String correctAnswerImagePath, String wrongAnswer1ImagePath, String wrongAnswer2ImagePath, String wrongAnswer3ImagePath, String comment) {
+        String sql = "INSERT INTO questions (question, correctAnswer, wrongAnswer1, wrongAnswer2, wrongAnswer3, course, topic, subTopic, difficulty, performance, discrimination, hasImage, questionImagePath, correctAnswerImagePath, wrongAnswer1ImagePath, wrongAnswer2ImagePath, wrongAnswer3ImagePath, comment, dateCreated, lastEdited, timesUsed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         
-        // java.util.Date today=new Date();
-        // java.sql.Date date=new java.sql.Date(today.getTime()); //your SQL date object
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -37,20 +26,22 @@ public class QuestionController {
             pstmt.setString(3, wrong1);
             pstmt.setString(4, wrong2);
             pstmt.setString(5, wrong3);
-            pstmt.setString(6, course);
-            pstmt.setString(7, topic);
-            pstmt.setString(8, subTopic);
-            pstmt.setString(9, ""); // comment (default empty)
-            pstmt.setFloat(10, difficulty);
-            pstmt.setFloat(11, performance);
-            pstmt.setFloat(12, discrimination);
-            pstmt.setString(13, date); // dateCreated
-            pstmt.setString(14, null); // lastUsed
-            pstmt.setString(15, date); // lastEdited
-            pstmt.setInt(16, 0); // timesUsed
-            pstmt.setFloat(17, 0.0f); // performanceMetric
-            pstmt.setBoolean(18, false); // hasImage
-            pstmt.setString(19, null); // imagePath
+            pstmt.setInt(6, course);
+            pstmt.setInt(7, topic);
+            pstmt.setInt(8, subTopic);
+            pstmt.setFloat(9, difficulty);
+            pstmt.setFloat(10, performance);
+            pstmt.setFloat(11, discrimination);
+            pstmt.setBoolean(12, hasImage);
+            pstmt.setString(13, questionImagePath);
+            pstmt.setString(14, correctAnswerImagePath);
+            pstmt.setString(15, wrongAnswer1ImagePath);
+            pstmt.setString(16, wrongAnswer2ImagePath);
+            pstmt.setString(17, wrongAnswer3ImagePath);
+            pstmt.setString(18, comment);
+            pstmt.setString(19, date);
+            pstmt.setString(20, date);
+            pstmt.setInt(21, 0); // timesUsed
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0; // Return true if the insert was successful
         } catch (SQLException e) {
@@ -58,55 +49,6 @@ public class QuestionController {
             return false; // Return false if there was an error
         }
     }
-
-
-    public void insertQuestionsFromCSV(String filename) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            String line;
-            boolean isFirstLine = true; // Flag to track header row
-            
-            while ((line = br.readLine()) != null) {
-                // Skip the header row
-                if (isFirstLine) {
-                    isFirstLine = false;
-                    continue;
-                }
-                
-                String[] values = line.split(","); // Assuming the CSV is comma-separated
-                
-                // Skip empty lines or lines with insufficient data
-                if (values.length < 9) {
-                    System.err.println("Skipping incomplete line: " + line);
-                    continue;
-                }
-                
-                try {
-                    String question = values[0].trim();
-                    String correctAnswer = values[1].trim();
-                    String wrong1 = values[2].trim();
-                    String wrong2 = values[3].trim();
-                    String wrong3 = values[4].trim();
-                    String course = values[5].trim();
-                    String topic = values[6].trim();
-                    String subTopic = values[7].trim();
-                    float difficulty = Float.parseFloat(values[9].trim());
-                    float performance = Float.parseFloat(values[10].trim());
-                    float discrimination = Float.parseFloat(values[11].trim());
-
-    
-                    // Pass data to the next step
-                    insertQuestion(question, correctAnswer, wrong1, wrong2, wrong3, 
-                                 course, topic, subTopic, difficulty, performance, discrimination);
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    System.err.println("Error processing line: " + line);
-                    e.printStackTrace();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }    
-
 
     public ResultSet getQuestion(int questionID){
         
@@ -135,34 +77,89 @@ public class QuestionController {
         }        
     }
 
-
-    public boolean editQuestion(int questionID, String question, String correctAnswer, String wrong1, String wrong2, String wrong3, String course, String topic, String subTopic, float difficulty) {
+    public boolean editQuestion(int questionID, String question, String correctAnswer, String wrong1, String wrong2, String wrong3, Integer course, Integer topic, Integer subTopic, Float difficulty, Float performance, Float discrimination, Boolean hasImage, String questionImagePath, String correctAnswerImagePath, String wrongAnswer1ImagePath, String wrongAnswer2ImagePath, String wrongAnswer3ImagePath, String comment) {
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         String sql = "UPDATE questions " +
-                    "SET question = '" + question + "' ,"+
-                    "correctAnswer = '" + correctAnswer + "' ,"+
-                    "wrongAnswer1 = '" + wrong1 + "' ,"+
-                    "wrongAnswer2 = '" + wrong2 + "' ,"+
-                    "wrongAnswer3= '" + wrong3 + "' ,"+
-                    "course = '" + course + "' ,"+
-                    "topic = '" + topic + "' ,"+
-                    "subTopic = '" + subTopic + "' ,"+
-                    "difficulty = '" + difficulty + "' ,"+
-                    "lastEdited = '" + date + "' " +
-                    "WHERE questionID = '" + questionID + "';";
+                    "SET question = ?, " +
+                    "correctAnswer = ?, " +
+                    "wrongAnswer1 = ?, " +
+                    "wrongAnswer2 = ?, " +
+                    "wrongAnswer3 = ?, " +
+                    "course = ?, " +
+                    "topic = ?, " +
+                    "subTopic = ?, " +
+                    "difficulty = ?, " +
+                    "performance = ?, " +
+                    "discrimination = ?, " +
+                    "hasImage = ?, " +
+                    "questionImagePath = ?, " +
+                    "correctAnswerImagePath = ?, " +
+                    "wrongAnswer1ImagePath = ?, " +
+                    "wrongAnswer2ImagePath = ?, " +
+                    "wrongAnswer3ImagePath = ?, " +
+                    "comment = ?, " +
+                    "lastEdited = ? " +
+                    "WHERE questionID = ?;";
 
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, question);
+            pstmt.setString(2, correctAnswer);
+            pstmt.setString(3, wrong1);
+            pstmt.setString(4, wrong2);
+            pstmt.setString(5, wrong3);
+            pstmt.setInt(6, course);
+            pstmt.setInt(7, topic);
+            pstmt.setInt(8, subTopic);
+            pstmt.setFloat(9, difficulty);
+            pstmt.setFloat(10, performance);
+            pstmt.setFloat(11, discrimination);
+            pstmt.setBoolean(12, hasImage);
+            pstmt.setString(13, questionImagePath);
+            pstmt.setString(14, correctAnswerImagePath);
+            pstmt.setString(15, wrongAnswer1ImagePath);
+            pstmt.setString(16, wrongAnswer2ImagePath);
+            pstmt.setString(17, wrongAnswer3ImagePath);
+            pstmt.setString(18, comment);
+            pstmt.setString(19, date);
+            pstmt.setInt(20, questionID);
 
-        try {
-            Connection conn = DriverManager.getConnection(DB_URL);
-            Statement stmt = conn.createStatement();
-            int rowsAffected = stmt.executeUpdate(sql);
+            int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0; // Return true if the update was successful
         } catch (SQLException e) {
             e.printStackTrace();
             return false; // Return false if there was an error
-        }        
+        }
     }
 
+    public void updateTimesUsed(int questionID) {
+        String countExamsSql = "SELECT COUNT(*) AS examCount " +
+                               "FROM ExamQuestions eq " +
+                               "JOIN exams e ON eq.examID = e.examID " +
+                               "WHERE eq.questionID = ? AND e.lastUsed IS NOT NULL AND e.lastUsed != ''";
+
+        String updateQuestionSql = "UPDATE questions SET timesUsed = ? WHERE questionID = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement countStmt = conn.prepareStatement(countExamsSql);
+             PreparedStatement updateStmt = conn.prepareStatement(updateQuestionSql)) {
+
+            // Count the number of exams where the question is used and lastUsed is not null or empty
+            countStmt.setInt(1, questionID);
+            ResultSet rs = countStmt.executeQuery();
+            int examCount = rs.next() ? rs.getInt("examCount") : 0;
+
+            // Update the timesUsed attribute of the question
+            updateStmt.setInt(1, examCount);
+            updateStmt.setInt(2, questionID);
+            updateStmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+/*
     public ArrayList<String> getDistinctCourses() {
         ArrayList<String> courses = new ArrayList<>();
         try {
@@ -216,7 +213,7 @@ public class QuestionController {
         }
         return subtopics;
     }
-
+*/
     public ResultSet getQuestionsWithFilter(String sqlQuery) {
         try {
             Connection conn = DriverManager.getConnection(DB_URL);

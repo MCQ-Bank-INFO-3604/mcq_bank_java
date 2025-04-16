@@ -11,33 +11,61 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import com.example.controllers.CoursesController;
+import com.example.controllers.QuestionController;
+import com.example.controllers.SubtopicsController;
+import com.example.controllers.TopicsController;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingUtilities;
-
-import com.example.controllers.QuestionController;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
  * @author Rian Ramdin
  */
 public class Questions extends javax.swing.JPanel {
-    private QuestionController controller = new QuestionController();
+    private QuestionController qController = new QuestionController();
+    
+    private HashMap<String, Integer> courseCodeToIDMap = new HashMap<>();
+    private CoursesController cController = new CoursesController();
+    
+    private HashMap<String, Integer> topicNameToIDMap = new HashMap<>();
+    private TopicsController tController = new TopicsController();
+    
+    private HashMap<String, Integer> subtopicNameToIDMap = new HashMap<>();
+    private SubtopicsController sController = new SubtopicsController();
+    
     private Integer currentQuestionId = null;
     private JPanel lastHighlightedPanel = null;
+    
+    private static final String DEFAULT_ALL_OPTION = "--All--";
+    private static final String DEFAULT_NONE_OPTION = "--None--";
 
+    private String questionImagePath = "";
+    private String answer1ImagePath = "";
+    private String answer2ImagePath = "";
+    private String answer3ImagePath = "";
+    private String answer4ImagePath = "";
+    
     public Questions() {
         initComponents();
 
@@ -46,8 +74,12 @@ public class Questions extends javax.swing.JPanel {
         verticalScrollBar.setUnitIncrement(16);  // Faster scrolling
 
         populateDropdowns();
+        setupBrowseDropdownListeners();
+        setupManageDropdownListeners();
+        setupFormatListeners();
+        setupImageButtonListeners();
 
-        populateResultsPanel(controller.getQuestionsWithFilter()); // Populate the panel with data from the database
+        populateResultsPanel(qController.getQuestionsWithFilter()); // Populate the panel with data from the database
     }
 
     /**
@@ -62,6 +94,8 @@ public class Questions extends javax.swing.JPanel {
 
         ansButtonGroup = new javax.swing.ButtonGroup();
         sortButtonGroup = new javax.swing.ButtonGroup();
+        qFormatButtonGroup = new javax.swing.ButtonGroup();
+        ansFormatButtonGroup = new javax.swing.ButtonGroup();
         headerPanel = new javax.swing.JPanel();
         returnButton = new javax.swing.JButton();
         helpButton = new javax.swing.JButton();
@@ -76,25 +110,27 @@ public class Questions extends javax.swing.JPanel {
         deleteButton = new javax.swing.JButton();
         manageQuestionPanel = new javax.swing.JPanel();
         questionTF = new javax.swing.JTextField();
-        qImageCB = new javax.swing.JCheckBox();
         qImageButton = new javax.swing.JButton();
         imagePathTF = new javax.swing.JTextField();
+        qFormatLabel = new javax.swing.JLabel();
+        qFormatRadioButton1 = new javax.swing.JRadioButton();
+        qFormatRadioButton2 = new javax.swing.JRadioButton();
+        qFormatRadioButton3 = new javax.swing.JRadioButton();
         manageAnswersPanel = new javax.swing.JPanel();
+        ansFormatLabel = new javax.swing.JLabel();
+        ansFormatRadioButton1 = new javax.swing.JRadioButton();
+        ansFormatRadioButton2 = new javax.swing.JRadioButton();
         ansRadioButton1 = new javax.swing.JRadioButton();
         ansTF1 = new javax.swing.JTextField();
-        ansImageCB1 = new javax.swing.JCheckBox();
         ansImageButton1 = new javax.swing.JButton();
         ansRadioButton2 = new javax.swing.JRadioButton();
         ansTF2 = new javax.swing.JTextField();
-        ansImageCB2 = new javax.swing.JCheckBox();
         ansImageButton2 = new javax.swing.JButton();
         ansRadioButton3 = new javax.swing.JRadioButton();
         ansTF3 = new javax.swing.JTextField();
-        ansImageCB3 = new javax.swing.JCheckBox();
         ansImageButton3 = new javax.swing.JButton();
         ansRadioButton4 = new javax.swing.JRadioButton();
         ansTF4 = new javax.swing.JTextField();
-        ansImageCB4 = new javax.swing.JCheckBox();
         ansImageButton4 = new javax.swing.JButton();
         manageTagsPanel = new javax.swing.JPanel();
         historyTagsPanel = new javax.swing.JPanel();
@@ -131,15 +167,20 @@ public class Questions extends javax.swing.JPanel {
         bUsedYesCB = new javax.swing.JCheckBox();
         bUsedNoCB = new javax.swing.JCheckBox();
         bDifficultyPanel = new javax.swing.JPanel();
-        bDiffEasyCb = new javax.swing.JCheckBox();
-        bDiffMedCB = new javax.swing.JCheckBox();
-        bDiffHardCB = new javax.swing.JCheckBox();
+        jSpinner1 = new javax.swing.JSpinner();
+        jSpinner2 = new javax.swing.JSpinner();
         bCoursePanel = new javax.swing.JPanel();
         bCourseComboBox = new javax.swing.JComboBox<>();
         bTopicPanel = new javax.swing.JPanel();
         bTopicComboBox = new javax.swing.JComboBox<>();
         bSubtopicPanel = new javax.swing.JPanel();
         bSubtopicComboBox = new javax.swing.JComboBox<>();
+        jPanel1 = new javax.swing.JPanel();
+        jSpinner3 = new javax.swing.JSpinner();
+        jSpinner4 = new javax.swing.JSpinner();
+        jPanel2 = new javax.swing.JPanel();
+        jSpinner5 = new javax.swing.JSpinner();
+        jSpinner6 = new javax.swing.JSpinner();
         bSortTab = new javax.swing.JPanel();
         sortRB1 = new javax.swing.JRadioButton();
         sortRB2 = new javax.swing.JRadioButton();
@@ -152,6 +193,10 @@ public class Questions extends javax.swing.JPanel {
         sortRB9 = new javax.swing.JRadioButton();
         sortRB10 = new javax.swing.JRadioButton();
         sortRB11 = new javax.swing.JRadioButton();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jRadioButton2 = new javax.swing.JRadioButton();
+        jRadioButton3 = new javax.swing.JRadioButton();
+        jRadioButton4 = new javax.swing.JRadioButton();
         searchPanel = new javax.swing.JPanel();
         searchTF = new javax.swing.JTextField();
         searchButton = new javax.swing.JButton();
@@ -184,7 +229,7 @@ public class Questions extends javax.swing.JPanel {
 
         add(headerPanel, java.awt.BorderLayout.PAGE_START);
 
-        manageScrollContentPanel.setPreferredSize(new java.awt.Dimension(621, 510));
+        manageScrollContentPanel.setPreferredSize(new java.awt.Dimension(652, 576));
 
         manageControlsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Controls"));
 
@@ -233,10 +278,24 @@ public class Questions extends javax.swing.JPanel {
         });
 
         qImageButton.setText("Choose Image");
+        qImageButton.setEnabled(false);
 
         imagePathTF.setEditable(false);
         imagePathTF.setText("Image Path");
+        imagePathTF.setEnabled(false);
         imagePathTF.setFocusable(false);
+
+        qFormatLabel.setText("Question Format:");
+
+        qFormatButtonGroup.add(qFormatRadioButton1);
+        qFormatRadioButton1.setSelected(true);
+        qFormatRadioButton1.setText("Text");
+
+        qFormatButtonGroup.add(qFormatRadioButton2);
+        qFormatRadioButton2.setText("Image");
+
+        qFormatButtonGroup.add(qFormatRadioButton3);
+        qFormatRadioButton3.setText("Text and Image");
 
         javax.swing.GroupLayout manageQuestionPanelLayout = new javax.swing.GroupLayout(manageQuestionPanel);
         manageQuestionPanel.setLayout(manageQuestionPanelLayout);
@@ -245,29 +304,49 @@ public class Questions extends javax.swing.JPanel {
             .addGroup(manageQuestionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(manageQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(questionTF)
                     .addGroup(manageQuestionPanelLayout.createSequentialGroup()
-                        .addComponent(qImageCB)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(qImageButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(imagePathTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(imagePathTF))
+                    .addComponent(questionTF)
+                    .addGroup(manageQuestionPanelLayout.createSequentialGroup()
+                        .addComponent(qFormatLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(qFormatRadioButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(qFormatRadioButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(qFormatRadioButton3)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         manageQuestionPanelLayout.setVerticalGroup(
             manageQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(manageQuestionPanelLayout.createSequentialGroup()
+                .addGroup(manageQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(qFormatLabel)
+                    .addComponent(qFormatRadioButton1)
+                    .addComponent(qFormatRadioButton2)
+                    .addComponent(qFormatRadioButton3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(questionTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(manageQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(qImageCB)
-                    .addComponent(qImageButton)
-                    .addComponent(imagePathTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 6, Short.MAX_VALUE))
+                .addGroup(manageQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(imagePathTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(qImageButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         manageAnswersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Answers"));
+
+        ansFormatLabel.setText("Answer Format:");
+
+        ansFormatButtonGroup.add(ansFormatRadioButton1);
+        ansFormatRadioButton1.setSelected(true);
+        ansFormatRadioButton1.setText("Text");
+
+        ansFormatButtonGroup.add(ansFormatRadioButton2);
+        ansFormatRadioButton2.setText("Images");
 
         ansButtonGroup.add(ansRadioButton1);
 
@@ -282,6 +361,7 @@ public class Questions extends javax.swing.JPanel {
         });
 
         ansImageButton1.setText("Choose Image");
+        ansImageButton1.setEnabled(false);
 
         ansButtonGroup.add(ansRadioButton2);
 
@@ -296,6 +376,7 @@ public class Questions extends javax.swing.JPanel {
         });
 
         ansImageButton2.setText("Choose Image");
+        ansImageButton2.setEnabled(false);
 
         ansButtonGroup.add(ansRadioButton3);
 
@@ -310,6 +391,7 @@ public class Questions extends javax.swing.JPanel {
         });
 
         ansImageButton3.setText("Choose Image");
+        ansImageButton3.setEnabled(false);
 
         ansButtonGroup.add(ansRadioButton4);
 
@@ -324,6 +406,7 @@ public class Questions extends javax.swing.JPanel {
         });
 
         ansImageButton4.setText("Choose Image");
+        ansImageButton4.setEnabled(false);
 
         javax.swing.GroupLayout manageAnswersPanelLayout = new javax.swing.GroupLayout(manageAnswersPanel);
         manageAnswersPanel.setLayout(manageAnswersPanelLayout);
@@ -337,15 +420,11 @@ public class Questions extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansTF1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ansImageCB1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansImageButton1))
                     .addGroup(manageAnswersPanelLayout.createSequentialGroup()
                         .addComponent(ansRadioButton4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansTF4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ansImageCB4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansImageButton4))
                     .addGroup(manageAnswersPanelLayout.createSequentialGroup()
@@ -353,45 +432,50 @@ public class Questions extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansTF2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ansImageCB2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansImageButton2))
                     .addGroup(manageAnswersPanelLayout.createSequentialGroup()
                         .addComponent(ansRadioButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansTF3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ansImageCB3)
+                        .addComponent(ansImageButton3))
+                    .addGroup(manageAnswersPanelLayout.createSequentialGroup()
+                        .addComponent(ansFormatLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ansImageButton3)))
+                        .addComponent(ansFormatRadioButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ansFormatRadioButton2)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         manageAnswersPanelLayout.setVerticalGroup(
             manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(manageAnswersPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageAnswersPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ansFormatLabel)
+                    .addComponent(ansFormatRadioButton1)
+                    .addComponent(ansFormatRadioButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(ansRadioButton1)
                     .addComponent(ansTF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ansImageButton1)
-                    .addComponent(ansImageCB1))
+                    .addComponent(ansImageButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(ansRadioButton2)
                     .addComponent(ansTF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ansImageButton2)
-                    .addComponent(ansImageCB2))
+                    .addComponent(ansImageButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(ansRadioButton3)
                     .addComponent(ansTF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ansImageButton3)
-                    .addComponent(ansImageCB3))
+                    .addComponent(ansImageButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(ansRadioButton4)
                     .addComponent(ansTF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ansImageButton4)
-                    .addComponent(ansImageCB4))
+                    .addComponent(ansImageButton4))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -445,7 +529,7 @@ public class Questions extends javax.swing.JPanel {
         historyTagsPanel.add(dateUsedLabel, gridBagConstraints);
 
         dateUsedTF.setEditable(false);
-        dateUsedTF.setText("Never");
+        dateUsedTF.setText("--Never--");
         dateUsedTF.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
@@ -596,7 +680,7 @@ public class Questions extends javax.swing.JPanel {
             commentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(commentPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(commentScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
+                .addComponent(commentScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addContainerGap())
         );
         commentPanelLayout.setVerticalGroup(
@@ -697,32 +781,29 @@ public class Questions extends javax.swing.JPanel {
 
         bDifficultyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Difficulty"));
 
-        bDiffEasyCb.setText("Easy");
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
 
-        bDiffMedCB.setText("Medium");
-
-        bDiffHardCB.setText("Hard");
+        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
 
         javax.swing.GroupLayout bDifficultyPanelLayout = new javax.swing.GroupLayout(bDifficultyPanel);
         bDifficultyPanel.setLayout(bDifficultyPanelLayout);
         bDifficultyPanelLayout.setHorizontalGroup(
             bDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bDifficultyPanelLayout.createSequentialGroup()
-                .addGroup(bDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bDiffEasyCb)
-                    .addComponent(bDiffMedCB)
-                    .addComponent(bDiffHardCB))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bDifficultyPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(bDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSpinner2)
+                    .addComponent(jSpinner1))
+                .addContainerGap())
         );
         bDifficultyPanelLayout.setVerticalGroup(
             bDifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bDifficultyPanelLayout.createSequentialGroup()
-                .addComponent(bDiffEasyCb)
+                .addContainerGap()
+                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bDiffMedCB)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bDiffHardCB)
-                .addGap(0, 6, Short.MAX_VALUE))
+                .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         bCoursePanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Course"));
@@ -733,7 +814,7 @@ public class Questions extends javax.swing.JPanel {
         bCoursePanel.setLayout(bCoursePanelLayout);
         bCoursePanelLayout.setHorizontalGroup(
             bCoursePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bCoursePanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bCoursePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(bCourseComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -777,7 +858,7 @@ public class Questions extends javax.swing.JPanel {
             bSubtopicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bSubtopicPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(bSubtopicComboBox, 0, 161, Short.MAX_VALUE)
+                .addComponent(bSubtopicComboBox, 0, 152, Short.MAX_VALUE)
                 .addContainerGap())
         );
         bSubtopicPanelLayout.setVerticalGroup(
@@ -788,6 +869,60 @@ public class Questions extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Performance"));
+
+        jSpinner3.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jSpinner4.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSpinner3)
+                    .addComponent(jSpinner4))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Discrimination"));
+
+        jSpinner5.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jSpinner6.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSpinner6)
+                    .addComponent(jSpinner5))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout bFilterPanelLayout = new javax.swing.GroupLayout(bFilterPanel);
         bFilterPanel.setLayout(bFilterPanelLayout);
         bFilterPanelLayout.setHorizontalGroup(
@@ -795,11 +930,13 @@ public class Questions extends javax.swing.JPanel {
             .addGroup(bFilterPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(bFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bSubtopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bCoursePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bDifficultyPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bUsedPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bTopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(bSubtopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bTopicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bCoursePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bDifficultyPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         bFilterPanelLayout.setVerticalGroup(
@@ -810,12 +947,16 @@ public class Questions extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bDifficultyPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bCoursePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bTopicPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bSubtopicPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         bFilterScrollTab.setViewportView(bFilterPanel);
@@ -856,6 +997,18 @@ public class Questions extends javax.swing.JPanel {
         sortButtonGroup.add(sortRB11);
         sortRB11.setText("Difficulty (Hard First)");
 
+        sortButtonGroup.add(jRadioButton1);
+        jRadioButton1.setText("Performance (Lowest First)");
+
+        sortButtonGroup.add(jRadioButton2);
+        jRadioButton2.setText("Performance (Highest First)");
+
+        sortButtonGroup.add(jRadioButton3);
+        jRadioButton3.setText("Discrimination (Lowest First)");
+
+        sortButtonGroup.add(jRadioButton4);
+        jRadioButton4.setText("Discrimination (Highest First)");
+
         javax.swing.GroupLayout bSortTabLayout = new javax.swing.GroupLayout(bSortTab);
         bSortTab.setLayout(bSortTabLayout);
         bSortTabLayout.setHorizontalGroup(
@@ -873,8 +1026,12 @@ public class Questions extends javax.swing.JPanel {
                     .addComponent(sortRB8)
                     .addComponent(sortRB9)
                     .addComponent(sortRB10)
-                    .addComponent(sortRB11))
-                .addContainerGap(13, Short.MAX_VALUE))
+                    .addComponent(sortRB11)
+                    .addComponent(jRadioButton1)
+                    .addComponent(jRadioButton2)
+                    .addComponent(jRadioButton3)
+                    .addComponent(jRadioButton4))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         bSortTabLayout.setVerticalGroup(
             bSortTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -901,7 +1058,15 @@ public class Questions extends javax.swing.JPanel {
                 .addComponent(sortRB10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sortRB11)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton4)
+                .addContainerGap(126, Short.MAX_VALUE))
         );
 
         bOrganizeTabbedPane.addTab("Sort", bSortTab);
@@ -939,11 +1104,11 @@ public class Questions extends javax.swing.JPanel {
         resultsPanel.setLayout(resultsPanelLayout);
         resultsPanelLayout.setHorizontalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 585, Short.MAX_VALUE)
+            .addGap(0, 584, Short.MAX_VALUE)
         );
         resultsPanelLayout.setVerticalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 499, Short.MAX_VALUE)
+            .addGap(0, 535, Short.MAX_VALUE)
         );
 
         resultsScrollPane.setViewportView(resultsPanel);
@@ -955,7 +1120,7 @@ public class Questions extends javax.swing.JPanel {
             .addGroup(browseTabLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(browseTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+                    .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
                     .addComponent(resultsScrollPane))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bOrganizeTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -966,7 +1131,7 @@ public class Questions extends javax.swing.JPanel {
             .addGroup(browseTabLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(browseTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bOrganizeTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                    .addComponent(bOrganizeTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE)
                     .addGroup(browseTabLayout.createSequentialGroup()
                         .addComponent(searchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -983,7 +1148,8 @@ public class Questions extends javax.swing.JPanel {
     private void searchTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTFActionPerformed
         // TODO add your handling code here:
         String sqlQuery = buildQuestionQuery();
-        ResultSet filteredResults = controller.getQuestionsWithFilter(sqlQuery);
+        System.out.println("SQL Query: " + sqlQuery);
+        ResultSet filteredResults = qController.getQuestionsWithFilter(sqlQuery);
         populateResultsPanel(filteredResults);
     }//GEN-LAST:event_searchTFActionPerformed
 
@@ -1006,102 +1172,171 @@ public class Questions extends javax.swing.JPanel {
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         // TODO add your handling code here:
-        // Clear all fields and reset state
         currentQuestionId = null;
         clearFields();
         
-        // Set default values
-        difficultySpinner.setValue(0);
+        // Clear non-editable fields
         dateCreatedTF.setText("--New--");
         dateEditedTF.setText("--New--");
-        dateUsedTF.setText("Never");
+        dateUsedTF.setText("--Never--");
         usedCountTF.setText("0");
-        //perfTF.setText("0");
+
     }//GEN-LAST:event_newButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
         // TODO add your handling code here:
         // Validate required fields
-        if (questionTF.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Question text is required", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        String question = questionTF.getText().trim();
+        String questionImagePath = imagePathTF.getText().trim();
+        Boolean hasImage = false;
+
+        if (qFormatRadioButton1.isSelected() || qFormatRadioButton3.isSelected()) { // text question format warning
+            if (question.isEmpty() || question.equalsIgnoreCase("Question text")) {
+                JOptionPane.showMessageDialog(this, "Question text is required", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (qFormatRadioButton1.isSelected()) { questionImagePath = ""; }
         }
+        if (qFormatRadioButton2.isSelected() || qFormatRadioButton3.isSelected()) { // image question format warning
+            if (questionImagePath.isEmpty() || questionImagePath.equalsIgnoreCase("Image Path")) {
+                JOptionPane.showMessageDialog(this, "Question Image Path is required", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (qFormatRadioButton2.isSelected()) { question = ""; }
+            hasImage = true; // Set hasImage to true for image questions
+        }
+
+        String cAns = "";
+        String wAns1 = "";
+        String wAns2 = "";
+        String wAns3 = "";
         
-        if (ansTF1.getText().trim().isEmpty() || ansTF2.getText().trim().isEmpty() || 
-            ansTF3.getText().trim().isEmpty() || ansTF4.getText().trim().isEmpty()) {
+        String correctAnswerImagePath = "";
+        String wrongAnswer1ImagePath = "";
+        String wrongAnswer2ImagePath = "";
+        String wrongAnswer3ImagePath = "";
+
+        if (ansTF1.getText().trim().isEmpty() || ansTF1.getText().trim().equalsIgnoreCase("Answer 1") ||
+            ansTF2.getText().trim().isEmpty() || ansTF2.getText().trim().equalsIgnoreCase("Answer 2") ||
+            ansTF3.getText().trim().isEmpty() || ansTF3.getText().trim().equalsIgnoreCase("Answer 3") ||
+            ansTF4.getText().trim().isEmpty() || ansTF4.getText().trim().equalsIgnoreCase("Answer 4")) {
             JOptionPane.showMessageDialog(this, "All answer fields are required", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        if (!ansRadioButton1.isSelected() && !ansRadioButton2.isSelected() && 
+
+        if (!ansRadioButton1.isSelected() && !ansRadioButton2.isSelected() &&
             !ansRadioButton3.isSelected() && !ansRadioButton4.isSelected()) {
             JOptionPane.showMessageDialog(this, "Please select the correct answer", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+    
         // Get the correct answer
         String correctAnswer = "";
-        if (ansRadioButton1.isSelected()) correctAnswer = ansTF1.getText();
-        else if (ansRadioButton2.isSelected()) correctAnswer = ansTF2.getText();
-        else if (ansRadioButton3.isSelected()) correctAnswer = ansTF3.getText();
-        else if (ansRadioButton4.isSelected()) correctAnswer = ansTF4.getText();
+        String cAnsImagePath = ""; // Placeholder for correct answer image path
+        if (ansRadioButton1.isSelected()) {
+            correctAnswer = ansTF1.getText();
+            cAnsImagePath = answer1ImagePath;
+        }
+        else if (ansRadioButton2.isSelected()){
+            correctAnswer = ansTF2.getText();
+            cAnsImagePath = answer2ImagePath;
+        } 
+        else if (ansRadioButton3.isSelected()) {
+            correctAnswer = ansTF3.getText();
+            cAnsImagePath = answer3ImagePath;
+        }
+        else if (ansRadioButton4.isSelected()) {
+            correctAnswer = ansTF4.getText();
+            cAnsImagePath = answer4ImagePath;
+        }
+        
 
         // Prepare question data
-        String question = questionTF.getText();
-
+        //String question = questionTF.getText();
+    
         // Initialize list to hold wrong answers
         ArrayList<String> wrongAnswers = new ArrayList<>();
-
+        ArrayList<String> wrongImagePaths = new ArrayList<>();
+    
         // Add all answers that aren't the correct one
         if (!ansRadioButton1.isSelected()) wrongAnswers.add(ansTF1.getText());
         if (!ansRadioButton2.isSelected()) wrongAnswers.add(ansTF2.getText());
         if (!ansRadioButton3.isSelected()) wrongAnswers.add(ansTF3.getText());
         if (!ansRadioButton4.isSelected()) wrongAnswers.add(ansTF4.getText());
 
-        // Ensure we have exactly 3 wrong answers (in case of unexpected state)
-        while (wrongAnswers.size() < 3) {
-            wrongAnswers.add(""); // Add empty strings if somehow we don't have 3 wrong answers
-        }
-
         String wrong1 = wrongAnswers.get(0);
         String wrong2 = wrongAnswers.get(1);
         String wrong3 = wrongAnswers.get(2);
 
-        String course = (String)courseComboBox.getSelectedItem();
-        String topic = (String)topicComboBox.getSelectedItem();
-        String subtopic = (String)subtopicComboBox.getSelectedItem();
-        Float difficulty = (Float)difficultySpinner.getValue();
-        Float performance = (Float)performanceSpinner.getValue();
-        Float discrimination = (Float)discriminationSpinner.getValue();
+        if (ansFormatRadioButton1.isSelected()) { // text answers
+            cAns = correctAnswer;
+            wAns1 = wrong1;
+            wAns2 = wrong2;
+            wAns3 = wrong3;
+        } else { // image answers
+            hasImage = true; // Set hasImage to true for image answers
+
+            correctAnswerImagePath = correctAnswer;
+            wrongAnswer1ImagePath = wrong1;
+            wrongAnswer2ImagePath = wrong2;
+            wrongAnswer3ImagePath = wrong3;
+
+            correctAnswer = "";
+            wrong1 = "";
+            wrong2 = "";
+            wrong3 = "";
+        }
+
         
+        String courseCode = (String) courseComboBox.getSelectedItem();
+        String topicName = (String) topicComboBox.getSelectedItem();
+        String subtopicName = (String) subtopicComboBox.getSelectedItem();
+        if (courseCode == null || courseCode.equalsIgnoreCase("--None--") ||
+            topicName == null || topicName.equalsIgnoreCase("--None--") ||
+            subtopicName == null || subtopicName.equalsIgnoreCase("--None--")) {
+            JOptionPane.showMessageDialog(this, "Please select a course, topic, and subtopic", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Integer courseID = courseCodeToIDMap.get(courseCode); // Get the courseID from the map
+        Integer topicID = topicNameToIDMap.get(topicName); // Get the topicID from the map
+        Integer subtopicID = subtopicNameToIDMap.get(subtopicName); // Get the subtopicID from the map
         
+        Float difficulty = ((Number) difficultySpinner.getValue()).floatValue();
+        Float performance = ((Number) performanceSpinner.getValue()).floatValue(); 
+        Float discrimination = ((Number) discriminationSpinner.getValue()).floatValue();
+
+        String comment = commentTextArea.getText().trim();
         try {
             if (currentQuestionId == null) {
                 // Create new question
-                boolean success = controller.insertQuestion(
+                boolean success = qController.insertQuestion(
                     question, correctAnswer, wrong1, wrong2, wrong3,
-                    course, topic, subtopic, difficulty, performance, discrimination
+                    courseID, topicID, subtopicID, difficulty, performance, discrimination,
+                    hasImage, questionImagePath, correctAnswerImagePath, wrongAnswer1ImagePath, 
+                    wrongAnswer2ImagePath, wrongAnswer3ImagePath, comment
                 );
-                
+    
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Question created successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                     // Refresh the results panel
-                    populateResultsPanel(controller.getQuestionsWithFilter());
+                    populateResultsPanel(qController.getQuestionsWithFilter());
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to create question", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 // Update existing question
-                boolean success = controller.editQuestion(
+                boolean success = qController.editQuestion(
                     currentQuestionId,
                     question, correctAnswer, wrong1, wrong2, wrong3,
-                    course, topic, subtopic, difficulty
+                    courseID, topicID, subtopicID, difficulty, performance, discrimination,
+                    hasImage, questionImagePath, correctAnswerImagePath, wrongAnswer1ImagePath, 
+                    wrongAnswer2ImagePath, wrongAnswer3ImagePath, comment
                 );
-                
+    
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Question updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                     // Refresh the results panel
-                    populateResultsPanel(controller.getQuestionsWithFilter());
+                    populateResultsPanel(qController.getQuestionsWithFilter());
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to update question", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -1110,6 +1345,11 @@ public class Questions extends javax.swing.JPanel {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error saving question: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        questionImagePath = "";
+        answer1ImagePath = "";
+        answer2ImagePath = "";
+        answer3ImagePath = "";
+        answer4ImagePath = "";
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
@@ -1133,13 +1373,13 @@ public class Questions extends javax.swing.JPanel {
         
         if (confirm == JOptionPane.YES_OPTION) {
             try {
-                boolean success = controller.deleteQuestion(currentQuestionId);
+                boolean success = qController.deleteQuestion(currentQuestionId);
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Question deleted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                     currentQuestionId = null;
                     clearFields();
                     // Refresh the results panel
-                    populateResultsPanel(controller.getQuestionsWithFilter());
+                    populateResultsPanel(qController.getQuestionsWithFilter());
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to delete question", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -1154,7 +1394,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF1.getText().equals("Answer 1")){
             ansTF1.setText("");
-            ansTF1.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_ansTF1FocusGained
 
@@ -1162,7 +1401,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF1.getText().equals("")){
             ansTF1.setText("Answer 1");
-            ansTF1.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_ansTF1FocusLost
 
@@ -1170,7 +1408,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF2.getText().equals("Answer 2")){
             ansTF2.setText("");
-            ansTF2.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_ansTF2FocusGained
 
@@ -1178,7 +1415,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF2.getText().equals("")){
             ansTF2.setText("Answer 2");
-            ansTF2.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_ansTF2FocusLost
 
@@ -1186,7 +1422,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF3.getText().equals("Answer 3")){
             ansTF3.setText("");
-            ansTF3.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_ansTF3FocusGained
 
@@ -1194,7 +1429,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF3.getText().equals("")){
             ansTF3.setText("Answer 3");
-            ansTF3.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_ansTF3FocusLost
 
@@ -1202,7 +1436,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF4.getText().equals("Answer 4")){
             ansTF4.setText("");
-            ansTF4.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_ansTF4FocusGained
 
@@ -1210,7 +1443,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF4.getText().equals("")){
             ansTF4.setText("Answer 4");
-            ansTF4.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_ansTF4FocusLost
 
@@ -1218,7 +1450,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(questionTF.getText().equals("Question Text")){
             questionTF.setText("");
-            questionTF.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_questionTFFocusGained
 
@@ -1226,7 +1457,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(questionTF.getText().equals("")){
             questionTF.setText("Question Text");
-            questionTF.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_questionTFFocusLost
 
@@ -1234,7 +1464,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(searchTF.getText().equals("Search Here")){
             searchTF.setText("");
-            searchTF.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_searchTFFocusGained
 
@@ -1242,7 +1471,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(searchTF.getText().equals("")){
             searchTF.setText("Search Here");
-            searchTF.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_searchTFFocusLost
 
@@ -1252,22 +1480,20 @@ public class Questions extends javax.swing.JPanel {
     
     private void clearFields() {
         // Clear text fields
-        questionTF.setText("");
-        ansTF1.setText("");
-        ansTF2.setText("");
-        ansTF3.setText("");
-        ansTF4.setText("");
+        questionTF.setText("Question Text");
+        ansTF1.setText("Answer 1");
+        ansTF2.setText("Answer 2");
+        ansTF3.setText("Answer 3");
+        ansTF4.setText("Answer 4");
         imagePathTF.setText("Image Path");
-        
-        // Clear checkboxes
-        qImageCB.setSelected(false);
-        ansImageCB1.setSelected(false);
-        ansImageCB2.setSelected(false);
-        ansImageCB3.setSelected(false);
-        ansImageCB4.setSelected(false);
         
         // Clear radio buttons
         ansButtonGroup.clearSelection();
+        qFormatButtonGroup.clearSelection();
+        ansButtonGroup.clearSelection();
+
+        qFormatRadioButton1.setSelected(true); // Default to text format
+        ansFormatRadioButton1.setSelected(true); // Default to text format
         
         // Reset dropdowns to first item
         courseComboBox.setSelectedIndex(0);
@@ -1278,7 +1504,7 @@ public class Questions extends javax.swing.JPanel {
         difficultySpinner.setValue(0);
         performanceSpinner.setValue(0);
         discriminationSpinner.setValue(0);
-        
+
         //Clear text area
         commentTextArea.setText("");
     }
@@ -1293,46 +1519,63 @@ public class Questions extends javax.swing.JPanel {
             sql.append(" AND timesUsed = 0");
         }
         
-        // Handle multiple difficulty selections
-        ArrayList<String> selectedDifficulties = new ArrayList<>();
-        if (bDiffEasyCb.isSelected()) {
-            selectedDifficulties.add("'Easy'");
+        // Handle range of difficulties
+        Float startDifficulty = (Float) jSpinner1.getValue();
+        Float endDifficulty = (Float) jSpinner2.getValue();
+        if (startDifficulty != null) {
+            sql.append(" AND difficulty >= '").append(startDifficulty).append("'");
         }
-        if (bDiffMedCB.isSelected()) {
-            selectedDifficulties.add("'Medium'");
+        if (endDifficulty != null) {
+            sql.append(" AND difficulty <= '").append(endDifficulty).append("'");
         }
-        if (bDiffHardCB.isSelected()) {
-            selectedDifficulties.add("'Hard'");
+
+        Float startPerformance = (Float) jSpinner3.getValue();
+        Float endPerformance = (Float) jSpinner4.getValue();
+        if (startPerformance != null) {
+            sql.append(" AND performance >= '").append(startPerformance).append("'");
         }
-        
-        if (!selectedDifficulties.isEmpty()) {
-            sql.append(" AND difficulty IN (")
-               .append(String.join(", ", selectedDifficulties))
-               .append(")");
+        if (endPerformance != null) {
+            sql.append(" AND performance <= '").append(endPerformance).append("'");
+        }
+
+        Float startDiscrimination = (Float) jSpinner5.getValue();
+        Float endDiscrimination = (Float) jSpinner6.getValue();
+        if (startDiscrimination != null) {
+            sql.append(" AND discrimination >= '").append(startDiscrimination).append("'");
+        }
+        if (endDiscrimination != null) {
+            sql.append(" AND discrimination <= '").append(endDiscrimination).append("'");
         }
         
         // Handle course filter (skip if "--All--" is selected)
         String courseFilter = (String)bCourseComboBox.getSelectedItem();
         if (courseFilter != null && !courseFilter.isEmpty() && !courseFilter.equals("--All--")) {
-            sql.append(" AND course = '").append(courseFilter).append("'");
+            Integer courseID = courseCodeToIDMap.get(courseFilter); // Get the courseID from the map
+            sql.append(" AND course = '").append(courseID).append("'");
         }
         
         // Handle topic filter (skip if "--All--" is selected)
         String topicFilter = (String)bTopicComboBox.getSelectedItem();
         if (topicFilter != null && !topicFilter.isEmpty() && !topicFilter.equals("--All--")) {
-            sql.append(" AND topic = '").append(topicFilter).append("'");
+            Integer topicID = topicNameToIDMap.get(topicFilter); // Get the topicID from the map
+            sql.append(" AND topic = '").append(topicID).append("'");
         }
         
         // Handle subtopic filter (skip if "--All--" is selected)
         String subtopicFilter = (String)bSubtopicComboBox.getSelectedItem();
         if (subtopicFilter != null && !subtopicFilter.isEmpty() && !subtopicFilter.equals("--All--")) {
-            sql.append(" AND subTopic = '").append(subtopicFilter).append("'");
+            Integer subtopicID = subtopicNameToIDMap.get(subtopicFilter); // Get the subtopicID from the map
+            sql.append(" AND subTopic = '").append(subtopicID).append("'");
         }
         
         // Apply search text
         String searchText = searchTF.getText().trim();
-        if (!searchText.isEmpty()) {
-            sql.append(" AND question LIKE '%").append(searchText).append("%'");
+        if (searchText != null && !searchText.isEmpty() && !searchText.equals("Search Here")) {
+            sql.append(" AND (question LIKE '%").append(searchText).append("%'")
+               .append(" OR correctAnswer LIKE '%").append(searchText).append("%'")
+               .append(" OR wrongAnswer1 LIKE '%").append(searchText).append("%'")
+               .append(" OR wrongAnswer2 LIKE '%").append(searchText).append("%'")
+               .append(" OR wrongAnswer3 LIKE '%").append(searchText).append("%')");
         }
         
         // Apply sorting
@@ -1346,8 +1589,12 @@ public class Questions extends javax.swing.JPanel {
             case "DateCreatedNewestFirst" -> sql.append(" ORDER BY dateCreated DESC");
             case "TimesUsedLeastFirst" -> sql.append(" ORDER BY timesUsed ASC");
             case "TimesUsedMostFirst" -> sql.append(" ORDER BY timesUsed DESC");
-            case "DifficultyEasyFirst" -> sql.append(" ORDER BY CASE difficulty WHEN 'Easy' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Hard' THEN 3 END");
-            case "DifficultyHardFirst" -> sql.append(" ORDER BY CASE difficulty WHEN 'Hard' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Easy' THEN 3 END");
+            case "DifficultyEasyFirst" -> sql.append(" ORDER BY difficulty ASC");
+            case "DifficultyHardFirst" -> sql.append(" ORDER BY difficulty DESC");
+            case "PerformanceLowestFirst" -> sql.append(" ORDER BY performance ASC");
+            case "PerformanceHighestFirst" -> sql.append(" ORDER BY performance DESC");
+            case "DiscriminationLowestFirst" -> sql.append(" ORDER BY discrimination ASC");
+            case "DiscriminationHighestFirst" -> sql.append(" ORDER BY discrimination DESC");
             default -> sql.append(" ORDER BY questionID"); // Default sorting
         }
         
@@ -1366,6 +1613,10 @@ public class Questions extends javax.swing.JPanel {
         if (sortRB9.isSelected()) return "TimesUsedMostFirst";
         if (sortRB10.isSelected()) return "DifficultyEasyFirst";
         if (sortRB11.isSelected()) return "DifficultyHardFirst";
+        if (jRadioButton1.isSelected()) return "PerformanceLowestFirst";
+        if (jRadioButton2.isSelected()) return "PerformanceHighestFirst";
+        if (jRadioButton3.isSelected()) return "DiscriminationLowestFirst";
+        if (jRadioButton4.isSelected()) return "DiscriminationHighestFirst";
         return "Default"; // Fallback
     }
 
@@ -1443,41 +1694,101 @@ public class Questions extends javax.swing.JPanel {
             this.currentQuestionId = questionId;
 
             // Fetch question details from the database
-            ResultSet rs = controller.getQuestion(questionId);
+            ResultSet rs = qController.getQuestion(questionId);
             
             if (rs.next()) {
-                // Fill question text
-                questionTF.setText(rs.getString("question"));
-                
+                System.out.println("Loading question ID: " + questionId);
+                System.out.println("Question Text: " + rs.getString("question"));
+                System.out.println("C Ans Text: " + rs.getString("correctAnswer"));
+                System.out.println("Question Img Path: " + rs.getString("questionImagePath"));
+                System.out.println("C Ans Img Path: " + rs.getString("correctAnswerImagePath"));
+                if (!rs.getString("question").isEmpty() && !rs.getString("questionImagePath").isEmpty()) {
+                    qFormatRadioButton3.setSelected(true);
+                    questionTF.setText(rs.getString("question"));
+                    imagePathTF.setText(rs.getString("questionImagePath"));
+                } else if (!rs.getString("questionImagePath").isEmpty()) {
+                    qFormatRadioButton2.setSelected(true);
+                    imagePathTF.setText(rs.getString("questionImagePath"));
+                } else {
+                    qFormatRadioButton1.setSelected(true);
+                    questionTF.setText(rs.getString("question"));
+                }
+                updateQuestionFormat();
+
                 // Fill answer fields (assuming 4 answers)
-                ansTF1.setText(rs.getString("correctAnswer"));
-                ansTF2.setText(rs.getString("wrongAnswer1"));
-                ansTF3.setText(rs.getString("wrongAnswer2"));
-                ansTF4.setText(rs.getString("wrongAnswer3"));
+                if (!rs.getString("correctAnswerImagePath").isEmpty()) {
+                    ansFormatRadioButton2.setSelected(true);
+
+                    ansTF1.setText(rs.getString("correctAnswerImagePath"));
+                    ansTF2.setText(rs.getString("wrongAnswer1ImagePath"));
+                    ansTF3.setText(rs.getString("wrongAnswer2ImagePath"));
+                    ansTF4.setText(rs.getString("wrongAnswer3ImagePath"));
+                } else {
+                    ansFormatRadioButton1.setSelected(true);
+
+                    ansTF1.setText(rs.getString("correctAnswer"));
+                    ansTF2.setText(rs.getString("wrongAnswer1"));
+                    ansTF3.setText(rs.getString("wrongAnswer2"));
+                    ansTF4.setText(rs.getString("wrongAnswer3"));
+                }
+                updateAnswerFormat();
                 
                 // Set correct answer (assuming radio buttons)
                 ansRadioButton1.setSelected(true);
                 
                 // Fill tags (course, topic, subtopic, difficulty)
-                courseComboBox.setSelectedItem(rs.getString("course"));
-                topicComboBox.setSelectedItem(rs.getString("topic"));
-                subtopicComboBox.setSelectedItem(rs.getString("subTopic"));
-                difficultySpinner.setValue(rs.getFloat("difficulty"));
-                
-                // Fill non-editable fields (dates, performance)
-                dateCreatedTF.setText(rs.getString("dateCreated"));
-                dateEditedTF.setText(rs.getString("lastEdited"));
+                Integer courseID = rs.getInt("course");
+                Integer topicID = rs.getInt("topic");
+                Integer subtopicID = rs.getInt("subTopic");
 
-                // Handle null lastUsed
+                String courseCode = cController.getCourseCodeById(courseID);
+                String topicName = tController.getTopicNameById(topicID);
+                String subtopicName = sController.getSubtopicName(subtopicID);
+                
+                courseComboBox.setSelectedItem(courseCode);
+                topicComboBox.setSelectedItem(topicName);
+                subtopicComboBox.setSelectedItem(subtopicName);
+                
+                // Fill history tags
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+                String dateCreated = rs.getString("dateCreated");
+                String dateEdited = rs.getString("lastEdited");
                 String lastUsed = rs.getString("lastUsed");
-                dateUsedTF.setText(lastUsed == null ? "Never" : lastUsed);
+
+                if (dateCreated != null) {
+                    dateCreatedTF.setText(outputFormat.format(inputFormat.parse(dateCreated)));
+                } else {
+                    dateCreatedTF.setText("--New--");
+                }
+
+                if (dateEdited != null) {
+                    dateEditedTF.setText(outputFormat.format(inputFormat.parse(dateEdited)));
+                } else {
+                    dateEditedTF.setText("--New--");
+                }
+
+                if (lastUsed != null) {
+                    dateUsedTF.setText(outputFormat.format(inputFormat.parse(lastUsed)));
+                } else {
+                    dateUsedTF.setText("--Never--");
+                }
 
                 usedCountTF.setText(String.valueOf(rs.getInt("timesUsed")));
-                //perfTF.setText(String.valueOf(rs.getInt("performanceMetric")));
+
+                // Fill performance, discrimination, and difficulty
+                difficultySpinner.setValue(rs.getFloat("difficulty"));
+                performanceSpinner.setValue(rs.getFloat("performance"));
+                discriminationSpinner.setValue(rs.getFloat("discrimination"));
+
+                commentTextArea.setText(rs.getString("comment"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Failed to load question data.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
     }
 
@@ -1489,56 +1800,268 @@ public class Questions extends javax.swing.JPanel {
         courseComboBox.removeAllItems();
         topicComboBox.removeAllItems();
         subtopicComboBox.removeAllItems();
+        courseCodeToIDMap.clear();
+        topicNameToIDMap.clear();
+        subtopicNameToIDMap.clear();
     
-        // Add "--All--" option to browse tab dropdowns
-        bCourseComboBox.addItem("--All--");
-        bTopicComboBox.addItem("--All--");
-        bSubtopicComboBox.addItem("--All--");
+        // Add default options
+        bCourseComboBox.addItem(DEFAULT_ALL_OPTION);
+        bTopicComboBox.addItem(DEFAULT_ALL_OPTION);
+        bSubtopicComboBox.addItem(DEFAULT_ALL_OPTION);
+        courseComboBox.addItem(DEFAULT_NONE_OPTION);
+        topicComboBox.addItem(DEFAULT_NONE_OPTION);
+        subtopicComboBox.addItem(DEFAULT_NONE_OPTION);
     
         // Get distinct values from database
-        ArrayList<String> courses = controller.getDistinctCourses();
-        ArrayList<String> topics = controller.getDistinctTopics();
-        ArrayList<String> subtopics = controller.getDistinctSubtopics();
-    
-        // Populate browse tab dropdowns
-        for (String course : courses) {
-            bCourseComboBox.addItem(course);
-        }
-        for (String topic : topics) {
-            bTopicComboBox.addItem(topic);
-        }
-        for (String subtopic : subtopics) {
-            bSubtopicComboBox.addItem(subtopic);
+        ArrayList<String[]> courses = cController.getAllCourses();
+        
+        // Populate course dropdowns
+        for (String[] course : courses) {
+            String courseCode = course[0];
+            int courseID = Integer.parseInt(course[1]);
+            bCourseComboBox.addItem(courseCode);
+            courseComboBox.addItem(courseCode);
+            courseCodeToIDMap.put(courseCode, courseID);
         }
     
-        // Populate manage tab dropdowns (without "--All--" option)
-        for (String course : courses) {
-            if (!course.equals("--All--")) {
-                courseComboBox.addItem(course);
+        // Initially disable dependent dropdowns
+        bTopicComboBox.setEnabled(false);
+        bSubtopicComboBox.setEnabled(false);
+        topicComboBox.setEnabled(false);
+        subtopicComboBox.setEnabled(false);
+    }
+
+    private void setupBrowseDropdownListeners() {
+        bCourseComboBox.addActionListener(e -> {
+            String selectedCourse = (String) bCourseComboBox.getSelectedItem();
+            if (DEFAULT_ALL_OPTION.equals(selectedCourse)) {
+                bTopicComboBox.setEnabled(false);
+                bSubtopicComboBox.setEnabled(false);
+                bTopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+                bSubtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+            } else {
+                Integer courseID = courseCodeToIDMap.get(selectedCourse);
+                bTopicComboBox.setEnabled(true);
+                populateTopicsDropdown(bTopicComboBox, courseID, true);
             }
+        });
+
+        bTopicComboBox.addActionListener(e -> {
+            String selectedTopic = (String) bTopicComboBox.getSelectedItem();
+            if (DEFAULT_ALL_OPTION.equals(selectedTopic)) {
+                bSubtopicComboBox.setEnabled(false);
+                bSubtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
+            } else {
+                bSubtopicComboBox.setEnabled(true);
+                populateSubtopicsDropdown(bSubtopicComboBox, selectedTopic, true);
+            }
+        });
+    }
+
+    private void setupManageDropdownListeners() {
+        courseComboBox.addActionListener(e -> {
+            String selectedCourse = (String) courseComboBox.getSelectedItem();
+            if (DEFAULT_NONE_OPTION.equals(selectedCourse)) {
+                topicComboBox.setEnabled(false);
+                subtopicComboBox.setEnabled(false);
+                topicComboBox.setSelectedItem(DEFAULT_NONE_OPTION);
+                subtopicComboBox.setSelectedItem(DEFAULT_NONE_OPTION);
+            } else {
+                Integer courseID = courseCodeToIDMap.get(selectedCourse);
+                topicComboBox.setEnabled(true);
+                populateTopicsDropdown(topicComboBox, courseID, false);
+            }
+        });
+
+        topicComboBox.addActionListener(e -> {
+            String selectedTopic = (String) topicComboBox.getSelectedItem();
+            if (DEFAULT_NONE_OPTION.equals(selectedTopic)) {
+                subtopicComboBox.setEnabled(false);
+                subtopicComboBox.setSelectedItem(DEFAULT_NONE_OPTION);
+            } else {
+                subtopicComboBox.setEnabled(true);
+                populateSubtopicsDropdown(subtopicComboBox, selectedTopic, false);
+            }
+        });
+    }
+
+    private void populateTopicsDropdown(JComboBox<String> topicDropdown, Integer courseID, boolean includeAllOption) {
+        topicDropdown.removeAllItems();
+        if (includeAllOption) {
+            topicDropdown.addItem(DEFAULT_ALL_OPTION);
+        } else {
+            topicDropdown.addItem(DEFAULT_NONE_OPTION);
         }
-        for (String topic : topics) {
-            if (!topic.equals("--All--")) {
-                topicComboBox.addItem(topic);
-            }
+
+        ArrayList<String[]> topics = tController.getTopicsByCourseId(courseID);
+        for (String[] topic : topics) {
+            String topicName = topic[0];
+            topicDropdown.addItem(topicName);
+            topicNameToIDMap.put(topicName, Integer.parseInt(topic[1])); // Map topicName to topicID
         }
-        for (String subtopic : subtopics) {
-            if (!subtopic.equals("--All--")) {
-                subtopicComboBox.addItem(subtopic);
+    }
+
+    private void populateSubtopicsDropdown(JComboBox<String> subtopicDropdown, String topicName, boolean includeAllOption) {
+        subtopicDropdown.removeAllItems();
+        if (includeAllOption) {
+            subtopicDropdown.addItem(DEFAULT_ALL_OPTION);
+        } else {
+            subtopicDropdown.addItem(DEFAULT_NONE_OPTION);
+        }
+
+        // Get the topicID from the topicNameToIDMap
+        Integer topicID = topicNameToIDMap.get(topicName);
+        if (topicID == null) {
+            System.err.println("Error: topicID is null for topicName: " + topicName);
+            return; // Exit early if topicID is null
+        }
+
+        // Fetch subtopics using the topicID
+        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicId(topicID);
+        for (String[] subtopic : subtopics) {
+            String subtopicName = subtopic[0];
+            subtopicDropdown.addItem(subtopicName);
+            subtopicNameToIDMap.put(subtopicName, Integer.parseInt(subtopic[1])); // Map subtopicName to subtopicID
+        }
+    }
+
+    private void setupFormatListeners() {
+        // Question Format Radio Buttons
+        qFormatRadioButton1.addActionListener(e -> updateQuestionFormat());
+        qFormatRadioButton2.addActionListener(e -> updateQuestionFormat());
+        qFormatRadioButton3.addActionListener(e -> updateQuestionFormat());
+    
+        // Answer Format Radio Buttons
+        ansFormatRadioButton1.addActionListener(e -> updateAnswerFormat());
+        ansFormatRadioButton2.addActionListener(e -> updateAnswerFormat());
+    }
+    
+    private void setupImageButtonListeners() {
+        // Question image button
+        qImageButton.addActionListener(e -> {
+            String imagePath = selectImageFile();
+            if (imagePath != null) {
+                imagePathTF.setText(imagePath);
+                questionImagePath = imagePath;
+            
             }
+        });
+        
+        // Answer image buttons
+        ansImageButton1.addActionListener(e -> {
+            String imagePath = selectImageFile();
+            if (imagePath != null) {
+                answer1ImagePath = imagePath;
+                ansTF1.setText(imagePath);
+                //ansImageCB1.setSelected(true);
+                // You might want to store this path somewhere or add a text field for it
+            }
+        });
+        
+        ansImageButton2.addActionListener(e -> {
+            String imagePath = selectImageFile();
+            if (imagePath != null) {
+                answer2ImagePath = imagePath;
+                ansTF2.setText(imagePath);
+                //ansImageCB2.setSelected(true);
+            }
+        });
+        
+        ansImageButton3.addActionListener(e -> {
+            String imagePath = selectImageFile();
+            if (imagePath != null) {
+                answer3ImagePath = imagePath;
+                ansTF3.setText(imagePath);
+                //ansImageCB3.setSelected(true);
+            }
+        });
+        
+        ansImageButton4.addActionListener(e -> {
+            String imagePath = selectImageFile();
+            if (imagePath != null) {
+                answer4ImagePath = imagePath;
+                ansTF4.setText(imagePath);
+                //ansImageCB4.setSelected(true);
+            }
+        });
+    }
+
+    private String selectImageFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        
+        // Set filter for image files only
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Image Files", "jpg", "jpeg", "png");
+        fileChooser.setFileFilter(filter);
+        
+        int returnValue = fileChooser.showOpenDialog(this);
+        
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile().getAbsolutePath();
+        }
+        return null;
+    }
+
+    private void updateQuestionFormat() {
+        if (qFormatRadioButton1.isSelected()) { // Text
+            questionTF.setEnabled(true);
+            qImageButton.setEnabled(false);
+            imagePathTF.setEnabled(false);
+        } else if (qFormatRadioButton2.isSelected()) { // Image
+            questionTF.setEnabled(false);
+            qImageButton.setEnabled(true);
+            imagePathTF.setEnabled(true);
+        } else if (qFormatRadioButton3.isSelected()) { // Text and Image
+            questionTF.setEnabled(true);
+            qImageButton.setEnabled(true);
+            imagePathTF.setEnabled(true);
+        }
+    }
+    
+    private void updateAnswerFormat() {
+        if (ansFormatRadioButton1.isSelected()) { // Text
+            ansTF1.setFocusable(true);
+            ansTF2.setFocusable(true);
+            ansTF3.setFocusable(true);
+            ansTF4.setFocusable(true);
+            
+            ansTF1.setEditable(true);
+            ansTF2.setEditable(true);
+            ansTF3.setEditable(true);
+            ansTF4.setEditable(true);
+
+            ansImageButton1.setEnabled(false);
+            ansImageButton2.setEnabled(false);
+            ansImageButton3.setEnabled(false);
+            ansImageButton4.setEnabled(false);
+        } else if (ansFormatRadioButton2.isSelected()) { // Images
+            ansTF1.setFocusable(false);
+            ansTF2.setFocusable(false);
+            ansTF3.setFocusable(false);
+            ansTF4.setFocusable(false);
+
+            ansTF1.setEditable(false);
+            ansTF2.setEditable(false);
+            ansTF3.setEditable(false);
+            ansTF4.setEditable(false);
+
+            ansImageButton1.setEnabled(true);
+            ansImageButton2.setEnabled(true);
+            ansImageButton3.setEnabled(true);
+            ansImageButton4.setEnabled(true);
         }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup ansButtonGroup;
+    private javax.swing.ButtonGroup ansFormatButtonGroup;
+    private javax.swing.JLabel ansFormatLabel;
+    private javax.swing.JRadioButton ansFormatRadioButton1;
+    private javax.swing.JRadioButton ansFormatRadioButton2;
     private javax.swing.JButton ansImageButton1;
     private javax.swing.JButton ansImageButton2;
     private javax.swing.JButton ansImageButton3;
     private javax.swing.JButton ansImageButton4;
-    private javax.swing.JCheckBox ansImageCB1;
-    private javax.swing.JCheckBox ansImageCB2;
-    private javax.swing.JCheckBox ansImageCB3;
-    private javax.swing.JCheckBox ansImageCB4;
     private javax.swing.JRadioButton ansRadioButton1;
     private javax.swing.JRadioButton ansRadioButton2;
     private javax.swing.JRadioButton ansRadioButton3;
@@ -1549,9 +2072,6 @@ public class Questions extends javax.swing.JPanel {
     private javax.swing.JTextField ansTF4;
     private javax.swing.JComboBox<String> bCourseComboBox;
     private javax.swing.JPanel bCoursePanel;
-    private javax.swing.JCheckBox bDiffEasyCb;
-    private javax.swing.JCheckBox bDiffHardCB;
-    private javax.swing.JCheckBox bDiffMedCB;
     private javax.swing.JPanel bDifficultyPanel;
     private javax.swing.JPanel bFilterPanel;
     private javax.swing.JScrollPane bFilterScrollTab;
@@ -1587,6 +2107,18 @@ public class Questions extends javax.swing.JPanel {
     private javax.swing.JButton helpButton;
     private javax.swing.JPanel historyTagsPanel;
     private javax.swing.JTextField imagePathTF;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JRadioButton jRadioButton3;
+    private javax.swing.JRadioButton jRadioButton4;
+    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JSpinner jSpinner2;
+    private javax.swing.JSpinner jSpinner3;
+    private javax.swing.JSpinner jSpinner4;
+    private javax.swing.JSpinner jSpinner5;
+    private javax.swing.JSpinner jSpinner6;
     private javax.swing.JPanel manageAnswersPanel;
     private javax.swing.JPanel manageControlsPanel;
     private javax.swing.JPanel manageQuestionPanel;
@@ -1597,8 +2129,12 @@ public class Questions extends javax.swing.JPanel {
     private javax.swing.JPanel perfTagsPanel;
     private javax.swing.JLabel performanceLabel;
     private javax.swing.JSpinner performanceSpinner;
+    private javax.swing.ButtonGroup qFormatButtonGroup;
+    private javax.swing.JLabel qFormatLabel;
+    private javax.swing.JRadioButton qFormatRadioButton1;
+    private javax.swing.JRadioButton qFormatRadioButton2;
+    private javax.swing.JRadioButton qFormatRadioButton3;
     private javax.swing.JButton qImageButton;
-    private javax.swing.JCheckBox qImageCB;
     private javax.swing.JTextField questionTF;
     private javax.swing.JLabel questionsLabel;
     private javax.swing.JTabbedPane questionsTabbedPane;
