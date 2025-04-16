@@ -29,12 +29,14 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -57,6 +59,12 @@ public class Questions extends javax.swing.JPanel {
     
     private static final String DEFAULT_ALL_OPTION = "--All--";
     private static final String DEFAULT_NONE_OPTION = "--None--";
+
+    private String questionImagePath = "";
+    private String answer1ImagePath = "";
+    private String answer2ImagePath = "";
+    private String answer3ImagePath = "";
+    private String answer4ImagePath = "";
     
     public Questions() {
         initComponents();
@@ -69,6 +77,7 @@ public class Questions extends javax.swing.JPanel {
         setupBrowseDropdownListeners();
         setupManageDropdownListeners();
         setupFormatListeners();
+        setupImageButtonListeners();
 
         populateResultsPanel(qController.getQuestionsWithFilter()); // Populate the panel with data from the database
     }
@@ -1223,13 +1232,31 @@ public class Questions extends javax.swing.JPanel {
     
         // Get the correct answer
         String correctAnswer = "";
-        if (ansRadioButton1.isSelected()) correctAnswer = ansTF1.getText();
-        else if (ansRadioButton2.isSelected()) correctAnswer = ansTF2.getText();
-        else if (ansRadioButton3.isSelected()) correctAnswer = ansTF3.getText();
-        else if (ansRadioButton4.isSelected()) correctAnswer = ansTF4.getText();
+        String cAnsImagePath = ""; // Placeholder for correct answer image path
+        if (ansRadioButton1.isSelected()) {
+            correctAnswer = ansTF1.getText();
+            cAnsImagePath = answer1ImagePath;
+        }
+        else if (ansRadioButton2.isSelected()){
+            correctAnswer = ansTF2.getText();
+            cAnsImagePath = answer2ImagePath;
+        } 
+        else if (ansRadioButton3.isSelected()) {
+            correctAnswer = ansTF3.getText();
+            cAnsImagePath = answer3ImagePath;
+        }
+        else if (ansRadioButton4.isSelected()) {
+            correctAnswer = ansTF4.getText();
+            cAnsImagePath = answer4ImagePath;
+        }
+        
 
+        // Prepare question data
+        //String question = questionTF.getText();
+    
         // Initialize list to hold wrong answers
         ArrayList<String> wrongAnswers = new ArrayList<>();
+        ArrayList<String> wrongImagePaths = new ArrayList<>();
     
         // Add all answers that aren't the correct one
         if (!ansRadioButton1.isSelected()) wrongAnswers.add(ansTF1.getText());
@@ -1253,6 +1280,11 @@ public class Questions extends javax.swing.JPanel {
             wrongAnswer1ImagePath = wrong1;
             wrongAnswer2ImagePath = wrong2;
             wrongAnswer3ImagePath = wrong3;
+
+            correctAnswer = "";
+            wrong1 = "";
+            wrong2 = "";
+            wrong3 = "";
         }
 
         
@@ -1313,6 +1345,11 @@ public class Questions extends javax.swing.JPanel {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error saving question: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        questionImagePath = "";
+        answer1ImagePath = "";
+        answer2ImagePath = "";
+        answer3ImagePath = "";
+        answer4ImagePath = "";
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
@@ -1899,6 +1936,72 @@ public class Questions extends javax.swing.JPanel {
         ansFormatRadioButton2.addActionListener(e -> updateAnswerFormat());
     }
     
+    private void setupImageButtonListeners() {
+        // Question image button
+        qImageButton.addActionListener(e -> {
+            String imagePath = selectImageFile();
+            if (imagePath != null) {
+                imagePathTF.setText(imagePath);
+                questionImagePath = imagePath;
+            
+            }
+        });
+        
+        // Answer image buttons
+        ansImageButton1.addActionListener(e -> {
+            String imagePath = selectImageFile();
+            if (imagePath != null) {
+                answer1ImagePath = imagePath;
+                ansTF1.setText(imagePath);
+                //ansImageCB1.setSelected(true);
+                // You might want to store this path somewhere or add a text field for it
+            }
+        });
+        
+        ansImageButton2.addActionListener(e -> {
+            String imagePath = selectImageFile();
+            if (imagePath != null) {
+                answer2ImagePath = imagePath;
+                ansTF2.setText(imagePath);
+                //ansImageCB2.setSelected(true);
+            }
+        });
+        
+        ansImageButton3.addActionListener(e -> {
+            String imagePath = selectImageFile();
+            if (imagePath != null) {
+                answer3ImagePath = imagePath;
+                ansTF3.setText(imagePath);
+                //ansImageCB3.setSelected(true);
+            }
+        });
+        
+        ansImageButton4.addActionListener(e -> {
+            String imagePath = selectImageFile();
+            if (imagePath != null) {
+                answer4ImagePath = imagePath;
+                ansTF4.setText(imagePath);
+                //ansImageCB4.setSelected(true);
+            }
+        });
+    }
+
+    private String selectImageFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        
+        // Set filter for image files only
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Image Files", "jpg", "jpeg", "png");
+        fileChooser.setFileFilter(filter);
+        
+        int returnValue = fileChooser.showOpenDialog(this);
+        
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile().getAbsolutePath();
+        }
+        return null;
+    }
+
     private void updateQuestionFormat() {
         if (qFormatRadioButton1.isSelected()) { // Text
             questionTF.setEnabled(true);

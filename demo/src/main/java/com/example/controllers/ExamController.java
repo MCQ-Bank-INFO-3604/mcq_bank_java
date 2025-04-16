@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -13,6 +14,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.poi.util.Units;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -373,28 +380,116 @@ public class ExamController {
                     li.add(question.getString("wrongAnswer3"));
                     Collections.shuffle(li);
 
+                    List<String> li2 = new ArrayList<>();
+                    li2.add(question.getString("correctAnswerImagePath"));
+                    li2.add(question.getString("wrongAnswer1ImagePath"));
+                    li2.add(question.getString("wrongAnswer2ImagePath"));
+                    li2.add(question.getString("wrongAnswer3ImagePath"));
+                    Collections.shuffle(li2);
+
                     // Format question
                     XWPFParagraph questionPara = document.createParagraph();
                     XWPFRun questionRun = questionPara.createRun();
                     questionRun.setBold(true);
                     questionRun.setText(autoNum + ". " + question.getString("question"));
 
+                    String imagePath = question.getString("questionImagePath"); // Make sure this field exists
+                    if (imagePath != null && !imagePath.isEmpty()) {
+                        try (FileInputStream is = new FileInputStream(imagePath)) {
+                            XWPFRun imageRun = document.createParagraph().createRun();
+                            imageRun.addPicture(
+                                is,
+                                XWPFDocument.PICTURE_TYPE_PNG,  // or PICTURE_TYPE_JPEG, etc.
+                                imagePath,
+                                Units.toEMU(200),   // Width
+                                Units.toEMU(150)    // Height
+                            );
+                        } catch (Exception e) {
+                            System.out.println("Could not add image: " + e.getMessage());
+                        }
+                    }                    
+
                     // Format answers
                     XWPFParagraph answerA = document.createParagraph();
                     XWPFRun answerARun = answerA.createRun();
                     answerARun.setText("A. " + li.get(0));
 
+                    imagePath = li2.get(0); // Make sure this field exists
+                    if (imagePath != null && !imagePath.isEmpty()) {
+                        try (FileInputStream is = new FileInputStream(imagePath)) {
+                            XWPFRun imageRun = document.createParagraph().createRun();
+                            imageRun.addPicture(
+                                is,
+                                XWPFDocument.PICTURE_TYPE_PNG,  // or PICTURE_TYPE_JPEG, etc.
+                                imagePath,
+                                Units.toEMU(200),   // Width
+                                Units.toEMU(150)    // Height
+                            );
+                        } catch (Exception e) {
+                            System.out.println("Could not add image: " + e.getMessage());
+                        }
+                    }                    
+
+                    
                     XWPFParagraph answerB = document.createParagraph();
                     XWPFRun answerBRun = answerB.createRun();
                     answerBRun.setText("B. " + li.get(1));
+
+                    imagePath = li2.get(1); // Make sure this field exists
+                    if (imagePath != null && !imagePath.isEmpty()) {
+                        try (FileInputStream is = new FileInputStream(imagePath)) {
+                            XWPFRun imageRun = document.createParagraph().createRun();
+                            imageRun.addPicture(
+                                is,
+                                XWPFDocument.PICTURE_TYPE_PNG,  // or PICTURE_TYPE_JPEG, etc.
+                                imagePath,
+                                Units.toEMU(200),   // Width
+                                Units.toEMU(150)    // Height
+                            );
+                        } catch (Exception e) {
+                            System.out.println("Could not add image: " + e.getMessage());
+                        }
+                    }                    
 
                     XWPFParagraph answerC = document.createParagraph();
                     XWPFRun answerCRun = answerC.createRun();
                     answerCRun.setText("C. " + li.get(2));
 
+                    imagePath = li2.get(2); // Make sure this field exists
+                    if (imagePath != null && !imagePath.isEmpty()) {
+                        try (FileInputStream is = new FileInputStream(imagePath)) {
+                            XWPFRun imageRun = document.createParagraph().createRun();
+                            imageRun.addPicture(
+                                is,
+                                XWPFDocument.PICTURE_TYPE_PNG,  // or PICTURE_TYPE_JPEG, etc.
+                                imagePath,
+                                Units.toEMU(200),   // Width
+                                Units.toEMU(150)    // Height
+                            );
+                        } catch (Exception e) {
+                            System.out.println("Could not add image: " + e.getMessage());
+                        }
+                    }                    
+
                     XWPFParagraph answerD = document.createParagraph();
                     XWPFRun answerDRun = answerD.createRun();
                     answerDRun.setText("D. " + li.get(3));
+
+                    imagePath = li2.get(3); // Make sure this field exists
+                    if (imagePath != null && !imagePath.isEmpty()) {
+                        try (FileInputStream is = new FileInputStream(imagePath)) {
+                            XWPFRun imageRun = document.createParagraph().createRun();
+                            imageRun.addPicture(
+                                is,
+                                XWPFDocument.PICTURE_TYPE_PNG,  // or PICTURE_TYPE_JPEG, etc.
+                                imagePath,
+                                Units.toEMU(200),   // Width
+                                Units.toEMU(150)    // Height
+                            );
+                        } catch (Exception e) {
+                            System.out.println("Could not add image: " + e.getMessage());
+                        }
+                    }                    
 
                     document.createParagraph(); // Add a blank line between questions
                     autoNum++;

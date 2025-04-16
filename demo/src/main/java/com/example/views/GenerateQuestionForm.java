@@ -67,14 +67,18 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
         subtopicLabel = new javax.swing.JLabel();
         subtopicComboBox = new javax.swing.JComboBox<>();
         difficultyLabel = new javax.swing.JLabel();
-        diffEasyRB = new javax.swing.JRadioButton();
-        diffMedRB = new javax.swing.JRadioButton();
-        diffHardRB = new javax.swing.JRadioButton();
-        diffAnyRB = new javax.swing.JRadioButton();
         jPanel1 = new javax.swing.JPanel();
         genButton = new javax.swing.JButton();
         helpButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        jSpinner1 = new javax.swing.JSpinner();
+        jSpinner2 = new javax.swing.JSpinner();
+        jLabel1 = new javax.swing.JLabel();
+        jSpinner3 = new javax.swing.JSpinner();
+        jSpinner4 = new javax.swing.JSpinner();
+        jLabel2 = new javax.swing.JLabel();
+        jSpinner5 = new javax.swing.JSpinner();
+        jSpinner6 = new javax.swing.JSpinner();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Generate Questions");
@@ -97,19 +101,6 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
         subtopicComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sub-Topic 1", "Sub-Topic 2", "Sub-Topic 3", "Sub-Topic 4" }));
 
         difficultyLabel.setText("Difficulty:");
-
-        buttonGroup1.add(diffEasyRB);
-        diffEasyRB.setText("Easy");
-
-        buttonGroup1.add(diffMedRB);
-        diffMedRB.setText("Medium");
-
-        buttonGroup1.add(diffHardRB);
-        diffHardRB.setText("Hard");
-
-        buttonGroup1.add(diffAnyRB);
-        diffAnyRB.setSelected(true);
-        diffAnyRB.setText("Any");
 
         genButton.setText("Generate");
         genButton.addActionListener(new java.awt.event.ActionListener() {
@@ -135,6 +126,22 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
         });
         jPanel1.add(cancelButton);
 
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jLabel1.setText("Performance");
+
+        jSpinner3.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jSpinner4.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jLabel2.setText("Discrimination");
+
+        jSpinner5.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
+        jSpinner6.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.01f)));
+
         javax.swing.GroupLayout contentPaneLayout = new javax.swing.GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
@@ -142,9 +149,14 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
             .addGroup(contentPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(contentPaneLayout.createSequentialGroup()
                         .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(contentPaneLayout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(contentPaneLayout.createSequentialGroup()
                                 .addComponent(courseLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -164,15 +176,19 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
                             .addGroup(contentPaneLayout.createSequentialGroup()
                                 .addComponent(difficultyLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(diffEasyRB)
+                                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(diffMedRB)
+                                .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(contentPaneLayout.createSequentialGroup()
+                                .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(diffHardRB)
+                                .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(diffAnyRB)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                                .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(contentPaneLayout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         contentPaneLayout.setVerticalGroup(
             contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,11 +212,19 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(difficultyLabel)
-                    .addComponent(diffEasyRB)
-                    .addComponent(diffMedRB)
-                    .addComponent(diffHardRB)
-                    .addComponent(diffAnyRB))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -222,78 +246,118 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void genButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genButtonActionPerformed
-        // TODO add your handling code here:
-        // Get the selected criteria
-        int numQuestions = (Integer) numSpinner.getValue();
-        String course = (String) courseComboBox.getSelectedItem();
-        String topic = (String) topicComboBox.getSelectedItem();
-        String subtopic = (String) subtopicComboBox.getSelectedItem();
-        
-        // Get selected difficulty
-        String difficulty = null;
-        if (diffEasyRB.isSelected()) difficulty = "Easy";
-        else if (diffMedRB.isSelected()) difficulty = "Medium";
-        else if (diffHardRB.isSelected()) difficulty = "Hard";
-        // If "Any" is selected, difficulty remains null
-        
-        try {
-            // Get questions that match the criteria
-            QuestionController qController = new QuestionController();
-            ResultSet matchingQuestions = qController.getQuestionsWithFilter(buildQuery(course, topic, subtopic, difficulty));
-            
-            // Add the specified number of questions to the exam
-            ExamController eController = new ExamController();
-            int addedCount = 0;
-            
-            while (matchingQuestions != null && matchingQuestions.next() && addedCount < numQuestions) {
-                int questionId = matchingQuestions.getInt("questionID");
-                eController.addQuestionToExam(currentExamId, questionId);
-                addedCount++;
-            }
-            
-            if (addedCount > 0) {
-                JOptionPane.showMessageDialog(this, 
-                    "Successfully added " + addedCount + " questions to the exam", 
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, 
-                    "No questions matched the specified criteria", 
-                    "Warning", JOptionPane.WARNING_MESSAGE);
-            }
-            
-            this.dispose();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, 
-                "Error generating questions: " + e.getMessage(), 
-                "Error", JOptionPane.ERROR_MESSAGE);
+    // Get the selected criteria
+    int numQuestions = (Integer) numSpinner.getValue();
+    String course = (String) courseComboBox.getSelectedItem();
+    String topic = (String) topicComboBox.getSelectedItem();
+    String subtopic = (String) subtopicComboBox.getSelectedItem();
+
+    // Get selected difficulty, performance, and discrimination ranges
+    float minDifficulty = (Float) jSpinner1.getValue();
+    float maxDifficulty = (Float) jSpinner2.getValue();
+    float minPerformance = (Float) jSpinner3.getValue();
+    float maxPerformance = (Float) jSpinner4.getValue();
+    float minDiscrimination = (Float) jSpinner5.getValue();
+    float maxDiscrimination = (Float) jSpinner6.getValue();
+
+    // Build the query dynamically
+    StringBuilder query = new StringBuilder("SELECT * FROM questions WHERE 1=1");
+
+    if (course != null && !course.equals(DEFAULT_ALL_OPTION)) {
+        query.append(" AND course = '").append(course).append("'");
+    }
+
+    if (topic != null && !topic.equals(DEFAULT_ALL_OPTION)) {
+        query.append(" AND topic = '").append(topic).append("'");
+    }
+
+    if (subtopic != null && !subtopic.equals(DEFAULT_ALL_OPTION)) {
+        query.append(" AND subTopic = '").append(subtopic).append("'");
+    }
+
+    if (minDifficulty > 0.0f) {
+        query.append(" AND difficulty >= ").append(minDifficulty);
+    }
+
+    if (maxDifficulty < 1.0f) {
+        query.append(" AND difficulty <= ").append(maxDifficulty);
+    }
+
+    if (minPerformance > 0.0f) {
+        query.append(" AND performance >= ").append(minPerformance);
+    }
+
+    if (maxPerformance < 1.0f) {
+        query.append(" AND performance <= ").append(maxPerformance);
+    }
+
+    if (minDiscrimination > 0.0f) {
+        query.append(" AND discrimination >= ").append(minDiscrimination);
+    }
+
+    if (maxDiscrimination < 1.0f) {
+        query.append(" AND discrimination <= ").append(maxDiscrimination);
+    }
+
+    query.append(" AND questionID NOT IN (SELECT questionID FROM ExamQuestions WHERE examID = ").append(currentExamId).append(")");
+
+    // Add random ordering to get different questions each time
+    query.append(" ORDER BY RANDOM()");
+
+    try {
+        // Get questions that match the criteria
+        QuestionController qController = new QuestionController();
+        ResultSet matchingQuestions = qController.getQuestionsWithFilter(query.toString());
+
+        // Add the specified number of questions to the exam
+        ExamController eController = new ExamController();
+        int addedCount = 0;
+
+        while (matchingQuestions != null && matchingQuestions.next() && addedCount < numQuestions) {
+            int questionId = matchingQuestions.getInt("questionID");
+            eController.addQuestionToExam(currentExamId, questionId);
+            addedCount++;
+        }
+
+        if (addedCount > 0) {
+            JOptionPane.showMessageDialog(this,
+                "Successfully added " + addedCount + " questions to the exam",
+                "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "No questions matched the specified criteria",
+                "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+
+        this.dispose();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this,
+            "Error generating questions: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_genButtonActionPerformed
 
-    private String buildQuery(String course, String topic, String subtopic, String difficulty) {
-        StringBuilder query = new StringBuilder("SELECT * FROM questions WHERE 1=1");
+    // private String buildQuery(String course, String topic, String subtopic, String difficulty) {
+    //     StringBuilder query = new StringBuilder("SELECT * FROM questions WHERE 1=1");
         
-        if (course != null && !course.equals("--All--")) {
-            query.append(" AND course = '").append(course).append("'");
-        }
+    //     if (course != null && !course.equals("--All--")) {
+    //         query.append(" AND course = '").append(course).append("'");
+    //     }
         
-        if (topic != null && !topic.equals("--All--")) {
-            query.append(" AND topic = '").append(topic).append("'");
-        }
+    //     if (topic != null && !topic.equals("--All--")) {
+    //         query.append(" AND topic = '").append(topic).append("'");
+    //     }
         
-        if (subtopic != null && !subtopic.equals("--All--")) {
-            query.append(" AND subTopic = '").append(subtopic).append("'");
-        }
+    //     if (subtopic != null && !subtopic.equals("--All--")) {
+    //         query.append(" AND subTopic = '").append(subtopic).append("'");
+    //     }
+
+    //     // Add random ordering to get different questions each time
+    //     query.append(" ORDER BY RANDOM()");
         
-        if (difficulty != null) {
-            query.append(" AND difficulty = '").append(difficulty).append("'");
-        }
-        
-        // Add random ordering to get different questions each time
-        query.append(" ORDER BY RANDOM()");
-        
-        return query.toString();
-    }
+    //     return query.toString();
+    // }
 
     private void populateDropdowns() {
         // Clear the existing items in the combo boxes
@@ -345,9 +409,8 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
                 subtopicComboBox.setEnabled(false);
                 subtopicComboBox.setSelectedItem(DEFAULT_ALL_OPTION);
             } else {
-                Integer topicID = topicNameToIDMap.get(selectedTopic);
                 subtopicComboBox.setEnabled(true);
-                populateSubtopicsDropdown(subtopicComboBox, topicID);
+                populateSubtopicsDropdown(subtopicComboBox, selectedTopic);
             }
         });
     }
@@ -360,17 +423,26 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
         for (String[] topic : topics) {
             String topicName = topic[0];
             topicDropdown.addItem(topicName);
+            topicNameToIDMap.put(topicName, Integer.parseInt(topic[1]));
         }
     }
 
-    private void populateSubtopicsDropdown(JComboBox<String> subtopicDropdown, Integer topic) {
+    private void populateSubtopicsDropdown(JComboBox<String> subtopicDropdown, String topic) {
         subtopicDropdown.removeAllItems();
         subtopicDropdown.addItem(DEFAULT_ALL_OPTION);
 
-        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicId(topic);
+        // Get the topicID from the topicNameToIDMap
+        Integer topicID = topicNameToIDMap.get(topic);
+        if (topicID == null) {
+            System.err.println("Error: topicID is null for topicName: " + topic);
+            return; // Exit early if topicID is null
+        }
+
+        ArrayList<String[]> subtopics = sController.getSubtopicsByTopicId(topicID);
         for (String[] subtopic : subtopics) {
             String subtopicName = subtopic[0];
             subtopicDropdown.addItem(subtopicName);
+            subtopicNameToIDMap.put(subtopicName, Integer.parseInt(subtopic[1]));
         }
     }
 
@@ -422,14 +494,18 @@ public class GenerateQuestionForm extends javax.swing.JDialog {
     private javax.swing.JPanel contentPane;
     private javax.swing.JComboBox<String> courseComboBox;
     private javax.swing.JLabel courseLabel;
-    private javax.swing.JRadioButton diffAnyRB;
-    private javax.swing.JRadioButton diffEasyRB;
-    private javax.swing.JRadioButton diffHardRB;
-    private javax.swing.JRadioButton diffMedRB;
     private javax.swing.JLabel difficultyLabel;
     private javax.swing.JButton genButton;
     private javax.swing.JButton helpButton;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JSpinner jSpinner2;
+    private javax.swing.JSpinner jSpinner3;
+    private javax.swing.JSpinner jSpinner4;
+    private javax.swing.JSpinner jSpinner5;
+    private javax.swing.JSpinner jSpinner6;
     private javax.swing.JLabel numLabel;
     private javax.swing.JSpinner numSpinner;
     private javax.swing.JComboBox<String> subtopicComboBox;

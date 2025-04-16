@@ -1099,24 +1099,24 @@ public class Exams extends javax.swing.JPanel {
         try {
             // Ask user for file location
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Save Exam PDF");
-            fileChooser.setSelectedFile(new File("Exam_" + currentExamId + ".pdf"));
-            fileChooser.setFileFilter(new FileNameExtensionFilter("PDF Files", "pdf"));
+            fileChooser.setDialogTitle("Save Exam Document");
+            fileChooser.setSelectedFile(new File("Exam_" + currentExamId + ".docx"));
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Word Documents", "docx"));
             
             int userSelection = fileChooser.showSaveDialog(this);
             
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
                 // Ensure the file has .pdf extension
-                if (!fileToSave.getName().toLowerCase().endsWith(".pdf")) {
-                    fileToSave = new File(fileToSave.getAbsolutePath() + ".pdf");
+                if (!fileToSave.getName().toLowerCase().endsWith(".docx")) {
+                    fileToSave = new File(fileToSave.getAbsolutePath() + ".docx");
                 }
                 
                 // Generate the PDF
-                eController.generateExamPDF(currentExamId, fileToSave.getAbsolutePath());
+                eController.generateExamDocx(currentExamId, fileToSave.getAbsolutePath());
                 
                 JOptionPane.showMessageDialog(this, 
-                    "Exam PDF generated successfully at:\n" + fileToSave.getAbsolutePath(), 
+                    "Exam document generated successfully at:\n" + fileToSave.getAbsolutePath(), 
                     "Success", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (Exception e) {
