@@ -19,6 +19,8 @@ import com.example.controllers.TopicsController;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -509,7 +511,7 @@ public class Questions extends javax.swing.JPanel {
         historyTagsPanel.add(dateUsedLabel, gridBagConstraints);
 
         dateUsedTF.setEditable(false);
-        dateUsedTF.setText("Never");
+        dateUsedTF.setText("--Never--");
         dateUsedTF.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
@@ -1071,33 +1073,58 @@ public class Questions extends javax.swing.JPanel {
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         // TODO add your handling code here:
-        // Clear all fields and reset state
         currentQuestionId = null;
         clearFields();
         
-        // Set default values
-        difficultySpinner.setValue(0);
+        // Clear non-editable fields
         dateCreatedTF.setText("--New--");
         dateEditedTF.setText("--New--");
-        dateUsedTF.setText("Never");
+        dateUsedTF.setText("--Never--");
         usedCountTF.setText("0");
-        //perfTF.setText("0");
+
     }//GEN-LAST:event_newButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
         // TODO add your handling code here:
         // Validate required fields
-        if (questionTF.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Question text is required", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        String question = questionTF.getText().trim();
+        String questionImagePath = imagePathTF.getText().trim();
+        Boolean hasImage = false;
+
+        if (qFormatRadioButton1.isSelected() || qFormatRadioButton3.isSelected()) { // text question format warning
+            if (question.isEmpty() || question.equalsIgnoreCase("Question text")) {
+                JOptionPane.showMessageDialog(this, "Question text is required", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (qFormatRadioButton1.isSelected()) { questionImagePath = ""; }
         }
-    
-        if (ansTF1.getText().trim().isEmpty() || ansTF2.getText().trim().isEmpty() ||
-            ansTF3.getText().trim().isEmpty() || ansTF4.getText().trim().isEmpty()) {
+        if (qFormatRadioButton2.isSelected() || qFormatRadioButton3.isSelected()) { // image question format warning
+            if (questionImagePath.isEmpty() || questionImagePath.equalsIgnoreCase("Image Path")) {
+                JOptionPane.showMessageDialog(this, "Question Image Path is required", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (qFormatRadioButton2.isSelected()) { question = ""; }
+            hasImage = true; // Set hasImage to true for image questions
+        }
+
+        String cAns = "";
+        String wAns1 = "";
+        String wAns2 = "";
+        String wAns3 = "";
+        
+        String correctAnswerImagePath = "";
+        String wrongAnswer1ImagePath = "";
+        String wrongAnswer2ImagePath = "";
+        String wrongAnswer3ImagePath = "";
+
+        if (ansTF1.getText().trim().isEmpty() || ansTF1.getText().trim().equalsIgnoreCase("Answer 1") ||
+            ansTF2.getText().trim().isEmpty() || ansTF2.getText().trim().equalsIgnoreCase("Answer 2") ||
+            ansTF3.getText().trim().isEmpty() || ansTF3.getText().trim().equalsIgnoreCase("Answer 3") ||
+            ansTF4.getText().trim().isEmpty() || ansTF4.getText().trim().equalsIgnoreCase("Answer 4")) {
             JOptionPane.showMessageDialog(this, "All answer fields are required", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-    
+
         if (!ansRadioButton1.isSelected() && !ansRadioButton2.isSelected() &&
             !ansRadioButton3.isSelected() && !ansRadioButton4.isSelected()) {
             JOptionPane.showMessageDialog(this, "Please select the correct answer", "Error", JOptionPane.ERROR_MESSAGE);
@@ -1110,10 +1137,7 @@ public class Questions extends javax.swing.JPanel {
         else if (ansRadioButton2.isSelected()) correctAnswer = ansTF2.getText();
         else if (ansRadioButton3.isSelected()) correctAnswer = ansTF3.getText();
         else if (ansRadioButton4.isSelected()) correctAnswer = ansTF4.getText();
-    
-        // Prepare question data
-        String question = questionTF.getText();
-    
+
         // Initialize list to hold wrong answers
         ArrayList<String> wrongAnswers = new ArrayList<>();
     
@@ -1122,42 +1146,52 @@ public class Questions extends javax.swing.JPanel {
         if (!ansRadioButton2.isSelected()) wrongAnswers.add(ansTF2.getText());
         if (!ansRadioButton3.isSelected()) wrongAnswers.add(ansTF3.getText());
         if (!ansRadioButton4.isSelected()) wrongAnswers.add(ansTF4.getText());
-    
-        // Ensure we have exactly 3 wrong answers (in case of unexpected state)
-        while (wrongAnswers.size() < 3) {
-            wrongAnswers.add(""); // Add empty strings if somehow we don't have 3 wrong answers
-        }
-    
+
         String wrong1 = wrongAnswers.get(0);
         String wrong2 = wrongAnswers.get(1);
         String wrong3 = wrongAnswers.get(2);
-    
+
+        if (ansFormatRadioButton1.isSelected()) { // text answers
+            cAns = correctAnswer;
+            wAns1 = wrong1;
+            wAns2 = wrong2;
+            wAns3 = wrong3;
+        } else { // image answers
+            hasImage = true; // Set hasImage to true for image answers
+
+            correctAnswerImagePath = correctAnswer;
+            wrongAnswer1ImagePath = wrong1;
+            wrongAnswer2ImagePath = wrong2;
+            wrongAnswer3ImagePath = wrong3;
+        }
+
+        
         String courseCode = (String) courseComboBox.getSelectedItem();
-        Integer courseID = courseCodeToIDMap.get(courseCode); // Get the courseID from the map
         String topicName = (String) topicComboBox.getSelectedItem();
-        Integer topicID = topicNameToIDMap.get(topicName); // Get the topicID from the map
         String subtopicName = (String) subtopicComboBox.getSelectedItem();
+        if (courseCode == null || courseCode.equalsIgnoreCase("--None--") ||
+            topicName == null || topicName.equalsIgnoreCase("--None--") ||
+            subtopicName == null || subtopicName.equalsIgnoreCase("--None--")) {
+            JOptionPane.showMessageDialog(this, "Please select a course, topic, and subtopic", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Integer courseID = courseCodeToIDMap.get(courseCode); // Get the courseID from the map
+        Integer topicID = topicNameToIDMap.get(topicName); // Get the topicID from the map
         Integer subtopicID = subtopicNameToIDMap.get(subtopicName); // Get the subtopicID from the map
-        Float difficulty = 0.0f; // Default difficulty value
-        Float performance = 0.0f; // Default performance value
-        Float discrimination = 0.0f; // Default discrimination value
-    
-        //TODO: Handle image paths and checkboxes
-        Boolean hasImage = false; // Default value for image presence
-        String qImagePath = ""; // Placeholder for question image path
-        String cAnsImagePath = ""; // Placeholder for correct answer image path
-        String wAns1ImagePath = ""; // Placeholder for wrong answer 1 image path
-        String wAns2ImagePath = ""; // Placeholder for wrong answer 2 image path
-        String wAns3ImagePath = ""; // Placeholder for wrong answer 3 image path
-        String comment = ""; // Placeholder for comment
+        
+        Float difficulty = ((Number) difficultySpinner.getValue()).floatValue();
+        Float performance = ((Number) performanceSpinner.getValue()).floatValue(); 
+        Float discrimination = ((Number) discriminationSpinner.getValue()).floatValue();
+
+        String comment = commentTextArea.getText().trim();
         try {
             if (currentQuestionId == null) {
                 // Create new question
                 boolean success = qController.insertQuestion(
                     question, correctAnswer, wrong1, wrong2, wrong3,
                     courseID, topicID, subtopicID, difficulty, performance, discrimination,
-                    hasImage, qImagePath, cAnsImagePath, wAns1ImagePath, wAns2ImagePath,
-                    wAns3ImagePath, comment
+                    hasImage, questionImagePath, correctAnswerImagePath, wrongAnswer1ImagePath, 
+                    wrongAnswer2ImagePath, wrongAnswer3ImagePath, comment
                 );
     
                 if (success) {
@@ -1173,8 +1207,8 @@ public class Questions extends javax.swing.JPanel {
                     currentQuestionId,
                     question, correctAnswer, wrong1, wrong2, wrong3,
                     courseID, topicID, subtopicID, difficulty, performance, discrimination,
-                    hasImage, qImagePath, cAnsImagePath, wAns1ImagePath, wAns2ImagePath,
-                    wAns3ImagePath, comment
+                    hasImage, questionImagePath, correctAnswerImagePath, wrongAnswer1ImagePath, 
+                    wrongAnswer2ImagePath, wrongAnswer3ImagePath, comment
                 );
     
                 if (success) {
@@ -1233,7 +1267,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF1.getText().equals("Answer 1")){
             ansTF1.setText("");
-            ansTF1.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_ansTF1FocusGained
 
@@ -1241,7 +1274,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF1.getText().equals("")){
             ansTF1.setText("Answer 1");
-            ansTF1.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_ansTF1FocusLost
 
@@ -1249,7 +1281,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF2.getText().equals("Answer 2")){
             ansTF2.setText("");
-            ansTF2.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_ansTF2FocusGained
 
@@ -1257,7 +1288,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF2.getText().equals("")){
             ansTF2.setText("Answer 2");
-            ansTF2.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_ansTF2FocusLost
 
@@ -1265,7 +1295,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF3.getText().equals("Answer 3")){
             ansTF3.setText("");
-            ansTF3.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_ansTF3FocusGained
 
@@ -1273,7 +1302,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF3.getText().equals("")){
             ansTF3.setText("Answer 3");
-            ansTF3.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_ansTF3FocusLost
 
@@ -1281,7 +1309,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF4.getText().equals("Answer 4")){
             ansTF4.setText("");
-            ansTF4.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_ansTF4FocusGained
 
@@ -1289,7 +1316,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(ansTF4.getText().equals("")){
             ansTF4.setText("Answer 4");
-            ansTF4.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_ansTF4FocusLost
 
@@ -1297,7 +1323,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(questionTF.getText().equals("Question Text")){
             questionTF.setText("");
-            questionTF.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_questionTFFocusGained
 
@@ -1305,7 +1330,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(questionTF.getText().equals("")){
             questionTF.setText("Question Text");
-            questionTF.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_questionTFFocusLost
 
@@ -1313,7 +1337,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(searchTF.getText().equals("Search Here")){
             searchTF.setText("");
-            searchTF.setForeground(new Color(0,0,0));
         }
     }//GEN-LAST:event_searchTFFocusGained
 
@@ -1321,7 +1344,6 @@ public class Questions extends javax.swing.JPanel {
         // TODO add your handling code here:
         if(searchTF.getText().equals("")){
             searchTF.setText("Search Here");
-            searchTF.setForeground(new Color(204,204,204));
         }
     }//GEN-LAST:event_searchTFFocusLost
 
@@ -1331,15 +1353,20 @@ public class Questions extends javax.swing.JPanel {
     
     private void clearFields() {
         // Clear text fields
-        questionTF.setText("");
-        ansTF1.setText("");
-        ansTF2.setText("");
-        ansTF3.setText("");
-        ansTF4.setText("");
+        questionTF.setText("Question Text");
+        ansTF1.setText("Answer 1");
+        ansTF2.setText("Answer 2");
+        ansTF3.setText("Answer 3");
+        ansTF4.setText("Answer 4");
         imagePathTF.setText("Image Path");
         
         // Clear radio buttons
         ansButtonGroup.clearSelection();
+        qFormatButtonGroup.clearSelection();
+        ansButtonGroup.clearSelection();
+
+        qFormatRadioButton1.setSelected(true); // Default to text format
+        ansFormatRadioButton1.setSelected(true); // Default to text format
         
         // Reset dropdowns to first item
         courseComboBox.setSelectedIndex(0);
@@ -1350,7 +1377,7 @@ public class Questions extends javax.swing.JPanel {
         difficultySpinner.setValue(0);
         performanceSpinner.setValue(0);
         discriminationSpinner.setValue(0);
-        
+
         //Clear text area
         commentTextArea.setText("");
     }
@@ -1525,14 +1552,41 @@ public class Questions extends javax.swing.JPanel {
             ResultSet rs = qController.getQuestion(questionId);
             
             if (rs.next()) {
-                // Fill question text
-                questionTF.setText(rs.getString("question"));
-                
+                System.out.println("Loading question ID: " + questionId);
+                System.out.println("Question Text: " + rs.getString("question"));
+                System.out.println("C Ans Text: " + rs.getString("correctAnswer"));
+                System.out.println("Question Img Path: " + rs.getString("questionImagePath"));
+                System.out.println("C Ans Img Path: " + rs.getString("correctAnswerImagePath"));
+                if (!rs.getString("question").isEmpty() && !rs.getString("questionImagePath").isEmpty()) {
+                    qFormatRadioButton3.setSelected(true);
+                    questionTF.setText(rs.getString("question"));
+                    imagePathTF.setText(rs.getString("questionImagePath"));
+                } else if (!rs.getString("questionImagePath").isEmpty()) {
+                    qFormatRadioButton2.setSelected(true);
+                    imagePathTF.setText(rs.getString("questionImagePath"));
+                } else {
+                    qFormatRadioButton1.setSelected(true);
+                    questionTF.setText(rs.getString("question"));
+                }
+                updateQuestionFormat();
+
                 // Fill answer fields (assuming 4 answers)
-                ansTF1.setText(rs.getString("correctAnswer"));
-                ansTF2.setText(rs.getString("wrongAnswer1"));
-                ansTF3.setText(rs.getString("wrongAnswer2"));
-                ansTF4.setText(rs.getString("wrongAnswer3"));
+                if (!rs.getString("correctAnswerImagePath").isEmpty()) {
+                    ansFormatRadioButton2.setSelected(true);
+
+                    ansTF1.setText(rs.getString("correctAnswerImagePath"));
+                    ansTF2.setText(rs.getString("wrongAnswer1ImagePath"));
+                    ansTF3.setText(rs.getString("wrongAnswer2ImagePath"));
+                    ansTF4.setText(rs.getString("wrongAnswer3ImagePath"));
+                } else {
+                    ansFormatRadioButton1.setSelected(true);
+
+                    ansTF1.setText(rs.getString("correctAnswer"));
+                    ansTF2.setText(rs.getString("wrongAnswer1"));
+                    ansTF3.setText(rs.getString("wrongAnswer2"));
+                    ansTF4.setText(rs.getString("wrongAnswer3"));
+                }
+                updateAnswerFormat();
                 
                 // Set correct answer (assuming radio buttons)
                 ansRadioButton1.setSelected(true);
@@ -1549,22 +1603,47 @@ public class Questions extends javax.swing.JPanel {
                 courseComboBox.setSelectedItem(courseCode);
                 topicComboBox.setSelectedItem(topicName);
                 subtopicComboBox.setSelectedItem(subtopicName);
-                // difficultyComboBox.setSelectedItem(rs.getString("difficulty"));
                 
-                // Fill non-editable fields (dates, performance)
-                dateCreatedTF.setText(rs.getString("dateCreated"));
-                dateEditedTF.setText(rs.getString("lastEdited"));
+                // Fill history tags
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-                // Handle null lastUsed
+                String dateCreated = rs.getString("dateCreated");
+                String dateEdited = rs.getString("lastEdited");
                 String lastUsed = rs.getString("lastUsed");
-                dateUsedTF.setText(lastUsed == null ? "Never" : lastUsed);
+
+                if (dateCreated != null) {
+                    dateCreatedTF.setText(outputFormat.format(inputFormat.parse(dateCreated)));
+                } else {
+                    dateCreatedTF.setText("--New--");
+                }
+
+                if (dateEdited != null) {
+                    dateEditedTF.setText(outputFormat.format(inputFormat.parse(dateEdited)));
+                } else {
+                    dateEditedTF.setText("--New--");
+                }
+
+                if (lastUsed != null) {
+                    dateUsedTF.setText(outputFormat.format(inputFormat.parse(lastUsed)));
+                } else {
+                    dateUsedTF.setText("--Never--");
+                }
 
                 usedCountTF.setText(String.valueOf(rs.getInt("timesUsed")));
-                // perfTF.setText(String.valueOf(rs.getInt("performanceMetric")));
+
+                // Fill performance, discrimination, and difficulty
+                difficultySpinner.setValue(rs.getFloat("difficulty"));
+                performanceSpinner.setValue(rs.getFloat("performance"));
+                discriminationSpinner.setValue(rs.getFloat("discrimination"));
+
+                commentTextArea.setText(rs.getString("comment"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Failed to load question data.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
     }
 

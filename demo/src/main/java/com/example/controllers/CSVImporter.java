@@ -141,6 +141,18 @@ public class CSVImporter {
                 String wrongAnswer3ImagePath = values[16].trim();
                 String comment = values[17].trim();
 
+                convertToEmptyStringIfNull(question);
+                convertToEmptyStringIfNull(correctAnswer);
+                convertToEmptyStringIfNull(wrong1);
+                convertToEmptyStringIfNull(wrong2);
+                convertToEmptyStringIfNull(wrong3);
+                
+                convertToEmptyStringIfNull(questionImagePath);
+                convertToEmptyStringIfNull(correctAnswerImagePath);
+                convertToEmptyStringIfNull(wrongAnswer1ImagePath);
+                convertToEmptyStringIfNull(wrongAnswer2ImagePath);
+                convertToEmptyStringIfNull(wrongAnswer3ImagePath);
+                
                 // Insert question using QuestionController
                 questionController.insertQuestion(
                     question, correctAnswer, wrong1, wrong2, wrong3, course, topic, subTopic,
@@ -151,6 +163,14 @@ public class CSVImporter {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private String convertToEmptyStringIfNull(String str) {
+        if (str == null || str.equals("null")) {
+            return ""; // Convert null to empty string
+        } else {
+            return str; // Return the original string if not null
         }
     }
 }
