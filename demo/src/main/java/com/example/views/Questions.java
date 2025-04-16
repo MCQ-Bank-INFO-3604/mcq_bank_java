@@ -66,6 +66,7 @@ public class Questions extends javax.swing.JPanel {
         populateDropdowns();
         setupBrowseDropdownListeners();
         setupManageDropdownListeners();
+        setupFormatListeners();
 
         populateResultsPanel(qController.getQuestionsWithFilter()); // Populate the panel with data from the database
     }
@@ -1697,6 +1698,67 @@ public class Questions extends javax.swing.JPanel {
             String subtopicName = subtopic[0];
             subtopicDropdown.addItem(subtopicName);
             subtopicNameToIDMap.put(subtopicName, Integer.parseInt(subtopic[1])); // Map subtopicName to subtopicID
+        }
+    }
+
+    private void setupFormatListeners() {
+        // Question Format Radio Buttons
+        qFormatRadioButton1.addActionListener(e -> updateQuestionFormat());
+        qFormatRadioButton2.addActionListener(e -> updateQuestionFormat());
+        qFormatRadioButton3.addActionListener(e -> updateQuestionFormat());
+    
+        // Answer Format Radio Buttons
+        ansFormatRadioButton1.addActionListener(e -> updateAnswerFormat());
+        ansFormatRadioButton2.addActionListener(e -> updateAnswerFormat());
+    }
+    
+    private void updateQuestionFormat() {
+        if (qFormatRadioButton1.isSelected()) { // Text
+            questionTF.setEnabled(true);
+            qImageButton.setEnabled(false);
+            imagePathTF.setEnabled(false);
+        } else if (qFormatRadioButton2.isSelected()) { // Image
+            questionTF.setEnabled(false);
+            qImageButton.setEnabled(true);
+            imagePathTF.setEnabled(true);
+        } else if (qFormatRadioButton3.isSelected()) { // Text and Image
+            questionTF.setEnabled(true);
+            qImageButton.setEnabled(true);
+            imagePathTF.setEnabled(true);
+        }
+    }
+    
+    private void updateAnswerFormat() {
+        if (ansFormatRadioButton1.isSelected()) { // Text
+            ansTF1.setFocusable(true);
+            ansTF2.setFocusable(true);
+            ansTF3.setFocusable(true);
+            ansTF4.setFocusable(true);
+            
+            ansTF1.setEditable(true);
+            ansTF2.setEditable(true);
+            ansTF3.setEditable(true);
+            ansTF4.setEditable(true);
+
+            ansImageButton1.setEnabled(false);
+            ansImageButton2.setEnabled(false);
+            ansImageButton3.setEnabled(false);
+            ansImageButton4.setEnabled(false);
+        } else if (ansFormatRadioButton2.isSelected()) { // Images
+            ansTF1.setFocusable(false);
+            ansTF2.setFocusable(false);
+            ansTF3.setFocusable(false);
+            ansTF4.setFocusable(false);
+
+            ansTF1.setEditable(false);
+            ansTF2.setEditable(false);
+            ansTF3.setEditable(false);
+            ansTF4.setEditable(false);
+
+            ansImageButton1.setEnabled(true);
+            ansImageButton2.setEnabled(true);
+            ansImageButton3.setEnabled(true);
+            ansImageButton4.setEnabled(true);
         }
     }
 
