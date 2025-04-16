@@ -82,6 +82,8 @@ public class Questions extends javax.swing.JPanel {
 
         ansButtonGroup = new javax.swing.ButtonGroup();
         sortButtonGroup = new javax.swing.ButtonGroup();
+        qFormatButtonGroup = new javax.swing.ButtonGroup();
+        ansFormatButtonGroup = new javax.swing.ButtonGroup();
         headerPanel = new javax.swing.JPanel();
         returnButton = new javax.swing.JButton();
         helpButton = new javax.swing.JButton();
@@ -96,25 +98,27 @@ public class Questions extends javax.swing.JPanel {
         deleteButton = new javax.swing.JButton();
         manageQuestionPanel = new javax.swing.JPanel();
         questionTF = new javax.swing.JTextField();
-        qImageCB = new javax.swing.JCheckBox();
         qImageButton = new javax.swing.JButton();
         imagePathTF = new javax.swing.JTextField();
+        qFormatLabel = new javax.swing.JLabel();
+        qFormatRadioButton1 = new javax.swing.JRadioButton();
+        qFormatRadioButton2 = new javax.swing.JRadioButton();
+        qFormatRadioButton3 = new javax.swing.JRadioButton();
         manageAnswersPanel = new javax.swing.JPanel();
+        ansFormatLabel = new javax.swing.JLabel();
+        ansFormatRadioButton1 = new javax.swing.JRadioButton();
+        ansFormatRadioButton2 = new javax.swing.JRadioButton();
         ansRadioButton1 = new javax.swing.JRadioButton();
         ansTF1 = new javax.swing.JTextField();
-        ansImageCB1 = new javax.swing.JCheckBox();
         ansImageButton1 = new javax.swing.JButton();
         ansRadioButton2 = new javax.swing.JRadioButton();
         ansTF2 = new javax.swing.JTextField();
-        ansImageCB2 = new javax.swing.JCheckBox();
         ansImageButton2 = new javax.swing.JButton();
         ansRadioButton3 = new javax.swing.JRadioButton();
         ansTF3 = new javax.swing.JTextField();
-        ansImageCB3 = new javax.swing.JCheckBox();
         ansImageButton3 = new javax.swing.JButton();
         ansRadioButton4 = new javax.swing.JRadioButton();
         ansTF4 = new javax.swing.JTextField();
-        ansImageCB4 = new javax.swing.JCheckBox();
         ansImageButton4 = new javax.swing.JButton();
         manageTagsPanel = new javax.swing.JPanel();
         historyTagsPanel = new javax.swing.JPanel();
@@ -204,7 +208,7 @@ public class Questions extends javax.swing.JPanel {
 
         add(headerPanel, java.awt.BorderLayout.PAGE_START);
 
-        manageScrollContentPanel.setPreferredSize(new java.awt.Dimension(621, 510));
+        manageScrollContentPanel.setPreferredSize(new java.awt.Dimension(652, 576));
 
         manageControlsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Controls"));
 
@@ -253,10 +257,24 @@ public class Questions extends javax.swing.JPanel {
         });
 
         qImageButton.setText("Choose Image");
+        qImageButton.setEnabled(false);
 
         imagePathTF.setEditable(false);
         imagePathTF.setText("Image Path");
+        imagePathTF.setEnabled(false);
         imagePathTF.setFocusable(false);
+
+        qFormatLabel.setText("Question Format:");
+
+        qFormatButtonGroup.add(qFormatRadioButton1);
+        qFormatRadioButton1.setSelected(true);
+        qFormatRadioButton1.setText("Text");
+
+        qFormatButtonGroup.add(qFormatRadioButton2);
+        qFormatRadioButton2.setText("Image");
+
+        qFormatButtonGroup.add(qFormatRadioButton3);
+        qFormatRadioButton3.setText("Text and Image");
 
         javax.swing.GroupLayout manageQuestionPanelLayout = new javax.swing.GroupLayout(manageQuestionPanel);
         manageQuestionPanel.setLayout(manageQuestionPanelLayout);
@@ -265,29 +283,49 @@ public class Questions extends javax.swing.JPanel {
             .addGroup(manageQuestionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(manageQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(questionTF)
                     .addGroup(manageQuestionPanelLayout.createSequentialGroup()
-                        .addComponent(qImageCB)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(qImageButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(imagePathTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(imagePathTF))
+                    .addComponent(questionTF)
+                    .addGroup(manageQuestionPanelLayout.createSequentialGroup()
+                        .addComponent(qFormatLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(qFormatRadioButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(qFormatRadioButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(qFormatRadioButton3)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         manageQuestionPanelLayout.setVerticalGroup(
             manageQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(manageQuestionPanelLayout.createSequentialGroup()
+                .addGroup(manageQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(qFormatLabel)
+                    .addComponent(qFormatRadioButton1)
+                    .addComponent(qFormatRadioButton2)
+                    .addComponent(qFormatRadioButton3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(questionTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(manageQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(qImageCB)
-                    .addComponent(qImageButton)
-                    .addComponent(imagePathTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 6, Short.MAX_VALUE))
+                .addGroup(manageQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(imagePathTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(qImageButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         manageAnswersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Answers"));
+
+        ansFormatLabel.setText("Answer Format:");
+
+        ansFormatButtonGroup.add(ansFormatRadioButton1);
+        ansFormatRadioButton1.setSelected(true);
+        ansFormatRadioButton1.setText("Text");
+
+        ansFormatButtonGroup.add(ansFormatRadioButton2);
+        ansFormatRadioButton2.setText("Images");
 
         ansButtonGroup.add(ansRadioButton1);
 
@@ -302,6 +340,7 @@ public class Questions extends javax.swing.JPanel {
         });
 
         ansImageButton1.setText("Choose Image");
+        ansImageButton1.setEnabled(false);
 
         ansButtonGroup.add(ansRadioButton2);
 
@@ -316,6 +355,7 @@ public class Questions extends javax.swing.JPanel {
         });
 
         ansImageButton2.setText("Choose Image");
+        ansImageButton2.setEnabled(false);
 
         ansButtonGroup.add(ansRadioButton3);
 
@@ -330,6 +370,7 @@ public class Questions extends javax.swing.JPanel {
         });
 
         ansImageButton3.setText("Choose Image");
+        ansImageButton3.setEnabled(false);
 
         ansButtonGroup.add(ansRadioButton4);
 
@@ -344,6 +385,7 @@ public class Questions extends javax.swing.JPanel {
         });
 
         ansImageButton4.setText("Choose Image");
+        ansImageButton4.setEnabled(false);
 
         javax.swing.GroupLayout manageAnswersPanelLayout = new javax.swing.GroupLayout(manageAnswersPanel);
         manageAnswersPanel.setLayout(manageAnswersPanelLayout);
@@ -357,15 +399,11 @@ public class Questions extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansTF1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ansImageCB1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansImageButton1))
                     .addGroup(manageAnswersPanelLayout.createSequentialGroup()
                         .addComponent(ansRadioButton4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansTF4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ansImageCB4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansImageButton4))
                     .addGroup(manageAnswersPanelLayout.createSequentialGroup()
@@ -373,45 +411,50 @@ public class Questions extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansTF2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ansImageCB2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansImageButton2))
                     .addGroup(manageAnswersPanelLayout.createSequentialGroup()
                         .addComponent(ansRadioButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ansTF3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ansImageCB3)
+                        .addComponent(ansImageButton3))
+                    .addGroup(manageAnswersPanelLayout.createSequentialGroup()
+                        .addComponent(ansFormatLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ansImageButton3)))
+                        .addComponent(ansFormatRadioButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ansFormatRadioButton2)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         manageAnswersPanelLayout.setVerticalGroup(
             manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(manageAnswersPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageAnswersPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ansFormatLabel)
+                    .addComponent(ansFormatRadioButton1)
+                    .addComponent(ansFormatRadioButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(ansRadioButton1)
                     .addComponent(ansTF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ansImageButton1)
-                    .addComponent(ansImageCB1))
+                    .addComponent(ansImageButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(ansRadioButton2)
                     .addComponent(ansTF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ansImageButton2)
-                    .addComponent(ansImageCB2))
+                    .addComponent(ansImageButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(ansRadioButton3)
                     .addComponent(ansTF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ansImageButton3)
-                    .addComponent(ansImageCB3))
+                    .addComponent(ansImageButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(manageAnswersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(ansRadioButton4)
                     .addComponent(ansTF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ansImageButton4)
-                    .addComponent(ansImageCB4))
+                    .addComponent(ansImageButton4))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -616,7 +659,7 @@ public class Questions extends javax.swing.JPanel {
             commentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(commentPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(commentScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
+                .addComponent(commentScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addContainerGap())
         );
         commentPanelLayout.setVerticalGroup(
@@ -1294,13 +1337,6 @@ public class Questions extends javax.swing.JPanel {
         ansTF4.setText("");
         imagePathTF.setText("Image Path");
         
-        // Clear checkboxes
-        qImageCB.setSelected(false);
-        ansImageCB1.setSelected(false);
-        ansImageCB2.setSelected(false);
-        ansImageCB3.setSelected(false);
-        ansImageCB4.setSelected(false);
-        
         // Clear radio buttons
         ansButtonGroup.clearSelection();
         
@@ -1666,14 +1702,14 @@ public class Questions extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup ansButtonGroup;
+    private javax.swing.ButtonGroup ansFormatButtonGroup;
+    private javax.swing.JLabel ansFormatLabel;
+    private javax.swing.JRadioButton ansFormatRadioButton1;
+    private javax.swing.JRadioButton ansFormatRadioButton2;
     private javax.swing.JButton ansImageButton1;
     private javax.swing.JButton ansImageButton2;
     private javax.swing.JButton ansImageButton3;
     private javax.swing.JButton ansImageButton4;
-    private javax.swing.JCheckBox ansImageCB1;
-    private javax.swing.JCheckBox ansImageCB2;
-    private javax.swing.JCheckBox ansImageCB3;
-    private javax.swing.JCheckBox ansImageCB4;
     private javax.swing.JRadioButton ansRadioButton1;
     private javax.swing.JRadioButton ansRadioButton2;
     private javax.swing.JRadioButton ansRadioButton3;
@@ -1732,8 +1768,12 @@ public class Questions extends javax.swing.JPanel {
     private javax.swing.JPanel perfTagsPanel;
     private javax.swing.JLabel performanceLabel;
     private javax.swing.JSpinner performanceSpinner;
+    private javax.swing.ButtonGroup qFormatButtonGroup;
+    private javax.swing.JLabel qFormatLabel;
+    private javax.swing.JRadioButton qFormatRadioButton1;
+    private javax.swing.JRadioButton qFormatRadioButton2;
+    private javax.swing.JRadioButton qFormatRadioButton3;
     private javax.swing.JButton qImageButton;
-    private javax.swing.JCheckBox qImageCB;
     private javax.swing.JTextField questionTF;
     private javax.swing.JLabel questionsLabel;
     private javax.swing.JTabbedPane questionsTabbedPane;

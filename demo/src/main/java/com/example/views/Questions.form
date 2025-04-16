@@ -6,6 +6,10 @@
     </Component>
     <Component class="javax.swing.ButtonGroup" name="sortButtonGroup">
     </Component>
+    <Component class="javax.swing.ButtonGroup" name="qFormatButtonGroup">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="ansFormatButtonGroup">
+    </Component>
   </NonVisualComponents>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -96,7 +100,7 @@
             <Container class="javax.swing.JPanel" name="manageScrollContentPanel">
               <Properties>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[621, 510]"/>
+                  <Dimension value="[652, 576]"/>
                 </Property>
               </Properties>
 
@@ -189,16 +193,23 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="questionTF" alignment="0" max="32767" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="qImageCB" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
                                       <Component id="qImageButton" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="imagePathTF" min="-2" max="-2" attributes="0"/>
+                                      <Component id="imagePathTF" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Component id="questionTF" alignment="0" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="qFormatLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="qFormatRadioButton1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="qFormatRadioButton2" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="qFormatRadioButton3" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
@@ -209,14 +220,20 @@
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="qFormatLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="qFormatRadioButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="qFormatRadioButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="qFormatRadioButton3" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="questionTF" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="2" attributes="0">
-                                  <Component id="qImageCB" alignment="2" min="-2" max="-2" attributes="0"/>
-                                  <Component id="qImageButton" alignment="2" min="-2" max="-2" attributes="0"/>
-                                  <Component id="imagePathTF" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="imagePathTF" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="qImageButton" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="0" pref="6" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -231,18 +248,48 @@
                         <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="questionTFFocusLost"/>
                       </Events>
                     </Component>
-                    <Component class="javax.swing.JCheckBox" name="qImageCB">
-                    </Component>
                     <Component class="javax.swing.JButton" name="qImageButton">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Choose Image"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JTextField" name="imagePathTF">
                       <Properties>
                         <Property name="editable" type="boolean" value="false"/>
                         <Property name="text" type="java.lang.String" value="Image Path"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                         <Property name="focusable" type="boolean" value="false"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="qFormatLabel">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Question Format:"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JRadioButton" name="qFormatRadioButton1">
+                      <Properties>
+                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                          <ComponentRef name="qFormatButtonGroup"/>
+                        </Property>
+                        <Property name="selected" type="boolean" value="true"/>
+                        <Property name="text" type="java.lang.String" value="Text"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JRadioButton" name="qFormatRadioButton2">
+                      <Properties>
+                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                          <ComponentRef name="qFormatButtonGroup"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" value="Image"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JRadioButton" name="qFormatRadioButton3">
+                      <Properties>
+                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                          <ComponentRef name="qFormatButtonGroup"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" value="Text and Image"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -259,15 +306,13 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="ansRadioButton1" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="ansTF1" max="32767" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="ansImageCB1" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="ansImageButton1" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -276,16 +321,12 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="ansTF4" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="ansImageCB4" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
                                       <Component id="ansImageButton4" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="ansRadioButton2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="ansTF2" max="32767" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="ansImageCB2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="ansImageButton2" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -294,9 +335,15 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="ansTF3" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="ansImageCB3" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
                                       <Component id="ansImageButton3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="ansFormatLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="ansFormatRadioButton1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="ansFormatRadioButton2" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -305,33 +352,36 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="ansFormatLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ansFormatRadioButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ansFormatRadioButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="2" attributes="0">
                                   <Component id="ansRadioButton1" alignment="2" min="-2" max="-2" attributes="0"/>
                                   <Component id="ansTF1" alignment="2" min="-2" max="-2" attributes="0"/>
                                   <Component id="ansImageButton1" alignment="2" min="-2" max="-2" attributes="0"/>
-                                  <Component id="ansImageCB1" alignment="2" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="2" attributes="0">
                                   <Component id="ansRadioButton2" alignment="2" min="-2" max="-2" attributes="0"/>
                                   <Component id="ansTF2" alignment="2" min="-2" max="-2" attributes="0"/>
                                   <Component id="ansImageButton2" alignment="2" min="-2" max="-2" attributes="0"/>
-                                  <Component id="ansImageCB2" alignment="2" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="2" attributes="0">
                                   <Component id="ansRadioButton3" alignment="2" min="-2" max="-2" attributes="0"/>
                                   <Component id="ansTF3" alignment="2" min="-2" max="-2" attributes="0"/>
                                   <Component id="ansImageButton3" alignment="2" min="-2" max="-2" attributes="0"/>
-                                  <Component id="ansImageCB3" alignment="2" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="2" attributes="0">
                                   <Component id="ansRadioButton4" alignment="2" min="-2" max="-2" attributes="0"/>
                                   <Component id="ansTF4" alignment="2" min="-2" max="-2" attributes="0"/>
                                   <Component id="ansImageButton4" alignment="2" min="-2" max="-2" attributes="0"/>
-                                  <Component id="ansImageCB4" alignment="2" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="32767" attributes="0"/>
                           </Group>
@@ -339,6 +389,28 @@
                     </DimensionLayout>
                   </Layout>
                   <SubComponents>
+                    <Component class="javax.swing.JLabel" name="ansFormatLabel">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Answer Format:"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JRadioButton" name="ansFormatRadioButton1">
+                      <Properties>
+                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                          <ComponentRef name="ansFormatButtonGroup"/>
+                        </Property>
+                        <Property name="selected" type="boolean" value="true"/>
+                        <Property name="text" type="java.lang.String" value="Text"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JRadioButton" name="ansFormatRadioButton2">
+                      <Properties>
+                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                          <ComponentRef name="ansFormatButtonGroup"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" value="Images"/>
+                      </Properties>
+                    </Component>
                     <Component class="javax.swing.JRadioButton" name="ansRadioButton1">
                       <Properties>
                         <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
@@ -355,11 +427,10 @@
                         <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="ansTF1FocusLost"/>
                       </Events>
                     </Component>
-                    <Component class="javax.swing.JCheckBox" name="ansImageCB1">
-                    </Component>
                     <Component class="javax.swing.JButton" name="ansImageButton1">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Choose Image"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JRadioButton" name="ansRadioButton2">
@@ -378,11 +449,10 @@
                         <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="ansTF2FocusLost"/>
                       </Events>
                     </Component>
-                    <Component class="javax.swing.JCheckBox" name="ansImageCB2">
-                    </Component>
                     <Component class="javax.swing.JButton" name="ansImageButton2">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Choose Image"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JRadioButton" name="ansRadioButton3">
@@ -401,11 +471,10 @@
                         <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="ansTF3FocusLost"/>
                       </Events>
                     </Component>
-                    <Component class="javax.swing.JCheckBox" name="ansImageCB3">
-                    </Component>
                     <Component class="javax.swing.JButton" name="ansImageButton3">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Choose Image"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JRadioButton" name="ansRadioButton4">
@@ -424,11 +493,10 @@
                         <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="ansTF4FocusLost"/>
                       </Events>
                     </Component>
-                    <Component class="javax.swing.JCheckBox" name="ansImageCB4">
-                    </Component>
                     <Component class="javax.swing.JButton" name="ansImageButton4">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Choose Image"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -781,7 +849,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="commentScrollPane" pref="347" max="32767" attributes="0"/>
+                                  <Component id="commentScrollPane" pref="0" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
