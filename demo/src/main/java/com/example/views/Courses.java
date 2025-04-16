@@ -518,7 +518,7 @@ public class Courses extends javax.swing.JPanel {
         courseSelectComboBox.addItem("--None--");
         ArrayList<String[]> courses = cController.getAllCourses();
         for (String[] course : courses) {
-            courseSelectComboBox.addItem(course[2]);
+            courseSelectComboBox.addItem(course[0]);
         }
         resetFields();
     }
@@ -558,19 +558,18 @@ public class Courses extends javax.swing.JPanel {
 
     private void setupListeners() {
         courseSelectComboBox.addActionListener(e -> {
-                String selectedCourse = (String) courseSelectComboBox.getSelectedItem();
-                if ("--None--".equals(selectedCourse)) {
+                String selectedCourseCode = (String) courseSelectComboBox.getSelectedItem();
+                if ("--None--".equals(selectedCourseCode)) {
                     resetFields();
-                } else if (selectedCourse != null) {
+                } else if (selectedCourseCode != null) {
                     resetSubtopicFields();
-                    System.out.println("Listener Selected Course: " + selectedCourse);
-                    selectedCourseId = cController.getCourseIdByName(selectedCourse);
+                    System.out.println("Listener Selected Course Code: " + selectedCourseCode);
+                    selectedCourseId = cController.getCourseIdByCode(selectedCourseCode);
                     System.out.println("Listener Selected Course ID: " + selectedCourseId);
-                    nameTF.setText(selectedCourse);
-                    nameTF.setText(selectedCourse);
+                    nameTF.setText(cController.getCourseNameById(selectedCourseId));
                     nameTF.setEnabled(true);
+                    codeTF.setText(selectedCourseCode);
                     codeTF.setEnabled(true);
-                    codeTF.setText(cController.getCourseCodeById(selectedCourseId));
                     populateTopicsList();
                     topicAddButton.setEnabled(true);
                 }

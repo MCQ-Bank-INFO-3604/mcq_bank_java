@@ -154,4 +154,19 @@ public class CoursesController {
         }
         return null; // Return null if no course found with the given ID
     }
+
+    public Integer getCourseIdByCode(String selectedCourseCode) {
+        String sql = "SELECT courseID FROM courses WHERE courseCode = ?;";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, selectedCourseCode);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("courseID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if no course found with the given code
+    }
 }
