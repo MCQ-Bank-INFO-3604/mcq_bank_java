@@ -14,8 +14,7 @@ import com.formdev.flatlaf.FlatLightLaf;
 
 
 public class App {
-
-
+    @SuppressWarnings("unused")
     public static void main(String[] args) throws Exception {
 
         //Create Models
@@ -29,30 +28,21 @@ public class App {
         //Create Contollers
         QuestionController questionController = new QuestionController();
         ExamController examController = new ExamController();
-        
 
-        //READING FROM A CSV
+        //Create test data from CSV
         CSVImporter csvImporter = new CSVImporter();
-        String cFilename = "src\\main\\java\\com\\example\\courses_topics_subtopics.csv";
-        System.out.println("Insert course details from CSV: ");
-        csvImporter.importCourseTopicSubtopicFromCSV(cFilename);
+        String cResource = "com/example/courses_topics_subtopics.csv";
+        String qResource = "com/example/questions.csv";
 
-        String qFilename = "src\\main\\java\\com\\example\\questions.csv";
-        System.out.println("Inserts questions from CSV: ");
-        csvImporter.importQuestionsFromCSV(qFilename);
+        System.out.println("Importing courses, topics, and subtopics from CSV...");
+        csvImporter.importCourseTopicSubtopicFromCSV(cResource);
 
-        examController.insertExam("Test Exam", 1, null);
+        System.out.println("Importing questions from CSV...");
+        csvImporter.importQuestionsFromCSV(qResource);
 
-        examController.addQuestionToExam(1,1);
-        examController.addQuestionToExam(1,2);
-        examController.addQuestionToExam(1,3);
-        examController.addQuestionToExam(1,4);
-        examController.addQuestionToExam(1,5);
-        examController.addQuestionToExam(1,6);
-        examController.addQuestionToExam(1,7);
-        examController.addQuestionToExam(1,8);
-        examController.addQuestionToExam(1,9);
-        examController.addQuestionToExam(1,10);
+        //Create test exam and add questions to it
+        System.out.println("Insert test exam and add questions to it");
+        csvImporter.createTestExamWithQuestions();
 
         //Create Views
         try {
