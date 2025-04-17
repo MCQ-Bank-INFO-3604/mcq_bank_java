@@ -170,17 +170,38 @@ public class CSVImporter {
                 convertToEmptyStringIfNull(wrongAnswer2ImagePath);
                 convertToEmptyStringIfNull(wrongAnswer3ImagePath);
                 
-                // Insert question using QuestionController
-                questionController.insertQuestion(
-                    question, correctAnswer, wrong1, wrong2, wrong3, course, topic, subTopic,
-                    difficulty, performance, discrimination, hasImage, questionImagePath,
-                    correctAnswerImagePath, wrongAnswer1ImagePath, wrongAnswer2ImagePath,
-                    wrongAnswer3ImagePath, comment
-                );
+                try (Connection conn = DriverManager.getConnection(DB_URL)) {
+                    if (!isQuestionInDatabase(conn, question, course, topic, subTopic)) {
+                        // Insert question using QuestionController
+                        questionController.insertQuestion(
+                            question, correctAnswer, wrong1, wrong2, wrong3, course, topic, subTopic,
+                            difficulty, performance, discrimination, hasImage, questionImagePath,
+                            correctAnswerImagePath, wrongAnswer1ImagePath, wrongAnswer2ImagePath,
+                            wrongAnswer3ImagePath, comment
+                        );
+                    } else {
+                        System.out.println("Skipping duplicate question: " + question);
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isQuestionInDatabase(Connection conn, String question, int course, int topic, int subTopic) throws SQLException {
+        String query = "SELECT COUNT(*) FROM questions WHERE question = ? AND course = ? AND topic = ? AND subtopic = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, question);
+            stmt.setInt(2, course);
+            stmt.setInt(3, topic);
+            stmt.setInt(4, subTopic);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Return true if the question exists
+            }
+        }
+        return false;
     }
 
     private String convertToEmptyStringIfNull(String str) {
@@ -188,6 +209,81 @@ public class CSVImporter {
             return ""; // Convert null to empty string
         } else {
             return str; // Return the original string if not null
+        }
+    }
+
+    public void createTestExamWithQuestions() {
+        String examTitle = "Test Exam";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+            // Check if the test exam already exists
+            if (!isExamInDatabase(conn, examTitle)) {
+                // Insert the test exam
+                int examID = insertExam(conn, examTitle);
+
+                // Get the first 10 questions from the database
+                String query = "SELECT questionID FROM questions LIMIT 10";
+                try (PreparedStatement stmt = conn.prepareStatement(query);
+                     ResultSet rs = stmt.executeQuery()) {
+
+                    while (rs.next()) {
+                        int questionID = rs.getInt("questionID");
+
+                        // Check if the question is already in the exam
+                        if (!isQuestionInExam(conn, examID, questionID)) {
+                            // Add the question to the exam
+                            addQuestionToExam(conn, examID, questionID);
+                        }
+                    }
+                }
+
+                System.out.println("Test exam created and questions added.");
+            } else {
+                System.out.println("Test exam already exists in the database.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isExamInDatabase(Connection conn, String examTitle) throws SQLException {
+        String query = "SELECT COUNT(*) FROM exams WHERE examTitle = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, examTitle);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        }
+    }
+
+    private int insertExam(Connection conn, String examTitle) throws SQLException {
+        String insert = "INSERT INTO exams (examTitle) VALUES (?)";
+        try (PreparedStatement stmt = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, examTitle);
+            stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1); // Return the generated exam ID
+            }
+        }
+        throw new SQLException("Failed to insert exam: " + examTitle);
+    }
+
+    private boolean isQuestionInExam(Connection conn, int examID, int questionID) throws SQLException {
+        String query = "SELECT COUNT(*) FROM ExamQuestions WHERE examID = ? AND questionID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, examID);
+            stmt.setInt(2, questionID);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        }
+    }
+
+    private void addQuestionToExam(Connection conn, int examID, int questionID) throws SQLException {
+        String insert = "INSERT INTO ExamQuestions (examID, questionID) VALUES (?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(insert)) {
+            stmt.setInt(1, examID);
+            stmt.setInt(2, questionID);
+            stmt.executeUpdate();
         }
     }
 }

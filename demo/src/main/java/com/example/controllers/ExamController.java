@@ -32,7 +32,7 @@ public class ExamController {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
     private QuestionController questionController = new QuestionController();
 
-    public Boolean insertExam(String examTitle, Integer course, String dateAdministered) {
+    public boolean insertExam(String examTitle, Integer course, String dateAdministered) {
         String sql = "INSERT INTO exams (examTitle, numQuestions, course, dateCreated, lastEdited, lastUsed) VALUES (?, ?, ?, ?, ?, ?);";
         
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -134,9 +134,10 @@ public class ExamController {
             pstmt.setInt(1, examID);
             pstmt.setInt(2, questionID);
             pstmt.executeUpdate();
+            return;
         } catch (SQLException e) {
             e.printStackTrace();
-            throw e;
+            return;
         }
     }
 

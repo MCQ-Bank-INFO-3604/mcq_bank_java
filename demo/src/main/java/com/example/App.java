@@ -14,8 +14,6 @@ import com.formdev.flatlaf.FlatLightLaf;
 
 
 public class App {
-
-
     @SuppressWarnings("unused")
     public static void main(String[] args) throws Exception {
 
@@ -31,7 +29,7 @@ public class App {
         QuestionController questionController = new QuestionController();
         ExamController examController = new ExamController();
 
-        //Read from CSV
+        //Create test data from CSV
         CSVImporter csvImporter = new CSVImporter();
         String cResource = "com/example/courses_topics_subtopics.csv";
         String qResource = "com/example/questions.csv";
@@ -44,19 +42,7 @@ public class App {
 
         //Create test exam and add questions to it
         System.out.println("Insert test exam and add questions to it");
-        examController.insertExam("Test Exam", 1, null);
-
-        examController.addQuestionToExam(1,1);
-        examController.addQuestionToExam(1,2);
-        examController.addQuestionToExam(1,3);
-        examController.addQuestionToExam(1,4);
-        examController.addQuestionToExam(1,5);
-        examController.addQuestionToExam(1,6);
-        examController.addQuestionToExam(1,7);
-        examController.addQuestionToExam(1,8);
-        examController.addQuestionToExam(1,9);
-        examController.addQuestionToExam(1,10);
-        System.out.println("Test exam created and questions added.");
+        csvImporter.createTestExamWithQuestions();
 
         //Create Views
         try {

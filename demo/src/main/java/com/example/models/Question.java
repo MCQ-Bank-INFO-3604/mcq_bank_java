@@ -9,7 +9,7 @@ public class Question{
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
     
     public Question(){
-        deleteQuestionTable();
+        // deleteQuestionTable();
         createQuestionTable();
 
     }
