@@ -2,16 +2,20 @@ package com.example.controllers;
 
 import java.io.*;
 import java.sql.*;
-import java.util.*;
 
 public class CSVImporter {
 
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
     private QuestionController questionController = new QuestionController();
 
-    public void importCourseTopicSubtopicFromCSV(String filename) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename));
-             Connection conn = DriverManager.getConnection(DB_URL)) {
+    public void importCourseTopicSubtopicFromCSV(String resourcePath) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+
+            if (is == null) {
+                System.err.println("Resource not found: " + resourcePath);
+                return;
+            }
 
             String line;
             boolean isFirstLine = true;
@@ -33,13 +37,19 @@ public class CSVImporter {
                 String topicName = values[2].trim();
                 String subtopicName = values[3].trim();
 
-                int courseID = getOrInsertCourse(conn, courseCode, courseName);
-                int topicID = getOrInsertTopic(conn, topicName, courseID);
-                int subtopicID = getOrInsertSubtopic(conn, subtopicName, topicID);
+                try (Connection conn = DriverManager.getConnection(DB_URL)) {    
+                    int courseID = getOrInsertCourse(conn, courseCode, courseName);
+                    int topicID = getOrInsertTopic(conn, topicName, courseID);
+                    int subtopicID = getOrInsertSubtopic(conn, subtopicName, topicID);
 
-                System.out.println("Imported: Course=" + courseName + " ID: " + courseID + ", Topic=" + topicName + ", Subtopic=" + subtopicName);
+                    System.out.println("Course=" + courseName + 
+                                       ", ID= " + courseID + 
+                                       ", Topic=" + topicName +
+                                       ", ID= " + topicID + 
+                                       ", Subtopic=" + subtopicName +
+                                       ", ID= " + subtopicID);
+                }
             }
-
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -104,8 +114,15 @@ public class CSVImporter {
         throw new SQLException("Failed to insert subtopic: " + name);
     }
 
-    public void importQuestionsFromCSV(String filename) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+    public void importQuestionsFromCSV(String resourcePath) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            
+            if (is == null) {
+                System.err.println("Resource not found: " + resourcePath);
+                return;
+            }
+            
             String line;
             boolean isFirstLine = true;
 
