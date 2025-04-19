@@ -29,5 +29,9 @@ jobs:
         distribution: 'temurin'
         architecture: 'x64'
         cache: maven
+
     - name: Build with Maven
       run: mvn -B package --file demo/pom.xml
+
+    - name: Run tests
+      run: mvn test --file demo/src/test/java/com/example/AppTest.java
