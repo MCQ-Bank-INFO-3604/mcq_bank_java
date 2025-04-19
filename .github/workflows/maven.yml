@@ -30,4 +30,4 @@ jobs:
         architecture: 'x64'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file mcq_bank_java/pom.xml
+      run: mvn -B package --file demo/pom.xml
