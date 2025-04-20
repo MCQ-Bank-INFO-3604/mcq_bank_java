@@ -32,11 +32,15 @@ public class ExamController {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
     private QuestionController questionController = new QuestionController();
 
+    protected Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
+    }
+
     public boolean insertExam(String examTitle, Integer course, String dateAdministered) {
         String sql = "INSERT INTO exams (examTitle, numQuestions, course, dateCreated, lastEdited, lastUsed) VALUES (?, ?, ?, ?, ?, ?);";
         
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, examTitle);
             pstmt.setInt(2, 0);
@@ -55,7 +59,7 @@ public class ExamController {
     public boolean deleteExam(int examId) throws SQLException {
         // First delete all exam-question relationships
         String deleteRelationsSql = "DELETE FROM ExamQuestions WHERE examID = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(deleteRelationsSql)) {
             pstmt.setInt(1, examId);
             pstmt.executeUpdate();
@@ -63,7 +67,7 @@ public class ExamController {
         
         // Then delete the exam itself
         String deleteExamSql = "DELETE FROM exams WHERE examID = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(deleteExamSql)) {
             pstmt.setInt(1, examId);
             return pstmt.executeUpdate() > 0;
@@ -73,7 +77,7 @@ public class ExamController {
     public ResultSet getExam(int examID) {
         String sql = "SELECT * FROM exams WHERE examID = '" + examID + "';";
         try {
-            Connection conn = DriverManager.getConnection(DB_URL);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             return stmt.executeQuery(sql);
         } catch (SQLException e) {
@@ -86,7 +90,7 @@ public class ExamController {
 
         String sql = "SELECT * FROM ExamQuestions WHERE examID = '" + examID + "' ;";
         try {
-            Connection conn = DriverManager.getConnection(DB_URL);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             return stmt.executeQuery(sql);
         } catch (SQLException e) {
@@ -100,7 +104,7 @@ public class ExamController {
         // Fetch the exam details
         int numQuestions = 0;
         String sql = "SELECT numQuestions FROM exams WHERE examID = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, examID);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -116,7 +120,7 @@ public class ExamController {
         // Update exam with new lastEdited and numQuestions
         sql = "UPDATE exams SET lastEdited = ?, numQuestions = ? WHERE examID = ?";
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, date);
             pstmt.setInt(2, numQuestions + 1);
@@ -129,7 +133,7 @@ public class ExamController {
 
         // Add the question to the exam
         sql = "INSERT INTO ExamQuestions (examID, questionID) VALUES (?, ?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, examID);
             pstmt.setInt(2, questionID);
@@ -147,7 +151,7 @@ public class ExamController {
         // Update exam with new lastEdited and numQuestions
         String sql = "UPDATE exams SET lastEdited = ?, numQuestions = ? WHERE examID = ?";
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        try (Connection conn1 = DriverManager.getConnection(DB_URL);
+        try (Connection conn1 = getConnection();
              PreparedStatement pstmt1 = conn1.prepareStatement(sql)) {
             pstmt1.setString(1, date);
             pstmt1.setInt(2, rs2.getInt("numQuestions") - 1);
@@ -160,7 +164,7 @@ public class ExamController {
 
         // Remove the question from the exam
         sql = "DELETE FROM ExamQuestions WHERE questionID = ? AND examID = ?";
-        try (Connection conn2 = DriverManager.getConnection(DB_URL);
+        try (Connection conn2 = getConnection();
              PreparedStatement pstmt2 = conn2.prepareStatement(sql)) {
             pstmt2.setInt(1, questionID);
             pstmt2.setInt(2, examID);
@@ -175,7 +179,7 @@ public class ExamController {
         String sql = "UPDATE exams SET examTitle = ?, course = ?, lastUsed = ?, lastEdited = ? WHERE examID = ?";
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, newTitle);
             pstmt.setInt(2, newCourse);
@@ -190,7 +194,7 @@ public class ExamController {
 
         // Call updateTimesUsed for each question in the exam
         String getQuestionsSql = "SELECT questionID FROM ExamQuestions WHERE examID = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(getQuestionsSql)) {
             pstmt.setInt(1, examID);
             ResultSet rs = pstmt.executeQuery();
@@ -207,7 +211,7 @@ public class ExamController {
 
     private void updateQuestionsLastUsed(int examID, String examLastUsed) throws SQLException {
         String sql = "SELECT questionID, lastUsed FROM questions WHERE questionID IN (SELECT questionID FROM ExamQuestions WHERE examID = ?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, examID);
             ResultSet rs = pstmt.executeQuery();
@@ -241,7 +245,7 @@ public class ExamController {
         String sql = "SELECT MAX(lastUsed) AS mostRecentLastUsed " +
                      "FROM exams " +
                      "WHERE examID IN (SELECT examID FROM ExamQuestions WHERE questionID = ?) AND lastUsed IS NOT NULL AND lastUsed != ''";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, questionID);
             ResultSet rs = pstmt.executeQuery();
@@ -262,7 +266,7 @@ public class ExamController {
 
     private void updateQuestionLastUsed(int questionID, String newLastUsed) throws SQLException {
         String sql = "UPDATE questions SET lastUsed = ? WHERE questionID = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, newLastUsed);
             pstmt.setInt(2, questionID);
@@ -272,7 +276,7 @@ public class ExamController {
 
     public ResultSet getExamsWithFilter(String sqlQuery) {
         try {
-            Connection conn = DriverManager.getConnection(DB_URL);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             return stmt.executeQuery(sqlQuery);
         } catch (SQLException e) {

@@ -11,10 +11,14 @@ import java.util.ArrayList;
 public class TopicsController {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
 
+    protected Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
+    }
+    
     public boolean insertTopic(String topicName, Integer courseID) {
         // Check if the topic already exists
         String select = "SELECT topicID FROM topics WHERE topicName = ? AND courseID = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(select)) {
             stmt.setString(1, topicName);
             stmt.setInt(2, courseID);
@@ -25,7 +29,7 @@ public class TopicsController {
         }
 
         String sql = "INSERT INTO topics (topicName, courseID) VALUES (?, ?);";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, topicName);
             pstmt.setInt(2, courseID);
@@ -40,7 +44,7 @@ public class TopicsController {
     public ArrayList<String> getAllTopics() {
         ArrayList<String> topics = new ArrayList<>();
         String sql = "SELECT topicName FROM topics;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -53,7 +57,7 @@ public class TopicsController {
     }
     public boolean deleteTopic(Integer topicId) {
         String sql = "DELETE FROM topics WHERE topicID = ?;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, topicId);
             int rowsAffected = pstmt.executeUpdate();
@@ -65,7 +69,7 @@ public class TopicsController {
     }
     public boolean updateTopic(Integer topicId, String newTopicName) {
         String sql = "UPDATE topics SET topicName = ? WHERE topicID = ?;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, newTopicName);
             pstmt.setInt(2, topicId);
@@ -84,7 +88,7 @@ public class TopicsController {
         // Get all topics for a specific course ID
         ArrayList<String[]> topics = new ArrayList<>();
         String sql = "SELECT topicName, topicID FROM topics WHERE courseID = ?;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, courseID);
             ResultSet rs = pstmt.executeQuery();
@@ -100,7 +104,7 @@ public class TopicsController {
     public ArrayList<String[]> getAllTopicsWithIDs() {
         ArrayList<String[]> topics = new ArrayList<>();
         String sql = "SELECT topicName, topicID FROM topics;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -113,7 +117,7 @@ public class TopicsController {
     }
     public String getTopicNameById(Integer topicID) {
         String sql = "SELECT topicName FROM topics WHERE topicID = ?;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, topicID);
             ResultSet rs = pstmt.executeQuery();
@@ -128,7 +132,7 @@ public class TopicsController {
 
     public Integer getTopicIdByNameAndCourseId(String topicName, Integer courseID) {
         String sql = "SELECT topicID FROM topics WHERE topicName = ? AND courseID = ?;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, topicName);
             pstmt.setInt(2, courseID);

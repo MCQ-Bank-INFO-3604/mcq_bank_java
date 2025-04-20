@@ -8,6 +8,10 @@ public class CSVImporter {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
     private QuestionController questionController = new QuestionController();
 
+    protected Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
+    }
+    
     public void importCourseTopicSubtopicFromCSV(String resourcePath) {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath);
              BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
@@ -37,7 +41,7 @@ public class CSVImporter {
                 String topicName = values[2].trim();
                 String subtopicName = values[3].trim();
 
-                try (Connection conn = DriverManager.getConnection(DB_URL)) {    
+                try (Connection conn = getConnection()) {    
                     int courseID = getOrInsertCourse(conn, courseCode, courseName);
                     int topicID = getOrInsertTopic(conn, topicName, courseID);
                     int subtopicID = getOrInsertSubtopic(conn, subtopicName, topicID);
@@ -170,7 +174,7 @@ public class CSVImporter {
                 convertToEmptyStringIfNull(wrongAnswer2ImagePath);
                 convertToEmptyStringIfNull(wrongAnswer3ImagePath);
                 
-                try (Connection conn = DriverManager.getConnection(DB_URL)) {
+                try (Connection conn = getConnection()) {
                     if (!isQuestionInDatabase(conn, question, course, topic, subTopic)) {
                         // Insert question using QuestionController
                         questionController.insertQuestion(
@@ -215,7 +219,7 @@ public class CSVImporter {
     public void createTestExamWithQuestions() {
         String examTitle = "Test Exam";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+        try (Connection conn = getConnection()) {
             // Check if the test exam already exists
             if (!isExamInDatabase(conn, examTitle)) {
                 // Insert the test exam

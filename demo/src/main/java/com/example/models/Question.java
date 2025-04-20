@@ -8,6 +8,10 @@ import java.sql.Statement;
 public class Question{
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
     
+    protected Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
+    }
+    
     public Question(){
         // deleteQuestionTable();
         createQuestionTable();
@@ -17,7 +21,7 @@ public class Question{
     public void deleteQuestionTable() {
         String sql = "DROP TABLE IF EXISTS questions;";
         
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -52,9 +56,9 @@ public class Question{
                    + "comment TEXT,"
                    + "FOREIGN KEY(course) REFERENCES courses(courseID),"
                    + "FOREIGN KEY(topic) REFERENCES topics(topicID),"
-                   + "FOREIGN KEY(subtopic) REFERENCES subtopics(subtopicID));";
+                   + "FOREIGN KEY(subTopic) REFERENCES subtopics(subtopicID));";
         
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {

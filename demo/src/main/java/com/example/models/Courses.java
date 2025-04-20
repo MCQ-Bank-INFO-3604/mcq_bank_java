@@ -8,6 +8,10 @@ import java.sql.Statement;
 public class Courses {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
 
+    protected Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
+    }
+
     public Courses() {
         // deleteCoursesTable();
         createCoursesTable();
@@ -15,7 +19,7 @@ public class Courses {
 
     public void deleteCoursesTable(){
         String sql = "DROP TABLE IF EXISTS courses;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -29,7 +33,7 @@ public class Courses {
                 + "courseCode TEXT NOT NULL,"
                 + "courseName TEXT NOT NULL);";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
             Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
