@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -24,14 +25,14 @@ class TopicsTest {
         // Configure test database connections
         controller = new TopicsController() {
             @Override
-            protected Connection getConnection() throws java.sql.SQLException {
+            protected Connection getConnection() throws SQLException {
                 return DriverManager.getConnection(TEST_DB_URL);
             }
         };
 
         model = new Topics() {
             @Override
-            protected Connection getConnection() throws java.sql.SQLException {
+            protected Connection getConnection() throws SQLException {
                 return DriverManager.getConnection(TEST_DB_URL);
             }
         };
