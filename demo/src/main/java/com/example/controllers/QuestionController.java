@@ -12,11 +12,15 @@ import java.util.Date;
 public class QuestionController {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
 
+    protected Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
+    }
+    
     public boolean insertQuestion(String question, String correctAnswer, String wrong1, String wrong2, String wrong3, Integer course, Integer topic, Integer subTopic, Float difficulty, Float performance, Float discrimination, Boolean hasImage, String questionImagePath, String correctAnswerImagePath, String wrongAnswer1ImagePath, String wrongAnswer2ImagePath, String wrongAnswer3ImagePath, String comment) {
         String sql = "INSERT INTO questions (question, correctAnswer, wrongAnswer1, wrongAnswer2, wrongAnswer3, course, topic, subTopic, difficulty, performance, discrimination, hasImage, questionImagePath, correctAnswerImagePath, wrongAnswer1ImagePath, wrongAnswer2ImagePath, wrongAnswer3ImagePath, comment, dateCreated, lastEdited, timesUsed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, question);
             pstmt.setString(2, correctAnswer);
@@ -51,7 +55,7 @@ public class QuestionController {
         
         String sql = "SELECT * FROM questions WHERE questionID = '" + questionID + "';";
         try {
-            Connection conn = DriverManager.getConnection(DB_URL);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             return stmt.executeQuery(sql);
         } catch (SQLException e) {
@@ -64,7 +68,7 @@ public class QuestionController {
         
         String sql = "DELETE FROM questions WHERE questionID = '" + questionID + "';";
         try {
-            Connection conn = DriverManager.getConnection(DB_URL);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             int rowsAffected = stmt.executeUpdate(sql);
             return rowsAffected > 0; // Return true if the delete was successful
@@ -98,7 +102,7 @@ public class QuestionController {
                     "lastEdited = ? " +
                     "WHERE questionID = ?;";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, question);
             pstmt.setString(2, correctAnswer);
@@ -137,7 +141,7 @@ public class QuestionController {
 
         String updateQuestionSql = "UPDATE questions SET timesUsed = ? WHERE questionID = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement countStmt = conn.prepareStatement(countExamsSql);
              PreparedStatement updateStmt = conn.prepareStatement(updateQuestionSql)) {
 
@@ -155,65 +159,10 @@ public class QuestionController {
             e.printStackTrace();
         }
     }
-
-/*
-    public ArrayList<String> getDistinctCourses() {
-        ArrayList<String> courses = new ArrayList<>();
-        try {
-            Connection conn = DriverManager.getConnection(DB_URL);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT DISTINCT course FROM questions");
-            while (rs.next()) {
-                String course = rs.getString("course");
-                if (course != null && !course.isEmpty()) {
-                    courses.add(course);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return courses;
-    }
-
-    public ArrayList<String> getDistinctTopics() {
-        ArrayList<String> topics = new ArrayList<>();
-        try {
-            Connection conn = DriverManager.getConnection(DB_URL);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT DISTINCT topic FROM questions");
-            while (rs.next()) {
-                String topic = rs.getString("topic");
-                if (topic != null && !topic.isEmpty()) {
-                    topics.add(topic);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return topics;
-    }
-
-    public ArrayList<String> getDistinctSubtopics() {
-        ArrayList<String> subtopics = new ArrayList<>();
-        try {
-            Connection conn = DriverManager.getConnection(DB_URL);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT DISTINCT subTopic FROM questions");
-            while (rs.next()) {
-                String subtopic = rs.getString("subTopic");
-                if (subtopic != null && !subtopic.isEmpty()) {
-                    subtopics.add(subtopic);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return subtopics;
-    }
-*/
+    
     public ResultSet getQuestionsWithFilter(String sqlQuery) {
         try {
-            Connection conn = DriverManager.getConnection(DB_URL);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             return stmt.executeQuery(sqlQuery);
         } catch (SQLException e) {
