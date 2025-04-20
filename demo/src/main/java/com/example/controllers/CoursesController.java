@@ -12,10 +12,14 @@ import java.util.ArrayList;
 public class CoursesController {
     private static final String DB_URL = "jdbc:sqlite:mcq_bank.db?journal_mode=WAL&busy_timeout=3000";
 
+    protected Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
+    }
+
     public Integer insertCourse(String courseName, String courseCode) {
         // Check if the course already exists
         String select = "SELECT courseID FROM courses WHERE courseName = ? OR courseCode = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(select)) {
             stmt.setString(1, courseName);
             stmt.setString(2, courseCode);
@@ -26,7 +30,7 @@ public class CoursesController {
         }
 
         String sql = "INSERT INTO courses (courseName, courseCode) VALUES (?, ?);";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, courseName);
             pstmt.setString(2, courseCode);
@@ -44,7 +48,7 @@ public class CoursesController {
     public ArrayList<String> getAllCourseCodes() {
         ArrayList<String> courses = new ArrayList<>();
         String sql = "SELECT courseCode FROM courses;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -59,7 +63,7 @@ public class CoursesController {
     public ArrayList<String[]> getAllCourses() {
         ArrayList<String[]> courses = new ArrayList<>();
         String sql = "SELECT courseCode, courseID, courseName FROM courses;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -73,7 +77,7 @@ public class CoursesController {
 
     public boolean deleteCourse(Integer courseId) {
         String sql = "DELETE FROM courses WHERE courseID = ?;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, courseId);
             int rowsAffected = pstmt.executeUpdate();
@@ -86,7 +90,7 @@ public class CoursesController {
 
     public boolean updateCourse(Integer courseId, String newCourseCode, String newCourseName) {
         String sql = "UPDATE courses SET courseCode = ?, courseName = ? WHERE courseID = ?;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, newCourseCode);
             pstmt.setString(2, newCourseName);
@@ -105,7 +109,7 @@ public class CoursesController {
             return null; // Return null if the course ID is invalid
         }
         String sql = "SELECT courseCode FROM courses WHERE courseID = ?;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, courseID);
             ResultSet rs = pstmt.executeQuery();
@@ -124,7 +128,7 @@ public class CoursesController {
             return null; // Return null if the course name is invalid
         }
         String sql = "SELECT courseID FROM courses WHERE LOWER(courseName) = LOWER(?);";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, courseName.trim());
             ResultSet rs = pstmt.executeQuery();
@@ -142,7 +146,7 @@ public class CoursesController {
 
     public String getCourseNameById(Integer courseID) {
         String sql = "SELECT courseName FROM courses WHERE courseID = ?;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, courseID);
             ResultSet rs = pstmt.executeQuery();
@@ -157,7 +161,7 @@ public class CoursesController {
 
     public Integer getCourseIdByCode(String selectedCourseCode) {
         String sql = "SELECT courseID FROM courses WHERE courseCode = ?;";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, selectedCourseCode);
             ResultSet rs = pstmt.executeQuery();
