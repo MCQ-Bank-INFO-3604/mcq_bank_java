@@ -29,22 +29,28 @@ This project is a Java-based desktop application designed to store multiple-choi
 ## Setup Instructions
 
 1. **Clone the Repository**:
+
    ```bash
    git clone <repository-url>
    cd mcq_bank_java/demo
    ```
 2. **Build the Project:**
    Use Maven to build the project:
+
    ```mvn
    mvn clean package
    ```
 3. **Run the Application:**
    You can run the application by executing the App class:
+
    ```mvn
    java -jar demo-1.0-SNAPSHOT.jar
    ```
+
+   Alternatively, if you have JRE 23 installed you may run the .jar file from your file explorer.
 4. **Run Tests:**
    Execute the unit and integration tests using Maven:
+
    ```mvn
    mvn test
    ```
