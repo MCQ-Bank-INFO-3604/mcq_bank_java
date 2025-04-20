@@ -159,7 +159,7 @@ public class QuestionController {
             e.printStackTrace();
         }
     }
-    
+
     public ResultSet getQuestionsWithFilter(String sqlQuery) {
         try {
             Connection conn = getConnection();

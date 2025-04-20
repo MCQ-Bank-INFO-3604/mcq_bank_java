@@ -56,7 +56,7 @@ public class Question{
                    + "comment TEXT,"
                    + "FOREIGN KEY(course) REFERENCES courses(courseID),"
                    + "FOREIGN KEY(topic) REFERENCES topics(topicID),"
-                   + "FOREIGN KEY(subtopic) REFERENCES subtopics(subtopicID));";
+                   + "FOREIGN KEY(subTopic) REFERENCES subtopics(subtopicID));";
         
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
